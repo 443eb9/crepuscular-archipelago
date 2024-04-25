@@ -10,7 +10,6 @@ export default function BlogTitle() {
             <p className="hidden md:block md:leading-[100px]">
                 Scroll down to start your exploration.
             </p>
-            <div className="h-full"></div>
         </div>
     );
 }
