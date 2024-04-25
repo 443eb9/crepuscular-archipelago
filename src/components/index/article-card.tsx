@@ -4,7 +4,7 @@ import { FaClock } from "react-icons/fa6";
 
 export default function ArticleCard({ card }: { card: ArticleCardDataRaw }) {
     return (
-        <div className="relative">
+        <div className="relative cursor-pointer">
             <div className="flex flex-col justify-between w-full h-72 p-4 border-neutral-900 dark:border-neutral-50 border-2 shadow-md">
                 <div className="flex flex-col">
                     <h1 className="font-sh-serif font-bold leading-loose text-xl">{card.title}</h1>

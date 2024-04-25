@@ -16,3 +16,36 @@
     font-family: "SourceHanSans";
     src: url('../../public/fonts/source-han-sans/SourceHanSansCN-Regular.otf');
 }
+
+/* .scrollbar-fallback {
+    scrollbar-width: thin;
+    scrollbar-color: #fafafa transparent;
+} */
+
+.scrollbar-light::-webkit-scrollbar {
+    width: 15px;
+}
+
+.scrollbar-light::-webkit-scrollbar-track {
+    background: transparent;
+    border: 2px solid #fafafa;
+}
+
+.scrollbar-light::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border: 2px solid #fafafa;
+}
+
+.scrollbar-dark::-webkit-scrollbar {
+    width: 15px;
+}
+
+.scrollbar-dark::-webkit-scrollbar-track {
+    background: transparent;
+    border: 2px solid #191919;
+}
+
+.scrollbar-dark::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border: 2px solid #191919;
+}
