@@ -1,6 +1,6 @@
 import '@/app/global.css'
 import ThemeSwither from './theme-swither';
-import NavButton from './nav-button';
+import NavButtons from './nav-buttons';
 
 export default function GlobalNavBar() {
     return (
@@ -11,9 +11,7 @@ export default function GlobalNavBar() {
             </div>
             <div className="flex flex-shrink-0 gap-2">
                 <ThemeSwither className="block md:hidden"></ThemeSwither>
-                <NavButton title="首页" href={"/"}></NavButton>
-                <NavButton title="文章" href={"/articles"}></NavButton>
-                <NavButton title="关于" href={""}></NavButton>
+                <NavButtons className="w-20 h-10" containerClassName="gap-2"></NavButtons>
             </div>
         </div>
     );
