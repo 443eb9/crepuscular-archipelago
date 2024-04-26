@@ -7,9 +7,6 @@ export default function BlogTitle() {
             <p className="md:leading-loose text-xl md:text-2xl">
                 Islands that owned by 443eb9#C.
             </p>
-            <p className="hidden md:block md:leading-[100px]">
-                Scroll down to start your exploration.
-            </p>
         </div>
     );
 }

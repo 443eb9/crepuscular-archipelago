@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import { IoMoonSharp, IoSunnySharp } from "react-icons/io5";
 import { useEffect, useState } from "react";
 
-export default function ThemeSwither() {
+export default function ThemeSwither({ className }: { className?: string }) {
     const [mounted, setMounted] = useState(false);
     const { setTheme, resolvedTheme } = useTheme();
 
@@ -17,7 +17,7 @@ export default function ThemeSwither() {
 
     if (resolvedTheme == 'light') {
         return (
-            <button onClick={() => { setTheme('dark') }} >
+            <button className={className} onClick={() => { setTheme('dark') }} >
                 <IoSunnySharp className="text-4xl"></IoSunnySharp>
             </button>
         );
@@ -25,7 +25,7 @@ export default function ThemeSwither() {
 
     if (resolvedTheme == 'dark') {
         return (
-            <button onClick={() => { setTheme('light') }} >
+            <button className={className} onClick={() => { setTheme('light') }} >
                 <IoMoonSharp className="text-4xl"></IoMoonSharp>
             </button>
         );
