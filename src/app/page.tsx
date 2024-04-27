@@ -12,6 +12,7 @@ export default function Page() {
             </div>
             <div className="absolute top-[10%] md:top-1/4 left-[10%]">
                 <BlogTitleEn></BlogTitleEn>
+                <div className="font-bender">Background under construction...</div>
             </div>
             <div className="absolute bottom-[15%] md:top-1/4 right-[10%]">
                 <BlogTitleCn></BlogTitleCn>

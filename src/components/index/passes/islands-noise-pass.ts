@@ -16,7 +16,7 @@ export class IslandsNoisePass {
 function uniforms() {
     return {
         resolution: new Uniform(new Vector2(window.innerWidth, window.innerHeight)),
-        scale: { value: 200 },
+        scale: { value: 300 },
         time: { value: new Date().getSeconds() },
     };
 }
@@ -43,9 +43,9 @@ function fragmentShader() {
 
     void main() {
         float noise = fbm(vec3((vUv * resolution) / vec2(scale), time)) * 0.5 + 0.5;
-        float height = pow(noise, 4.) > 0.2 ? 1. : 0.;
+        float height = pow(noise, 4.) > 0.15 ? 1. : 0.;
 
-        gl_FragColor = vec4(vec3(height), 1);
+        gl_FragColor = vec4(vUv * vec2(height), 0, 1);
     }
     `;
     return resolveLygia(frag);
