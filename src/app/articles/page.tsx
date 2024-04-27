@@ -13,9 +13,7 @@ export default function Page() {
                 </aside>
                 <div className="flex justify-center">
                     <div className="flex gap-10 max-w-[1080px]">
-                        <div className="flex">
-                            <BlogArticles></BlogArticles>
-                        </div>
+                        <BlogArticles></BlogArticles>
                         <aside className="hidden md:block w-72">
                             <BlogInfo></BlogInfo>
                         </aside>

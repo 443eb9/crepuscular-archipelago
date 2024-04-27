@@ -5,6 +5,7 @@ export const articles = [
         tags: ["图形学", "数据结构与算法"],
         date: "2024-4-25",
         id: 0,
+        is_achievement: false,
     },
     {
         title: "并行A*寻路算法",
@@ -12,6 +13,15 @@ export const articles = [
         tags: ["图形学", "数据结构与算法"],
         date: "2024-4-25",
         id: 1,
+        is_achievement: false,
+    },
+    {
+        title: "发布第一篇post",
+        preview: "在本博客发出第一篇post",
+        tags: ["灌水"],
+        date: "2024-4-25",
+        id: 10,
+        is_achievement: true,
     },
     {
         title: "JFA Signed Distance Field",
@@ -19,6 +29,7 @@ export const articles = [
         tags: ["图形学", "数据结构与算法"],
         date: "2024-4-25",
         id: 2,
+        is_achievement: false,
     },
     {
         title: "Ray Tracing",
@@ -26,6 +37,7 @@ export const articles = [
         tags: ["图形学"],
         date: "2024-4-25",
         id: 3,
+        is_achievement: false,
     },
     {
         title: "啊啊啊啊啊啊啊啊啊",
@@ -33,6 +45,7 @@ export const articles = [
         tags: ["灌水"],
         date: "2024-4-25",
         id: 4,
+        is_achievement: false,
     },
     {
         title: "随便写点",
@@ -40,6 +53,7 @@ export const articles = [
         tags: ["灌水"],
         date: "2024-4-25",
         id: 5,
+        is_achievement: false,
     },
 ];
 

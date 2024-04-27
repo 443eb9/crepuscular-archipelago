@@ -1,19 +1,20 @@
 import { articles, tags } from "./mock";
 
-export type ArticleCardData = {
+export type CardData = {
+    id: number,
     title: string,
     preview: string,
     tags: string[],
     date: string,
-    id: number,
+    is_achievement: boolean,
 }
 
-export type ArticleTag = {
+export type CardTag = {
     name: string,
     amount: number,
 }
 
-export async function fetchArticleCards() {
+export async function fetchAllCards() {
     return articles;
 }
 

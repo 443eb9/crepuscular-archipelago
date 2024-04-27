@@ -1,6 +1,6 @@
 import { IoSearchSharp } from "react-icons/io5";
 import OutlinedButton from "../common/outlined-button";
-import { fetchAllTags } from "@/data/article";
+import { fetchAllTags } from "@/data/card";
 import Tag from "../common/tag";
 
 export default async function BlogInfo() {
@@ -21,7 +21,7 @@ export default async function BlogInfo() {
                 <div className="flex flex-wrap gap-1">
                     {
                         tags.map((tag) => (
-                            <Tag tag={tag.name}></Tag>
+                            <Tag tag={tag} showAmount key={tag.name}></Tag>
                         ))
                     }
                 </div>
