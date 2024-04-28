@@ -1,4 +1,4 @@
-import {nextui} from '@nextui-org/theme';
+import { nextui } from '@nextui-org/theme';
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -19,6 +19,7 @@ const config: Config = {
         "sh-serif": ["SourceHanSerif", "sans-serif"],
         "bender": ["Bender"],
         "sh-sans": ["SourceHanSans"],
+        "krypton": ["MonaspaceKrypton"]
       }
     },
   },

@@ -1,8 +1,8 @@
-export const articles = [
+export const cards = [
     {
         title: "游戏实时阴影渲染",
         preview: "首先，先这样，然后注意到这样，然后这里再这样这样，最后按这个方式这样首先，先这样，然后注意到这样，然后这里再这样这样，最后按这个方式这样首先，先这样，然后注意到这样，然后这里再这样这样，最后按这个方式这样首先，先这样，然后注意到这样，然后这里再这样这样，最后按这个方式这样首先，先这样，然后注意到这样，然后这里再这样这样，最后按这个方式这样首先，先这样，然后注意到这样，然后这里再这样这样，最后按这个方式这样首先，先这样，然后注意到这样，然后这里再这样这样，最后按这个方式这样首先，先这样，然后注意到这样，然后这里再这样这样，最后按这个方式这样首先，先这样，然后注意到这样，然后这里再这样这样，最后按这个方式这样首先，先这样，然后注意到这样，然后这里再这样这样，最后按这个方式这样首先，先这样，然后注意到这样，然后这里再这样这样，最后按这个方式这样",
-        tags: ["图形学", "数据结构与算法"],
+        tags: [0, 2],
         date: "2024-4-25",
         id: 0,
         is_achievement: false,
@@ -10,7 +10,7 @@ export const articles = [
     {
         title: "并行A*寻路算法",
         preview: "Another sample card",
-        tags: ["图形学", "数据结构与算法"],
+        tags: [0, 2],
         date: "2024-4-25",
         id: 1,
         is_achievement: false,
@@ -18,7 +18,7 @@ export const articles = [
     {
         title: "发布第一篇post",
         preview: "在本博客发出第一篇post",
-        tags: ["灌水"],
+        tags: [3],
         date: "2024-4-25",
         id: 10,
         is_achievement: true,
@@ -26,7 +26,7 @@ export const articles = [
     {
         title: "JFA Signed Distance Field",
         preview: "A sample card",
-        tags: ["图形学", "数据结构与算法"],
+        tags: [0, 2],
         date: "2024-4-25",
         id: 2,
         is_achievement: false,
@@ -34,7 +34,7 @@ export const articles = [
     {
         title: "Ray Tracing",
         preview: "Another sample card",
-        tags: ["图形学"],
+        tags: [0],
         date: "2024-4-25",
         id: 3,
         is_achievement: false,
@@ -42,7 +42,7 @@ export const articles = [
     {
         title: "啊啊啊啊啊啊啊啊啊",
         preview: "A sample card",
-        tags: ["灌水"],
+        tags: [3],
         date: "2024-4-25",
         id: 4,
         is_achievement: false,
@@ -50,7 +50,7 @@ export const articles = [
     {
         title: "随便写点",
         preview: "Another sample card",
-        tags: ["灌水"],
+        tags: [3],
         date: "2024-4-25",
         id: 5,
         is_achievement: false,

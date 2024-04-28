@@ -17,6 +17,11 @@
     src: url('../../public/fonts/source-han-sans/SourceHanSansCN-Regular.otf');
 }
 
+@font-face {
+    font-family: "MonaspaceKrypton";
+    src: url('../../public/fonts/monaspace-krypton/MonaspaceKrypton-Regular.otf');
+}
+
 ::selection {
     background-color: rgba(128, 128, 128, 0.5);
 }

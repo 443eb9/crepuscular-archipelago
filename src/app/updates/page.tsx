@@ -1,6 +1,6 @@
 import BlogArticles from "@/components/updates/blog-articles";
 import BlogInfo from "@/components/updates/blog-info";
-import GlobalNavBar from "@/components/nav/global-nav-bar";
+import GlobalNavBar from "@/components/common/nav/global-nav-bar";
 import ContentWrapper from "@/components/common/content-wrapper";
 
 export default function Page() {
@@ -8,8 +8,8 @@ export default function Page() {
         <main>
             <GlobalNavBar></GlobalNavBar>
             <div className="flex-1 h-20"></div>
-            <div className="flex flex-col gap-10 pl-5 pr-5 md:pl-0 md:pr-0">
-                <aside className="block md:hidden">
+            <div className="flex flex-col gap-10 md:pl-0 md:pr-0">
+                <aside className="block md:hidden pl-5 pr-5">
                     <BlogInfo></BlogInfo>
                 </aside>
                 <div className="flex justify-center">

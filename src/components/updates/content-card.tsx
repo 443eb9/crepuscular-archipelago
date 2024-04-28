@@ -1,13 +1,13 @@
 import { FaClock } from "react-icons/fa6";
 import Link from "next/link";
 import Tag from "../common/tag";
-import { CardData, CardTag, fetchAllTags } from "@/data/card";
+import { ArticleMeta, ContentTag, fetchAllTags } from "@/data/card";
 import clsx from "clsx";
 import { RiMedal2Line } from "react-icons/ri";
 import OutlinedBox from "../common/outlined-box";
 
-export default async function ContentCard({ card }: { card: CardData }) {
-    const tagsLookup: { [name: string]: CardTag } = Object.fromEntries((await fetchAllTags()).map((tag) => [tag.name, tag]));
+export default async function ContentCard({ card }: { card: ArticleMeta }) {
+    const tagsLookup: { [name: number]: ContentTag } = Object.fromEntries((await fetchAllTags()).map((tag, id) => [id, tag]));
 
     return (
         <div className="relative">
@@ -18,7 +18,7 @@ export default async function ContentCard({ card }: { card: CardData }) {
                 {
                     card.is_achievement
                         ? <CardMain card={card}></CardMain>
-                        : <Link href={''}><CardMain card={card}></CardMain></Link>
+                        : <Link href={`/island?id=${card.id}`}><CardMain card={card}></CardMain></Link>
                 }
                 <div className="flex justify-between">
                     <div className="flex items-center gap-1">
@@ -43,7 +43,7 @@ export default async function ContentCard({ card }: { card: CardData }) {
     );
 }
 
-function CardMain({ card }: { card: CardData }) {
+function CardMain({ card }: { card: ArticleMeta }) {
     return (
         <div>
             {card.is_achievement && <AchievementCardHeader></AchievementCardHeader>}

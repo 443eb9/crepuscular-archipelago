@@ -1,8 +1,8 @@
-import { fetchAllCards } from "@/data/card";
+import { fetchAllMeta } from "@/data/card";
 import ContentCard from "./content-card";
 
 export default async function BlogArticles() {
-    let cards = await fetchAllCards();
+    let cards = await fetchAllMeta();
 
     return (
         <div className="flex flex-col gap-10">

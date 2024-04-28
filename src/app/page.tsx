@@ -1,7 +1,7 @@
 import '@/app/global.css'
 import BlogTitleCn from '@/components/index/blog-title-cn';
 import BlogTitleEn from '@/components/index/blog-title-en';
-import NavButtons from '@/components/nav/nav-buttons';
+import NavButtons from '@/components/common/nav/nav-buttons';
 
 export default function Page() {
     return (
