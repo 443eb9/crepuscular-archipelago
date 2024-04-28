@@ -4,14 +4,15 @@ import Tag from "../common/tag";
 import { CardData, CardTag, fetchAllTags } from "@/data/card";
 import clsx from "clsx";
 import { RiMedal2Line } from "react-icons/ri";
+import OutlinedBox from "../common/outlined-box";
 
 export default async function ContentCard({ card }: { card: CardData }) {
     const tagsLookup: { [name: string]: CardTag } = Object.fromEntries((await fetchAllTags()).map((tag) => [tag.name, tag]));
 
     return (
         <div className="relative">
-            <div className={clsx(
-                "flex flex-col justify-between w-full p-4 border-neutral-900 dark:border-neutral-50 border-2 shadow-md gap-2",
+            <OutlinedBox className={clsx(
+                "flex flex-col justify-between w-full p-4 shadow-md gap-2",
                 { "h-72": !card.is_achievement }
             )}>
                 {
@@ -32,7 +33,7 @@ export default async function ContentCard({ card }: { card: CardData }) {
                         <div className="font-bender">{card.date}</div>
                     </div>
                 </div>
-            </div>
+            </OutlinedBox>
             <div className="">
                 <div className="absolute w-2 h-24 bg-neutral-900 dark:bg-neutral-50 -bottom-4 -right-4"></div>
                 <div className="absolute w-8 h-2 bg-neutral-900 dark:bg-neutral-50 -bottom-4 right-36"></div>

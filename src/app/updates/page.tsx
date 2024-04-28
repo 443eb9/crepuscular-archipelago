@@ -1,23 +1,24 @@
-import BlogArticles from "@/components/articles/blog-articles";
-import BlogInfo from "@/components/articles/blog-info";
+import BlogArticles from "@/components/updates/blog-articles";
+import BlogInfo from "@/components/updates/blog-info";
 import GlobalNavBar from "@/components/nav/global-nav-bar";
+import ContentWrapper from "@/components/common/content-wrapper";
 
 export default function Page() {
     return (
         <main>
             <GlobalNavBar></GlobalNavBar>
-            <div className="flex-1 h-10"></div>
-            <div className="flex flex-col gap-10 p-10">
+            <div className="flex-1 h-20"></div>
+            <div className="flex flex-col gap-10 pl-5 pr-5 md:pl-0 md:pr-0">
                 <aside className="block md:hidden">
                     <BlogInfo></BlogInfo>
                 </aside>
                 <div className="flex justify-center">
-                    <div className="flex gap-10 max-w-[1080px]">
+                    <ContentWrapper className="gap-10">
                         <BlogArticles></BlogArticles>
                         <aside className="hidden md:block w-72">
                             <BlogInfo></BlogInfo>
                         </aside>
-                    </div>
+                    </ContentWrapper>
                 </div>
             </div>
         </main>

@@ -6,7 +6,7 @@ export default function NavButton({ title, href, className }: { title: String, h
     return (
         <div className={`font-sh-serif font-bold ${className}`}>
             <Link href={href}>
-                <OutlinedButton>
+                <OutlinedButton className="w-full h-full">
                     {title}
                 </OutlinedButton>
             </Link>
