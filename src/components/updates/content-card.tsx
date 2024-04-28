@@ -1,13 +1,13 @@
 import { FaClock } from "react-icons/fa6";
 import Link from "next/link";
 import Tag from "../common/tag";
-import { ArticleMeta, ContentTag, fetchAllTags } from "@/data/card";
+import { IslandMeta, IslandTag, fetchAllIslandTags } from "@/data/island";
 import clsx from "clsx";
 import { RiMedal2Line } from "react-icons/ri";
 import OutlinedBox from "../common/outlined-box";
 
-export default async function ContentCard({ card }: { card: ArticleMeta }) {
-    const tagsLookup: { [name: number]: ContentTag } = Object.fromEntries((await fetchAllTags()).map((tag, id) => [id, tag]));
+export default async function ContentCard({ card }: { card: IslandMeta }) {
+    const tagsLookup: { [name: number]: IslandTag } = Object.fromEntries((await fetchAllIslandTags()).map((tag, id) => [id, tag]));
 
     return (
         <div className="relative">
@@ -43,7 +43,7 @@ export default async function ContentCard({ card }: { card: ArticleMeta }) {
     );
 }
 
-function CardMain({ card }: { card: ArticleMeta }) {
+function CardMain({ card }: { card: IslandMeta }) {
     return (
         <div>
             {card.is_achievement && <AchievementCardHeader></AchievementCardHeader>}

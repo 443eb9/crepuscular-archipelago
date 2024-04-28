@@ -8,9 +8,7 @@ export default async function SelfIntro() {
 
     return (
         <OutlinedBox className="font-sh-sans p-4 md:p-10">
-            <Markdown className="flex flex-col gap-2 cursor-text" components={{
-                h3: ({ children }) => <h3 className="font-bold text-xl">{children}</h3>,
-            }} rehypePlugins={[rehypeRaw]}>{selfIntroMd.data}</Markdown>
+            <Markdown className="flex flex-col gap-2 cursor-text" rehypePlugins={[rehypeRaw]}>{selfIntroMd.data}</Markdown>
         </OutlinedBox>
     );
 }

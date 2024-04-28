@@ -1,4 +1,4 @@
-import { fetchAllMeta } from "@/data/card";
+import { fetchAllMeta } from "@/data/island";
 import ContentCard from "./content-card";
 
 export default async function BlogArticles() {
