@@ -1,5 +1,5 @@
 import axios from "axios"
-import { cards, tags } from "./mock";
+import { combineApi } from "./backend";
 
 export type IslandMeta = {
     id: number,
@@ -11,16 +11,17 @@ export type IslandMeta = {
 }
 
 export type IslandTag = {
+    id: number,
     name: string,
     amount: number,
 }
 
 export async function fetchAllMeta() {
-    return cards;
+    return [];
 }
 
 export async function fetchAllIslandTags() {
-    return tags;
+    return (await axios.get(combineApi("/get/allTags"))).data;
 }
 
 export async function fetchIndex(): Promise<string[]> {
