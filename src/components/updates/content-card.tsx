@@ -46,7 +46,9 @@ export default async function ContentCard({ card }: { card: IslandMeta }) {
 function CardMain({ card }: { card: IslandMeta }) {
     return (
         <div>
-            {card.is_achievement && <AchievementCardHeader></AchievementCardHeader>}
+            {card.is_achievement
+                ? <AchievementCardHeader></AchievementCardHeader>
+                : <div className="absolute right-5 bg-dark-diag-lines w-10 h-10 dark:invert" style={{ backgroundSize: "300%" }}></div>}
             <h1 className="font-sh-serif font-bold leading-loose text-xl">{card.title}</h1>
             <div className="flex">
                 <div className="w-20 h-1 bg-neutral-900 dark:bg-neutral-50"></div>

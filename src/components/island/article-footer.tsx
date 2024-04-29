@@ -5,8 +5,8 @@ export default function ArticleFooter() {
     return (
         <div>
             <Link href={"/updates"}>
-                <OutlinedBox className="font-krypton font-bold text-4xl p-5">
-                    $ cd ..
+                <OutlinedBox className="font-argon font-bold text-4xl p-5">
+                    &lt; $ cd .._
                 </OutlinedBox>
             </Link>
         </div>

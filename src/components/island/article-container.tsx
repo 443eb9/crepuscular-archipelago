@@ -1,9 +1,8 @@
-import { useSearchParams } from "next/navigation";
-import ArticleBody from "./article";
-import { Suspense } from "react";
+import ArticleBody from "./article-body";
 import { fetchAllIslandTags, fetchIsland, fetchIslandMeta } from "@/data/island";
 import ArticleHeader from "./article-header";
 import ArticleFooter from "./article-footer";
+import { Suspense } from "react";
 
 export default async function ArticleContainer({ id }: { id: number }) {
     const meta = await fetchIslandMeta(id);
