@@ -1,16 +1,19 @@
-'use client';
-
 import BlogInfo from "@/components/updates/blog-info";
 import GlobalNavBar from "@/components/common/nav/global-nav-bar";
 import ContentWrapper from "@/components/common/content-wrapper";
-import { useSearchParams } from "next/navigation";
 import BlogIslands from "@/components/updates/blog-islands";
 import { Suspense } from "react";
 
-export default function Page() {
-    const params = useSearchParams();
-    const page = Number.parseInt(params.get("p") ?? "0");
-    const length = Number.parseInt(params.get("len") ?? "10");
+export default function Page({ searchParams }: {
+    searchParams?: {
+        page?: string,
+        len?: string,
+        tags?: string,
+    }
+}) {
+    const page = Number.parseInt(searchParams?.page ?? "0");
+    const length = Number.parseInt(searchParams?.len ?? "10");
+    const tagsFilter = Number.parseInt(searchParams?.tags ?? "0");
 
     return (
         <main>
@@ -18,14 +21,18 @@ export default function Page() {
             <div className="flex-1 h-20"></div>
             <div className="flex flex-col gap-10 md:px-0">
                 <aside className="block md:hidden px-5">
-                    <BlogInfo></BlogInfo>
+                    <Suspense>
+                        <BlogInfo></BlogInfo>
+                    </Suspense>
                 </aside>
                 <ContentWrapper className="gap-10">
                     <Suspense>
-                        <BlogIslands page={page} length={length}></BlogIslands>
+                        <BlogIslands page={page} length={length} tagsFilter={tagsFilter}></BlogIslands>
                     </Suspense>
                     <aside className="hidden md:block w-72">
-                        <BlogInfo></BlogInfo>
+                        <Suspense>
+                            <BlogInfo></BlogInfo>
+                        </Suspense>
                     </aside>
                 </ContentWrapper>
             </div>

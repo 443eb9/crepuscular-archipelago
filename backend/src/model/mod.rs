@@ -26,6 +26,29 @@ pub struct IslandMeta {
     pub ty: IslandType,
 }
 
+#[derive(Debug, Serialize)]
+pub struct IslandMetaTagged {
+    pub id: u32,
+    pub title: String,
+    pub desc: String,
+    pub date: DateTime<Utc>,
+    pub ty: IslandType,
+    pub tags: Vec<Tag>,
+}
+
+impl IslandMetaTagged {
+    pub fn new(meta: IslandMeta, tags: Vec<Tag>) -> Self {
+        Self {
+            id: meta.id,
+            title: meta.title,
+            desc: meta.desc,
+            date: meta.date,
+            ty: meta.ty,
+            tags,
+        }
+    }
+}
+
 #[derive(Debug, Serialize, FromRow)]
 pub struct IslandFilename(pub String);
 

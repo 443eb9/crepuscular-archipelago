@@ -23,7 +23,10 @@ const config: Config = {
         "sh-sans": ["SourceHanSans"],
         "krypton": ["MonaspaceKrypton"],
         "argon": ["MonaspaceArgon"],
-      }
+      },
+      colors: {
+        "443eb9": "#443eb9",
+      },
     },
   },
   plugins: [

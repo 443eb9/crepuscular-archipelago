@@ -6,7 +6,7 @@ import { RiMedal2Line } from "react-icons/ri";
 import OutlinedBox from "../common/outlined-box";
 import DiagLines from "../common/decos/diag-lines";
 
-export default async function IslandCard({ card, tags }: { card: IslandMeta, tags: TagData[] }) {
+export default async function IslandCard({ island: card, tags }: { island: IslandMeta, tags: TagData[] }) {
     return (
         <div className="relative">
             <OutlinedBox className=
@@ -43,7 +43,7 @@ export default async function IslandCard({ card, tags }: { card: IslandMeta, tag
 function CardMain({ card }: { card: IslandMeta }) {
     return (
         <div>
-            <h2 className="absolute font-bender leading-none pl-2 py-[2px] text-[10px] w-20 -top-1 left-3 text-neutral-50 dark:text-neutral-900 bg-neutral-900 dark:bg-neutral-50">{`# ${card.id}`}</h2>
+            <h2 className="absolute font-bender font-bold leading-none pl-2 py-[2px] text-[10px] w-20 -top-1 left-3 text-neutral-50 dark:text-neutral-900 bg-neutral-900 dark:bg-neutral-50">{`# ${card.id}`}</h2>
             {
                 card.ty == IslandType.Achievement
                     ? <AchievementCardHeader></AchievementCardHeader>

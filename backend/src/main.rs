@@ -25,8 +25,6 @@ async fn main() -> std::io::Result<()> {
             .service(http::get_all_tags)
             .service(http::get_island_meta)
             .service(http::get_islands_meta)
-            .service(http::get_island_tags)
-            .service(http::get_islands_tags)
             .service(http::get_island)
     })
     .bind(("localhost", 8080))?
