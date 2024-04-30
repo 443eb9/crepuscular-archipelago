@@ -6,28 +6,28 @@ import { RiMedal2Line } from "react-icons/ri";
 import OutlinedBox from "../common/outlined-box";
 import DiagLines from "../common/decos/diag-lines";
 
-export default async function IslandCard({ island: card, tags }: { island: IslandMeta, tags: TagData[] }) {
+export default async function IslandCard({ island }: { island: IslandMeta }) {
     return (
         <div className="relative">
             <OutlinedBox className=
                 "flex flex-col justify-between w-full p-4 shadow-md gap-2"
             >
                 {
-                    card.ty == IslandType.Achievement
-                        ? <CardMain card={card}></CardMain>
-                        : <Link href={`/island?id=${card.id}`}><CardMain card={card}></CardMain></Link>
+                    island.ty == IslandType.Achievement
+                        ? <CardMain card={island}></CardMain>
+                        : <Link href={`/island?id=${island.id}`}><CardMain card={island}></CardMain></Link>
                 }
                 <div className="flex justify-between">
                     <div className="flex items-center gap-1">
                         {
-                            tags.map(tag => (
+                            island.tags.map(tag => (
                                 <Tag tag={tag} key={tag.id}></Tag>
                             ))
                         }
                     </div>
                     <div className="flex items-center gap-1">
                         <FaClock></FaClock>
-                        <div className="font-bender">{new Date(card.date).toLocaleDateString()}</div>
+                        <div className="font-bender">{new Date(island.date).toLocaleDateString()}</div>
                     </div>
                 </div>
             </OutlinedBox>

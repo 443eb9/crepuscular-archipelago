@@ -9,6 +9,7 @@ export type IslandMeta = {
     desc: string,
     date: Date,
     ty: IslandType,
+    tags: TagData[]
 }
 
 export type TagData = {

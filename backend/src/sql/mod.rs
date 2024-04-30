@@ -19,9 +19,7 @@ pub async fn query_island_meta_tagged(
         )
         .bind(id)
         .fetch_one(pool),
-        sqlx::query_as::<_, Tag>("SELECT id, name, amount FROM island_tags WHERE island_id = ?")
-            .bind(id)
-            .fetch_all(pool)
+        query_island_tags(pool, id)
     );
 
     Ok(IslandMetaTagged::new(meta?, tags?))

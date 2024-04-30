@@ -5,7 +5,7 @@ import Tag from "../common/tag";
 import Link from "next/link";
 import DiagLines from "../common/decos/diag-lines";
 
-export default function ArticleHeader({ meta, tags }: { meta: IslandMeta, tags: TagData[] }) {
+export default function ArticleHeader({ meta }: { meta: IslandMeta }) {
     return (
         <OutlinedBox className="flex justify-between p-5">
             <div className="flex flex-col gap-1">
@@ -15,7 +15,7 @@ export default function ArticleHeader({ meta, tags }: { meta: IslandMeta, tags: 
                 <h1 className="font-bender text-4xl font-bold">{`# ${meta.id}`}</h1>
                 <h1 className="font-sh-serif text-2xl font-bold">{meta.title}</h1>
                 <div className="flex gap-1">
-                    {tags.map((tag) => <Tag tag={tag} key={tag.id}></Tag>)}
+                    {meta.tags.map((tag) => <Tag tag={tag} key={tag.id}></Tag>)}
                 </div>
                 <div className="flex items-center gap-2">
                     <FaClock></FaClock>
