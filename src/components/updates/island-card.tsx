@@ -2,9 +2,9 @@ import { FaClock } from "react-icons/fa6";
 import Link from "next/link";
 import Tag from "../common/tag";
 import { IslandMeta, IslandType, TagData } from "@/data/model";
-import clsx from "clsx";
 import { RiMedal2Line } from "react-icons/ri";
 import OutlinedBox from "../common/outlined-box";
+import DiagLines from "../common/decos/diag-lines";
 
 export default async function IslandCard({ card, tags }: { card: IslandMeta, tags: TagData[] }) {
     return (
@@ -43,9 +43,12 @@ export default async function IslandCard({ card, tags }: { card: IslandMeta, tag
 function CardMain({ card }: { card: IslandMeta }) {
     return (
         <div>
-            {card.ty == IslandType.Achievement
-                ? <AchievementCardHeader></AchievementCardHeader>
-                : <div className="absolute right-5 bg-dark-diag-lines w-10 h-10 dark:invert" style={{ backgroundSize: "300%" }}></div>}
+            <h2 className="absolute font-bender leading-none pl-2 py-[2px] text-[10px] w-20 -top-1 left-3 text-neutral-50 dark:text-neutral-900 bg-neutral-900 dark:bg-neutral-50">{`# ${card.id}`}</h2>
+            {
+                card.ty == IslandType.Achievement
+                    ? <AchievementCardHeader></AchievementCardHeader>
+                    : <DiagLines className="absolute right-5 size-10" scale="300%"></DiagLines>
+            }
             <h1 className="font-sh-serif font-bold leading-loose text-xl">{card.title}</h1>
             <div className="flex">
                 <div className="w-20 h-1 bg-neutral-900 dark:bg-neutral-50"></div>

@@ -3,6 +3,7 @@ import OutlinedBox from "../common/outlined-box";
 import { IslandMeta, TagData } from "@/data/model";
 import Tag from "../common/tag";
 import Link from "next/link";
+import DiagLines from "../common/decos/diag-lines";
 
 export default function ArticleHeader({ meta, tags }: { meta: IslandMeta, tags: TagData[] }) {
     return (
@@ -21,7 +22,7 @@ export default function ArticleHeader({ meta, tags }: { meta: IslandMeta, tags: 
                     <div className="font-bender">{new Date(meta.date).toLocaleDateString()}</div>
                 </div>
             </div>
-            <div className="bg-dark-diag-lines bg-repeat w-20 dark:invert" style={{ backgroundSize: "300%" }}></div>
+            <DiagLines className="w-10 md:w-20" scale="300%"></DiagLines>
         </OutlinedBox>
     );
 }

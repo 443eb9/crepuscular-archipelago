@@ -16,8 +16,8 @@ export default function Page() {
         <main>
             <GlobalNavBar></GlobalNavBar>
             <div className="flex-1 h-20"></div>
-            <div className="flex flex-col gap-10 md:pl-0 md:pr-0">
-                <aside className="block md:hidden pl-5 pr-5">
+            <div className="flex flex-col gap-10 md:px-0">
+                <aside className="block md:hidden px-5">
                     <BlogInfo></BlogInfo>
                 </aside>
                 <ContentWrapper className="gap-10">
