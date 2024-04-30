@@ -1,51 +1,27 @@
 import axios from "axios"
-import { combineApi } from "./backend";
+import { combineApi as api } from "./backend";
+import { Island, IslandMeta, TagData } from "./model";
 
-export type IslandMeta = {
-    id: number,
-    title: string,
-    preview: string,
-    tags: number[],
-    date: string,
-    is_achievement: boolean,
+export async function fetchIslandMeta(id: number): Promise<IslandMeta> {
+    return (await axios.get(api(`/get/islandMeta/${id}`))).data;
 }
 
-export type IslandTag = {
-    id: number,
-    name: string,
-    amount: number,
+export async function fetchIslandsMeta(start: number, length: number): Promise<IslandMeta[]> {
+    return (await axios.get(api(`/get/islandsMeta/${start}/${length}`))).data;
 }
 
-export async function fetchAllMeta() {
-    return [];
+export async function fetchIslandTags(id: number): Promise<TagData[]> {
+    return (await axios.get(api(`/get/islandTags/${id}`))).data;
 }
 
-export async function fetchAllIslandTags() {
-    return (await axios.get(combineApi("/get/allTags"))).data;
+export async function fetchIslandsTags(start: number, length: number): Promise<TagData[][]> {
+    return (await axios.get(api(`/get/islandsTags/${start}/${length}`))).data;
 }
 
-export async function fetchIndex(): Promise<string[]> {
-    return (await axios.get("https://raw.githubusercontent.com/443eb9/individual-islands/main/index.json")).data;
+export async function fetchAllTags(): Promise<TagData[]> {
+    return (await axios.get(api("/get/allTags"))).data;
 }
 
-export async function fetchIslandMeta(id: number): Promise<IslandMeta | void> {
-    const index = await fetchIndex();
-    if (id >= index.length) {
-        return new Promise((_, rej) => {
-            rej("Invalid id");
-        });
-    }
-
-    return (await axios.get(`https://raw.githubusercontent.com/443eb9/individual-islands/main/islands/${index}.meta.json`)).data;
-}
-
-export async function fetchIsland(id: number): Promise<string | void> {
-    const index = await fetchIndex();
-    if (id >= index.length || id < 0) {
-        return new Promise((_, rej) => {
-            rej("Invalid id");
-        });
-    }
-
-    return (await axios.get(`https://raw.githubusercontent.com/443eb9/individual-islands/main/islands/${index[id]}.md`)).data;
+export async function fetchIsland(id: number): Promise<Island> {
+    return (await axios.get(api(`/get/island/${id}`))).data;
 }

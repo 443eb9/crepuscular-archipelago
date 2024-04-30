@@ -1,11 +1,11 @@
 import { IoSearchSharp } from "react-icons/io5";
 import OutlinedButton from "../common/outlined-button";
-import { fetchAllIslandTags } from "@/data/island";
+import { fetchAllTags } from "@/data/island";
 import Tag from "../common/tag";
 import OutlinedBox from "../common/outlined-box";
 
 export default async function BlogInfo() {
-    const tags = await fetchAllIslandTags();
+    const tags = await fetchAllTags();
 
     return (
         <OutlinedBox className="flex flex-col gap-4 p-2">

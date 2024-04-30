@@ -5,13 +5,13 @@ use actix_web::{
 };
 use sqlx::SqlitePool;
 
-use crate::sql::{query_all_tags, query_islands_meta};
+use crate::{fs::load_island, sql::*};
 
 #[get("/api/get/allTags")]
 pub async fn get_all_tags(pool: Data<SqlitePool>) -> impl Responder {
     match query_all_tags(&pool).await {
         Ok(tags) => HttpResponse::Ok().json(tags),
-        Err(_) => todo!(),
+        Err(err) => HttpResponse::BadRequest().json(err.to_string()),
     }
 }
 
@@ -19,6 +19,41 @@ pub async fn get_all_tags(pool: Data<SqlitePool>) -> impl Responder {
 pub async fn get_islands_meta(pool: Data<SqlitePool>, params: Path<(u32, u32)>) -> impl Responder {
     match query_islands_meta(&pool, params.0, params.1).await {
         Ok(meta) => HttpResponse::Ok().json(meta),
-        Err(_) => todo!(),
+        Err(err) => HttpResponse::BadRequest().json(err.to_string()),
+    }
+}
+
+#[get("/api/get/islandMeta/{id}")]
+pub async fn get_island_meta(pool: Data<SqlitePool>, id: Path<u32>) -> impl Responder {
+    match query_island_meta(&pool, *id).await {
+        Ok(meta) => HttpResponse::Ok().json(meta),
+        Err(err) => HttpResponse::BadRequest().json(err.to_string()),
+    }
+}
+
+#[get("/api/get/islandTags/{id}")]
+pub async fn get_island_tags(pool: Data<SqlitePool>, id: Path<u32>) -> impl Responder {
+    match query_island_tags(&pool, *id).await {
+        Ok(tags) => HttpResponse::Ok().json(tags),
+        Err(err) => HttpResponse::BadRequest().json(err.to_string()),
+    }
+}
+
+#[get("/api/get/islandsTags/{start}/{length}")]
+pub async fn get_islands_tags(pool: Data<SqlitePool>, params: Path<(u32, u32)>) -> impl Responder {
+    match query_islands_tags(&pool, params.0, params.1).await {
+        Ok(tags) => HttpResponse::Ok().json(tags),
+        Err(err) => HttpResponse::BadRequest().json(err.to_string()),
+    }
+}
+
+#[get("/api/get/island/{id}")]
+pub async fn get_island(pool: Data<SqlitePool>, id: Path<u32>) -> impl Responder {
+    match query_island_filename(&pool, *id).await {
+        Ok(filename) => match load_island(&filename) {
+            Ok(island) => HttpResponse::Ok().json(island),
+            Err(err) => HttpResponse::BadRequest().json(err.to_string()),
+        },
+        Err(err) => HttpResponse::BadRequest().json(err.to_string()),
     }
 }

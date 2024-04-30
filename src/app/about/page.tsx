@@ -8,14 +8,12 @@ export default function Page() {
         <main>
             <GlobalNavBar></GlobalNavBar>
             <div className="h-20"></div>
-            <div className="flex justify-center">
-                <ContentWrapper className="flex-col md:flex-row gap-2">
-                    <div className="w-full md:w-72">
-                        <MeInfo></MeInfo>
-                    </div>
-                    <SelfIntro></SelfIntro>
-                </ContentWrapper>
-            </div>
+            <ContentWrapper className="flex-col md:flex-row gap-2">
+                <div className="w-full md:w-72">
+                    <MeInfo></MeInfo>
+                </div>
+                <SelfIntro></SelfIntro>
+            </ContentWrapper>
         </main>
     );
 }

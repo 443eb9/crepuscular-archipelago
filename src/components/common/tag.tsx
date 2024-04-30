@@ -1,7 +1,7 @@
-import { IslandTag } from "@/data/island";
+import { TagData } from "@/data/island";
 import Link from "next/link";
 
-export default function Tag({ tag, showAmount, className }: { tag: IslandTag, showAmount?: boolean, className?: string }) {
+export default function Tag({ tag, showAmount, className }: { tag: TagData, showAmount?: boolean, className?: string }) {
     return (
         <Link href={''}>
             <div className={`flex gap-1 border-neutral-900 dark:border-neutral-50 border-2 p-1 font-sh-serif text-xs font-bold cursor-pointer ${className}`}>

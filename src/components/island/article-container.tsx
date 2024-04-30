@@ -1,25 +1,18 @@
 import ArticleBody from "./article-body";
-import { fetchAllIslandTags, fetchIsland, fetchIslandMeta } from "@/data/island";
+import { fetchIsland, fetchIslandMeta, fetchIslandTags } from "@/data/island";
 import ArticleHeader from "./article-header";
 import ArticleFooter from "./article-footer";
-import { Suspense } from "react";
 
 export default async function ArticleContainer({ id }: { id: number }) {
     const meta = await fetchIslandMeta(id);
-    if (meta == null) {
-        return null;
-    }
+    const tags = await fetchIslandTags(id);
     const article = await fetchIsland(id);
-    if (article == null) {
-        return null;
-    }
-    const tags = await fetchAllIslandTags();
 
     return (
-        <Suspense>
+        <div className="flex flex-col gap-10 w-full">
             <ArticleHeader meta={meta} tags={tags}></ArticleHeader>
-            <ArticleBody body={article}></ArticleBody>
+            <ArticleBody body={article.content}></ArticleBody>
             <ArticleFooter></ArticleFooter>
-        </Suspense>
+        </div>
     );
 }
