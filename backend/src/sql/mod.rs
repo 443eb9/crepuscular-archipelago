@@ -1,18 +1,15 @@
 use futures::{future::join_all, join};
 use sqlx::{Error, SqlitePool};
 
-use crate::model::{IslandFilename, IslandMeta, IslandMetaTagged, Tag};
+use crate::model::{IslandFilename, IslandMeta, IslandMetaTagged, TagData};
 
-pub async fn query_all_tags(pool: &SqlitePool) -> Result<Vec<Tag>, Error> {
+pub async fn query_all_tags(pool: &SqlitePool) -> Result<Vec<TagData>, Error> {
     Ok(sqlx::query_as("SELECT id, name, amount FROM tags")
         .fetch_all(pool)
         .await?)
 }
 
-pub async fn query_island_meta_tagged(
-    pool: &SqlitePool,
-    id: u32,
-) -> Result<IslandMetaTagged, Error> {
+pub async fn query_island_meta(pool: &SqlitePool, id: u32) -> Result<IslandMetaTagged, Error> {
     let (meta, tags) = join!(
         sqlx::query_as::<_, IslandMeta>(
             "SELECT id, title, desc, ty, date FROM islands WHERE id = ?"
@@ -25,16 +22,47 @@ pub async fn query_island_meta_tagged(
     Ok(IslandMetaTagged::new(meta?, tags?))
 }
 
-pub async fn query_islands_meta_tagged(
+pub async fn query_islands_meta(
     pool: &SqlitePool,
     start: u32,
     length: u32,
-    mut tags_filter: u32,
 ) -> Result<Vec<IslandMetaTagged>, Error> {
-    if tags_filter == 0 {
-        tags_filter = !0;
-    }
+    let metas = sqlx::query_as::<_, IslandMeta>(
+        "
+            SELECT id, title, desc, ty, date FROM islands
+            LEFT JOIN island_tags ON islands.id = island_tags.island_id
+            WHERE id BETWEEN ? AND ?
+            GROUP BY islands.id
+        ",
+    )
+    .bind(start)
+    .bind(start + length - 1)
+    .fetch_all(pool)
+    .await?;
 
+    join_all(
+        (start..start + length)
+            .into_iter()
+            .map(|id| query_island_tags(pool, id)),
+    )
+    .await
+    .into_iter()
+    .zip(metas)
+    .try_fold(Vec::new(), |mut acc, (tags, meta)| match tags {
+        Ok(tags) => {
+            acc.push(IslandMetaTagged::new(meta, tags));
+            Ok(acc)
+        }
+        Err(err) => Err(err),
+    })
+}
+
+pub async fn query_islands_meta_filtered(
+    pool: &SqlitePool,
+    start: u32,
+    length: u32,
+    tags_filter: u32,
+) -> Result<Vec<IslandMetaTagged>, Error> {
     let included_tag_ids = (0..32)
         .into_iter()
         .filter_map(|bit| {
@@ -59,9 +87,10 @@ pub async fn query_islands_meta_tagged(
             WHERE id BETWEEN ? AND ?
             AND island_tags.tag_id IN ({})
             GROUP BY islands.id
-            HAVING COUNT(island_tags.tag_id) != 0
+            HAVING COUNT(island_tags.tag_id) = {}
         ",
-        &included_tag_conditions
+        &included_tag_conditions,
+        included_tag_ids.len()
     );
 
     let mut query = sqlx::query_as(&sql).bind(start).bind(start + length - 1);
@@ -74,7 +103,7 @@ pub async fn query_islands_meta_tagged(
     join_all(metas.iter().map(|meta| query_island_tags(pool, meta.id)))
         .await
         .into_iter()
-        .zip(metas.into_iter())
+        .zip(metas)
         .try_fold(Vec::new(), |mut acc, (tags, meta)| match tags {
             Ok(tags) => {
                 acc.push(IslandMetaTagged::new(meta, tags));
@@ -84,7 +113,7 @@ pub async fn query_islands_meta_tagged(
         })
 }
 
-async fn query_island_tags(pool: &SqlitePool, id: u32) -> Result<Vec<Tag>, Error> {
+async fn query_island_tags(pool: &SqlitePool, id: u32) -> Result<Vec<TagData>, Error> {
     Ok(sqlx::query_as(
         "
             SELECT id, name, amount FROM tags

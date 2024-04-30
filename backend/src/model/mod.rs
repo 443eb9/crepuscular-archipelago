@@ -11,7 +11,7 @@ pub enum IslandType {
 }
 
 #[derive(Debug, Serialize, FromRow)]
-pub struct Tag {
+pub struct TagData {
     pub id: u32,
     pub name: String,
     pub amount: u32,
@@ -33,11 +33,11 @@ pub struct IslandMetaTagged {
     pub desc: String,
     pub date: DateTime<Utc>,
     pub ty: IslandType,
-    pub tags: Vec<Tag>,
+    pub tags: Vec<TagData>,
 }
 
 impl IslandMetaTagged {
-    pub fn new(meta: IslandMeta, tags: Vec<Tag>) -> Self {
+    pub fn new(meta: IslandMeta, tags: Vec<TagData>) -> Self {
         Self {
             id: meta.id,
             title: meta.title,
