@@ -26,7 +26,7 @@ pub async fn get_island_meta(pool: Data<SqlitePool>, id: Path<u32>) -> impl Resp
 #[get("/api/get/islandsMeta/{start}/{length}/{tagsFilter}")]
 pub async fn get_islands_meta(
     pool: Data<SqlitePool>,
-    params: Path<(u32, u32, u32)>,
+    params: Path<(u32, u32, i32)>,
 ) -> impl Responder {
     if params.2 == 0 {
         match query_islands_meta(&pool, params.0, params.1).await {
@@ -34,7 +34,9 @@ pub async fn get_islands_meta(
             Err(err) => HttpResponse::BadRequest().json(err.to_string()),
         }
     } else {
-        match query_islands_meta_filtered(&pool, params.0, params.1, params.2).await {
+        let actual_filter = unsafe { std::mem::transmute(params.2) };
+        dbg!(actual_filter, params.2);
+        match query_islands_meta_filtered(&pool, params.0, params.1, actual_filter).await {
             Ok(meta) => HttpResponse::Ok().json(meta),
             Err(err) => HttpResponse::BadRequest().json(err.to_string()),
         }
@@ -44,7 +46,7 @@ pub async fn get_islands_meta(
 #[get("/api/get/island/{id}")]
 pub async fn get_island(pool: Data<SqlitePool>, id: Path<u32>) -> impl Responder {
     match query_island_filename(&pool, *id).await {
-        Ok(filename) => match load_island(&filename) {
+        Ok(filename) => match load_island(*id, &filename) {
             Ok(island) => HttpResponse::Ok().json(island),
             Err(err) => HttpResponse::BadRequest().json(err.to_string()),
         },

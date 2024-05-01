@@ -30,9 +30,9 @@ pub async fn query_islands_meta(
     let metas = sqlx::query_as::<_, IslandMeta>(
         "
             SELECT id, title, desc, ty, date FROM islands
-            LEFT JOIN island_tags ON islands.id = island_tags.island_id
+            LEFT JOIN island_tags ON id = island_id
             WHERE id BETWEEN ? AND ?
-            GROUP BY islands.id
+            GROUP BY id
         ",
     )
     .bind(start)
@@ -63,7 +63,8 @@ pub async fn query_islands_meta_filtered(
     length: u32,
     tags_filter: u32,
 ) -> Result<Vec<IslandMetaTagged>, Error> {
-    let included_tag_ids = (0..32)
+    let is_exclude_mode = (tags_filter & (1 << 31)) != 0;
+    let filter_ids = (0..30)
         .into_iter()
         .filter_map(|bit| {
             if (tags_filter & (1 << bit)) != 0 {
@@ -74,28 +75,47 @@ pub async fn query_islands_meta_filtered(
         })
         .collect::<Vec<_>>();
 
-    let included_tag_conditions = included_tag_ids
+    let filter_conditions = filter_ids
         .iter()
         .map(|_| "?")
         .collect::<Vec<_>>()
         .join(", ");
 
-    let sql = format!(
-        "
-            SELECT id, title, desc, ty, date FROM islands
-            LEFT OUTER JOIN island_tags ON islands.id = island_tags.island_id
-            WHERE id BETWEEN ? AND ?
-            AND island_tags.tag_id IN ({})
-            GROUP BY islands.id
-            HAVING COUNT(island_tags.tag_id) = {}
-        ",
-        &included_tag_conditions,
-        included_tag_ids.len()
-    );
+    let sql = {
+        if is_exclude_mode {
+            format!(
+                "
+                    SELECT id, title, desc, ty, date
+                    FROM islands
+                    WHERE id BETWEEN ? AND ?
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM island_tags
+                        WHERE island_id = id
+                        AND tag_id IN ({})
+                    )
+                ",
+                &filter_conditions,
+            )
+        } else {
+            format!(
+                "
+                    SELECT id, title, desc, ty, date FROM islands
+                    LEFT OUTER JOIN island_tags ON id = island_id
+                    WHERE id BETWEEN ? AND ?
+                    AND tag_id IN ({})
+                    GROUP BY id
+                    HAVING COUNT(tag_id) = {}
+                ",
+                &filter_conditions,
+                filter_ids.len()
+            )
+        }
+    };
 
     let mut query = sqlx::query_as(&sql).bind(start).bind(start + length - 1);
 
-    for tag_id in included_tag_ids {
+    for tag_id in filter_ids {
         query = query.bind(tag_id);
     }
 
@@ -117,8 +137,8 @@ async fn query_island_tags(pool: &SqlitePool, id: u32) -> Result<Vec<TagData>, E
     Ok(sqlx::query_as(
         "
             SELECT id, name, amount FROM tags
-            JOIN island_tags ON tags.id = island_tags.tag_id
-            WHERE island_tags.island_id = ?
+            JOIN island_tags ON tags.id = tag_id
+            WHERE island_id = ?
         ",
     )
     .bind(id)

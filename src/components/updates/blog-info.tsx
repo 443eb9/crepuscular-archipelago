@@ -3,6 +3,7 @@ import OutlinedButton from "../common/outlined-button";
 import { fetchAllTags } from "@/data/island";
 import Tag from "../common/tag";
 import OutlinedBox from "../common/outlined-box";
+import ToggleExclude from "./toggle-exclude";
 
 export default async function BlogInfo() {
     const tags = await fetchAllTags();
@@ -18,7 +19,10 @@ export default async function BlogInfo() {
                 </div>
             </div>
             <div className="flex flex-col">
-                <h1 className="font-bender font-bold text-lg">Travel To:</h1>
+                <div className="">
+                    <h1 className="font-bender font-bold text-lg">Travel To:</h1>
+                    <ToggleExclude></ToggleExclude>
+                </div>
                 <div className="flex flex-wrap gap-1">
                     {
                         tags.map((tag) => (
