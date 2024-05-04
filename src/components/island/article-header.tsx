@@ -28,7 +28,10 @@ export default function ArticleHeader({ meta }: { meta: IslandMeta }) {
                     <div className="bg-neutral-900 dark:bg-neutral-50 w-3 h-3"></div>
                 </div>
             </div>
-            <DiagLines className="w-8 md:w-14" scale="500%"></DiagLines>
+            <div className="flex flex-col justify-between items-end">
+                <DiagLines className="w-8 md:w-14 h-8 md:h-14" scale="500%"></DiagLines>
+                <div className="bg-neutral-900 dark:bg-neutral-50 w-2" style={{ height: "calc(100% - 75px)" }}></div>
+            </div>
         </OutlinedBox>
     );
 }
