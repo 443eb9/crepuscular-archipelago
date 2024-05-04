@@ -10,7 +10,7 @@ export default async function IslandCard({ island }: { island: IslandMeta }) {
     return (
         <div className="relative">
             <OutlinedBox className=
-                "flex flex-col justify-between w-full p-4 shadow-md gap-2"
+                "flex flex-col justify-between w-full p-4 shadow-md gap-2 min-h-[200px]"
             >
                 {
                     island.ty == IslandType.Achievement
@@ -49,13 +49,13 @@ function CardMain({ card }: { card: IslandMeta }) {
                     ? <AchievementCardHeader></AchievementCardHeader>
                     : <DiagLines className="absolute right-5 size-10" scale="300%"></DiagLines>
             }
-            <h1 className="font-sh-serif font-bold leading-loose text-xl">{card.title}</h1>
-            <div className="flex">
+            <h1 className="font-sh-serif font-bold text-xl mb-1">{card.title}</h1>
+            <div className="flex mb-2">
                 <div className="w-20 h-1 bg-neutral-900 dark:bg-neutral-50"></div>
                 <div className="w-4 h-1 bg-neutral-900 dark:bg-neutral-50 ml-3"></div>
                 <div className="w-2 h-1 bg-neutral-900 dark:bg-neutral-50 ml-3"></div>
             </div>
-            <p className="font-sh-sans text-ellipsis overflow-hidden line-clamp-6">{card.desc}</p>
+            <p className="font-sh-sans text-ellipsis overflow-hidden line-clamp-6" style={{width: "calc(100% - 80px)"}}>{card.desc}</p>
         </div>
     );
 }

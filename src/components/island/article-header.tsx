@@ -12,8 +12,8 @@ export default function ArticleHeader({ meta }: { meta: IslandMeta }) {
                 <Link href={"/updates"} className="font-argon font-bold">
                     &lt; $ cd .._
                 </Link>
-                <h1 className="font-bender text-4xl font-bold">{`# ${meta.id}`}</h1>
-                <h1 className="font-sh-serif text-2xl font-bold">{meta.title}</h1>
+                <h1 className="w-24 font-bender text-lg font-bold px-2 bg-neutral-900 dark:bg-neutral-50 text-neutral-50 dark:text-neutral-900">{`# ${meta.id}`}</h1>
+                <h1 className="font-sh-serif text-2xl font-bold mb-1">{meta.title}</h1>
                 <div className="flex gap-1">
                     {meta.tags.map((tag) => <Tag tag={tag} key={tag.id}></Tag>)}
                 </div>
@@ -21,8 +21,14 @@ export default function ArticleHeader({ meta }: { meta: IslandMeta }) {
                     <FaClock></FaClock>
                     <div className="font-bender">{new Date(meta.date).toLocaleDateString()}</div>
                 </div>
+                <div className="flex gap-3 mt-1">
+                    <div className="bg-neutral-900 dark:bg-neutral-50 w-3 h-3"></div>
+                    <div className="bg-neutral-900 dark:bg-neutral-50 w-3 h-3"></div>
+                    <div className="bg-neutral-900 dark:bg-neutral-50 w-3 h-3"></div>
+                    <div className="bg-neutral-900 dark:bg-neutral-50 w-3 h-3"></div>
+                </div>
             </div>
-            <DiagLines className="w-10 md:w-20" scale="300%"></DiagLines>
+            <DiagLines className="w-8 md:w-14" scale="500%"></DiagLines>
         </OutlinedBox>
     );
 }
