@@ -2,15 +2,20 @@ use actix_cors::Cors;
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 use sqlx::SqlitePool;
 
+mod env;
 mod fs;
+mod git;
 mod http;
 mod model;
+mod schedule;
 mod sql;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     dotenvy::dotenv().ok();
+
+    schedule::start_schedules();
 
     let storage_root = std::env::var("ISLAND_STORAGE_ROOT").unwrap();
     let db = SqlitePool::connect(&format!("sqlite://{}archipelago.sqlite3", storage_root))
