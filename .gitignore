@@ -3,6 +3,9 @@
 /.idea/
 package-lock.json
 
+/backend/storage
+/public/imgs
+
 # rust backend
 /backend/target
 

@@ -9,7 +9,7 @@ export default async function BlogIslands({ page, length, tagsFilter }: { page: 
         <div className="flex w-full flex-col gap-10">
             {
                 islands.reverse().map((data, i) =>
-                    <Suspense>
+                    <Suspense key={i}>
                         <IslandCard island={data} key={data.id}></IslandCard>
                     </Suspense>
                 )
