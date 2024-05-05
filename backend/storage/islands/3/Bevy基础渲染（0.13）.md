@@ -251,7 +251,7 @@ app.add_plugins((
 
 Bevy中的渲染流程是由一个叫Render Graph的东西控制的，它定义了每一个Graph Node的执行顺序，比如下面这张图就是0.13.0的默认Render Graph。
 
-![](imgs/render_graph%200.13.0.png)
+![](https://img2.imgtp.com/2024/05/05/jrf2MoEc.png)
 
 > 如果你也想要生成这张图，你可以下载`bevy_mod_debugdump`这个crate，使用很简单，看一下README就会了。把这个crate输出的内容复制，然后粘贴到[这个网站](https://dreampuf.github.io/GraphvizOnline/)里面，就可以把dot格式的文字变成上面这样的图片。
 
@@ -526,7 +526,7 @@ commands.spawn((
 
 如果此时你尝试输出Render Graph，你就会得到：
 
-![](imgs/post_process_graph.png)
+![](https://img2.imgtp.com/2024/05/05/VUHAfDsw.png)
 
 看到`MonochromerNodeLable`和`ViewNodeRunner<MonochomerNode>`了吗？那就是你努力的成果！
 

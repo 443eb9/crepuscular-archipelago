@@ -14,7 +14,7 @@ const config: Config = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        "diag-lines": "url(/web-imgs/diag-lines.svg)",
+        "diag-lines": "url(/images/diag-lines.svg)",
       },
       fontFamily: {
         "sh-serif": ["SourceHanSerif", "sans-serif"],

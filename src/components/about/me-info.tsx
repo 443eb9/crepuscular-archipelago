@@ -9,7 +9,7 @@ export default function MeInfo() {
     return (
         <OutlinedBox className="flex font-bender p-4">
             <div className="w-full h-full">
-                <OutlinedBox className="w-full aspect-square bg-cover" style={{ backgroundImage: "url(https://avatars.githubusercontent.com/u/50186452)" }}></OutlinedBox>
+                <OutlinedBox className="w-full aspect-square bg-cover" style={{ backgroundImage: "url(https://img2.imgtp.com/2024/05/05/NQTv46Yr.jpg)" }}></OutlinedBox>
                 <div className="flex flex-col mt-4">
                     <h1 className="font-bold text-4xl">443eb9#C</h1>
                     <h2 className="font-sh-serif font-bold text-lg">中国 浙江</h2>
