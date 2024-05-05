@@ -23,10 +23,12 @@ export default async function ArticleBody({ body }: { body: string }) {
                                     language={match[1]}
                                     // @ts-expect-error
                                     style={mdStyle}
-                                />
+                                >
+                                    {String(children).replace(/\n$/, '')}
+                                </SyntaxHighlighter>
                             ) : (
                                 <code {...rest} className={className}>
-                                    {String(children).replace(/\n$/, '')}
+                                    {children}
                                 </code>
                             )
                         )
