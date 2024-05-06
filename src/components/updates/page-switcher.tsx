@@ -13,7 +13,7 @@ export default function PageSwitcher({ islandCount, currentPage, currentLength }
 
     return (
         <OutlinedBox className="flex content-between w-full p-3 border-x-0 border-dashed">
-            {pages.map((index) => <SwitcherButton target={index} params={searchParams} className={clsx(
+            {pages.map((index) => <SwitcherButton key={index} target={index} params={searchParams} className={clsx(
                 { "bg-neutral-900 dark:bg-neutral-50 text-neutral-50 dark:text-neutral-900": index == currentPage, }
             )}></SwitcherButton>)}
         </OutlinedBox>
