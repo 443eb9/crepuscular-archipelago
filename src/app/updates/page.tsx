@@ -4,12 +4,14 @@ import ContentWrapper from "@/components/common/content-wrapper";
 import BlogIslands from "@/components/updates/blog-islands";
 import { Suspense } from "react";
 import { Metadata } from "next";
+import { fetchIslandCount } from "@/data/island";
+import PageSwitcher from "@/components/updates/page-switcher";
 
 export const metadata: Metadata = {
     title: "Updates - Crepuscular Archipelago",
 }
 
-export default function Page({ searchParams }: {
+export default async function Page({ searchParams }: {
     searchParams?: {
         page?: string,
         len?: string,
@@ -19,6 +21,7 @@ export default function Page({ searchParams }: {
     const page = Number.parseInt(searchParams?.page ?? "0");
     const length = Number.parseInt(searchParams?.len ?? "10");
     const tagsFilter = Number.parseInt(searchParams?.tags ?? "0");
+    const islandCount = await fetchIslandCount();
 
     return (
         <main>
@@ -39,6 +42,9 @@ export default function Page({ searchParams }: {
                             <BlogInfo></BlogInfo>
                         </Suspense>
                     </aside>
+                </ContentWrapper>
+                <ContentWrapper>
+                    <PageSwitcher islandCount={islandCount.count} currentPage={page} currentLength={length}></PageSwitcher>
                 </ContentWrapper>
             </div>
         </main>

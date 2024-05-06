@@ -28,6 +28,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .wrap(Cors::permissive())
             .service(http::get_all_tags)
+            .service(http::get_island_count)
             .service(http::get_island_meta)
             .service(http::get_islands_meta)
             .service(http::get_island)

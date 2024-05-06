@@ -7,7 +7,7 @@ export async function fetchAllTags(): Promise<TagData[]> {
 }
 
 export async function fetchIslandCount(): Promise<IslandCount> {
-    return (await axios.get(combineApi("get/islandCount"))).data;
+    return (await axios.get(combineApi("/get/islandCount"))).data;
 }
 
 export async function fetchIslandMeta(id: number): Promise<IslandMeta> {

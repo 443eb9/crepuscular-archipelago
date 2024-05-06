@@ -10,14 +10,14 @@ pub async fn query_all_tags(pool: &SqlitePool) -> Result<Vec<TagData>, Error> {
 }
 
 pub async fn query_island_count(pool: &SqlitePool) -> Result<IslandCount, Error> {
-    Ok(sqlx::query_as("SELECT COUNT(*) FROM islands")
+    Ok(sqlx::query_as("SELECT COUNT(*) as count FROM islands")
         .fetch_one(pool)
         .await?)
 }
 
 pub async fn query_island_meta(pool: &SqlitePool, id: u32) -> Result<IslandMetaTagged, Error> {
     let (meta, tags) = join!(
-        sqlx::query_as::<_, IslandMeta>(
+        sqlx::query_as(
             "SELECT id, title, desc, ty, date FROM islands WHERE id = ?"
         )
         .bind(id)
@@ -33,7 +33,7 @@ pub async fn query_islands_meta(
     start: u32,
     length: u32,
 ) -> Result<Vec<IslandMetaTagged>, Error> {
-    let metas = sqlx::query_as::<_, IslandMeta>(
+    let metas = sqlx::query_as(
         "
             SELECT id, title, desc, ty, date FROM islands
             LEFT JOIN island_tags ON id = island_id
