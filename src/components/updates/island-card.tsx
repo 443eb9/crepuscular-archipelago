@@ -74,7 +74,7 @@ function getHeader(card: IslandMeta) {
 function ArticleCardHeader({ card }: { card: IslandMeta }) {
     return (
         <div className="mb-2">
-            {card.banner != undefined && <Image src={card.banner} alt="" className="w-full h-40"></Image>}
+            {card.banner != "" && <Image src={card.banner} alt="" className="w-full h-40"></Image>}
         </div>
     );
 }

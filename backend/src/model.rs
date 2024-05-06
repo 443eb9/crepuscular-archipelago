@@ -24,7 +24,7 @@ pub struct IslandMeta {
     pub desc: String,
     pub date: DateTime<Utc>,
     pub ty: IslandType,
-    pub banner: Option<String>,
+    pub banner: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -35,7 +35,7 @@ pub struct IslandMetaTagged {
     pub date: DateTime<Utc>,
     pub ty: IslandType,
     pub tags: Vec<TagData>,
-    pub banner: Option<String>,
+    pub banner: String,
 }
 
 impl IslandMetaTagged {

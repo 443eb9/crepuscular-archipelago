@@ -91,8 +91,7 @@ pub async fn query_islands_meta_filtered(
         if is_exclude_mode {
             format!(
                 "
-                    SELECT id, title, desc, ty, date
-                    FROM islands
+                    SELECT id, title, desc, ty, date, banner FROM islands
                     WHERE id BETWEEN ? AND ?
                     AND NOT EXISTS (
                         SELECT 1
@@ -106,7 +105,7 @@ pub async fn query_islands_meta_filtered(
         } else {
             format!(
                 "
-                    SELECT id, title, desc, ty, date FROM islands
+                    SELECT id, title, desc, ty, date, banner FROM islands
                     LEFT OUTER JOIN island_tags ON id = island_id
                     WHERE id BETWEEN ? AND ?
                     AND tag_id IN ({})
