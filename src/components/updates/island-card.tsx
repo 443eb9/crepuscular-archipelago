@@ -5,6 +5,7 @@ import { RiMedal2Line } from "react-icons/ri";
 import OutlinedBox from "../common/outlined-box";
 import DiagLines from "../common/decos/diag-lines";
 import Image from "next/image";
+import Link from "next/link";
 
 export default async function IslandCard({ island }: { island: IslandMeta }) {
     return (
@@ -15,7 +16,7 @@ export default async function IslandCard({ island }: { island: IslandMeta }) {
                 {
                     island.ty == IslandType.Achievement
                         ? <CardMain card={island}></CardMain>
-                        : <a target="_blank" href={`/island?id=${island.id}`}><CardMain card={island}></CardMain></a>
+                        : <Link href={`/island?id=${island.id}`}><CardMain card={island}></CardMain></Link>
                 }
                 <div className="flex justify-between">
                     <div className="flex items-center gap-1">
