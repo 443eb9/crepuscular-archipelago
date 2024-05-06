@@ -2,6 +2,12 @@ import '@/app/global.css'
 import BlogTitleCn from '@/components/index/blog-title-cn';
 import BlogTitleEn from '@/components/index/blog-title-en';
 import NavButtons from '@/components/common/nav/nav-buttons';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: "443eb9#C - Crepuscular Archipelago",
+    description: "443eb9#C's blog - Islands that owned by 443eb9#C."
+}
 
 export default function Page() {
     return (
@@ -10,7 +16,7 @@ export default function Page() {
                 <BlogTitleEn></BlogTitleEn>
                 <div className="font-bender">Background under construction...</div>
             </div>
-            <div className="absolute bottom-[15%] md:top-1/4 right-[10%]">
+            <div className="absolute bottom-[15%] md:top-1/4 right-[10%] text-right">
                 <BlogTitleCn></BlogTitleCn>
             </div>
             <div className="absolute left-[10%] bottom-1/4">

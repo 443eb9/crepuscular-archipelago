@@ -56,3 +56,8 @@ pub struct IslandFilename(pub String);
 pub struct Island {
     pub content: String,
 }
+
+#[derive(Debug, Serialize, FromRow)]
+pub struct IslandCount {
+    pub count: u32,
+}

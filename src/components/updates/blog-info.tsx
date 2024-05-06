@@ -12,14 +12,14 @@ export default async function BlogInfo() {
         <OutlinedBox className="flex flex-col gap-4 p-2">
             <div className="flex gap-2 items-center h-10 w-full">
                 <input type="text" className="flex-1 p-1 h-full bg-transparent outline-none focus:border-b-2 border-neutral-900 dark:border-neutral-50 font-sh-sans placeholder:font-bender" placeholder="Search Islands (WIP)" />
-                <div className="w-10 h-10">
-                    <OutlinedButton>
+                <div>
+                    <OutlinedButton className="w-10 h-10">
                         <IoSearchSharp className="text-2xl"></IoSearchSharp>
                     </OutlinedButton>
                 </div>
             </div>
             <div className="flex flex-col">
-                <div className="">
+                <div>
                     <h1 className="font-bender font-bold text-lg">Travel To:</h1>
                     <ToggleExclude></ToggleExclude>
                 </div>

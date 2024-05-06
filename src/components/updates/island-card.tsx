@@ -1,7 +1,6 @@
 import { FaClock } from "react-icons/fa6";
-import Link from "next/link";
 import Tag from "../common/tag";
-import { IslandMeta, IslandType, TagData } from "@/data/model";
+import { IslandMeta, IslandType } from "@/data/model";
 import { RiMedal2Line } from "react-icons/ri";
 import OutlinedBox from "../common/outlined-box";
 import DiagLines from "../common/decos/diag-lines";
@@ -15,7 +14,7 @@ export default async function IslandCard({ island }: { island: IslandMeta }) {
                 {
                     island.ty == IslandType.Achievement
                         ? <CardMain card={island}></CardMain>
-                        : <Link href={`/island?id=${island.id}`}><CardMain card={island}></CardMain></Link>
+                        : <a target="_blank" href={`/island?id=${island.id}`}><CardMain card={island}></CardMain></a>
                 }
                 <div className="flex justify-between">
                     <div className="flex items-center gap-1">
@@ -55,7 +54,7 @@ function CardMain({ card }: { card: IslandMeta }) {
                 <div className="w-4 h-1 bg-neutral-900 dark:bg-neutral-50 ml-3"></div>
                 <div className="w-2 h-1 bg-neutral-900 dark:bg-neutral-50 ml-3"></div>
             </div>
-            <p className="font-sh-sans text-ellipsis overflow-hidden line-clamp-6" style={{width: "calc(100% - 80px)"}}>{card.desc}</p>
+            <p className="font-sh-sans text-ellipsis overflow-hidden line-clamp-6" style={{ width: "calc(100% - 80px)" }}>{card.desc}</p>
         </div>
     );
 }

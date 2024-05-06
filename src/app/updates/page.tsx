@@ -3,6 +3,11 @@ import GlobalNavBar from "@/components/common/nav/global-nav-bar";
 import ContentWrapper from "@/components/common/content-wrapper";
 import BlogIslands from "@/components/updates/blog-islands";
 import { Suspense } from "react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Updates - Crepuscular Archipelago",
+}
 
 export default function Page({ searchParams }: {
     searchParams?: {
@@ -19,7 +24,7 @@ export default function Page({ searchParams }: {
         <main>
             <GlobalNavBar></GlobalNavBar>
             <div className="flex-1 h-20"></div>
-            <div className="flex flex-col gap-10 md:px-0">
+            <div className="flex flex-col gap-10 pr-2 md:pr-0">
                 <aside className="block md:hidden px-5">
                     <Suspense>
                         <BlogInfo></BlogInfo>

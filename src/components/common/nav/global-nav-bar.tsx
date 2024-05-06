@@ -1,5 +1,5 @@
 import '@/app/global.css'
-import ThemeSwither from './theme-swither';
+import ThemeSwither from './theme-switcher';
 import NavButtons from './nav-buttons';
 import Link from 'next/link';
 

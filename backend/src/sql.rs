@@ -1,11 +1,17 @@
 use futures::{future::join_all, join};
 use sqlx::{Error, SqlitePool};
 
-use crate::model::{IslandFilename, IslandMeta, IslandMetaTagged, TagData};
+use crate::model::{IslandCount, IslandFilename, IslandMeta, IslandMetaTagged, TagData};
 
 pub async fn query_all_tags(pool: &SqlitePool) -> Result<Vec<TagData>, Error> {
     Ok(sqlx::query_as("SELECT id, name, amount FROM tags")
         .fetch_all(pool)
+        .await?)
+}
+
+pub async fn query_island_count(pool: &SqlitePool) -> Result<IslandCount, Error> {
+    Ok(sqlx::query_as("SELECT COUNT(*) FROM islands")
+        .fetch_one(pool)
         .await?)
 }
 

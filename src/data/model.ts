@@ -21,3 +21,7 @@ export type TagData = {
 export type Island = {
     content: string,
 }
+
+export type IslandCount = {
+    count: number,
+}
