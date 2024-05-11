@@ -10,7 +10,7 @@ export type IslandMeta = {
     date: Date,
     ty: IslandType,
     tags: TagData[],
-    banner: string,
+    banner: boolean,
 }
 
 export type TagData = {

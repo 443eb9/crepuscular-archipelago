@@ -6,6 +6,7 @@ import OutlinedBox from "../common/outlined-box";
 import DiagLines from "../common/decos/diag-lines";
 import Image from "next/image";
 import Link from "next/link";
+import { OSS } from "@/data/backend";
 
 export default async function IslandCard({ island }: { island: IslandMeta }) {
     return (
@@ -75,7 +76,7 @@ function getHeader(card: IslandMeta) {
 function ArticleCardHeader({ card }: { card: IslandMeta }) {
     return (
         <div className="mb-2">
-            {card.banner != "" && <Image src={card.banner} alt="" className="w-full h-40"></Image>}
+            {card.banner && <OutlinedBox className="w-full bg-cover" style={{ aspectRatio: "10 / 3", backgroundImage: `url(${OSS}/${card.id}/BANNER.png)` }}></OutlinedBox>}
         </div>
     );
 }
