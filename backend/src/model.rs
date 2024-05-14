@@ -25,6 +25,7 @@ pub struct IslandMeta {
     pub date: DateTime<Utc>,
     pub ty: IslandType,
     pub banner: bool,
+    pub wip: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -36,6 +37,7 @@ pub struct IslandMetaTagged {
     pub ty: IslandType,
     pub tags: Vec<TagData>,
     pub banner: bool,
+    pub wip: bool,
 }
 
 impl IslandMetaTagged {
@@ -48,6 +50,7 @@ impl IslandMetaTagged {
             ty: meta.ty,
             tags,
             banner: meta.banner,
+            wip: meta.wip,
         }
     }
 }

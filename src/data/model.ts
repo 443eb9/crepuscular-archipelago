@@ -11,6 +11,7 @@ export type IslandMeta = {
     ty: IslandType,
     tags: TagData[],
     banner: boolean,
+    wip: boolean,
 }
 
 export type TagData = {

@@ -18,7 +18,7 @@ pub async fn query_island_count(pool: &SqlitePool) -> Result<IslandCount, Error>
 pub async fn query_island_meta(pool: &SqlitePool, id: u32) -> Result<IslandMetaTagged, Error> {
     let (meta, tags) = join!(
         sqlx::query_as(
-            "SELECT id, title, desc, ty, date, banner FROM islands WHERE id = ?"
+            "SELECT id, title, desc, ty, date, banner, wip FROM islands WHERE id = ?"
         )
         .bind(id)
         .fetch_one(pool),
@@ -35,7 +35,7 @@ pub async fn query_islands_meta(
 ) -> Result<Vec<IslandMetaTagged>, Error> {
     let metas = sqlx::query_as(
         "
-            SELECT id, title, desc, ty, date, banner FROM islands
+            SELECT id, title, desc, ty, date, banner, wip FROM islands
             LEFT JOIN island_tags ON id = island_id
             WHERE id BETWEEN ? AND ?
             GROUP BY id
@@ -91,7 +91,7 @@ pub async fn query_islands_meta_filtered(
         if is_exclude_mode {
             format!(
                 "
-                    SELECT id, title, desc, ty, date, banner FROM islands
+                    SELECT id, title, desc, ty, date, banner, wip FROM islands
                     WHERE id BETWEEN ? AND ?
                     AND NOT EXISTS (
                         SELECT 1
@@ -105,7 +105,7 @@ pub async fn query_islands_meta_filtered(
         } else {
             format!(
                 "
-                    SELECT id, title, desc, ty, date, banner FROM islands
+                    SELECT id, title, desc, ty, date, banner, wip FROM islands
                     LEFT OUTER JOIN island_tags ON id = island_id
                     WHERE id BETWEEN ? AND ?
                     AND tag_id IN ({})
