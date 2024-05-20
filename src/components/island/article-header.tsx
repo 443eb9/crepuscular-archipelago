@@ -1,6 +1,6 @@
 import { FaClock } from "react-icons/fa6";
 import OutlinedBox from "../common/outlined-box";
-import { IslandMeta, TagData } from "@/data/model";
+import { IslandMeta } from "@/data/model";
 import Tag from "../common/tag";
 import Link from "next/link";
 import DiagLines from "../common/decos/diag-lines";
@@ -13,7 +13,10 @@ export default function ArticleHeader({ meta }: { meta: IslandMeta }) {
                     &lt; $ cd .._
                 </Link>
                 <h1 className="w-24 font-bender text-lg font-bold px-2 bg-neutral-900 dark:bg-neutral-50 text-neutral-50 dark:text-neutral-900">{`# ${meta.id}`}</h1>
-                <h1 className="font-sh-serif text-2xl font-bold mb-1">{meta.title}</h1>
+                <div className="flex flex-col">
+                    <h1 className="font-sh-serif text-2xl font-bold mb-1">{meta.title}</h1>
+                    <h2 className="font-sh-serif font-bold italic text-md mb-1">{meta.subtitle}</h2>
+                </div>
                 <div className="flex gap-1">
                     {meta.tags.map((tag) => <Tag tag={tag} key={tag.id}></Tag>)}
                 </div>

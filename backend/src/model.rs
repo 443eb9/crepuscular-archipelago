@@ -21,6 +21,7 @@ pub struct TagData {
 pub struct IslandMeta {
     pub id: u32,
     pub title: String,
+    pub subtitle: String,
     pub desc: String,
     pub date: DateTime<Utc>,
     pub ty: IslandType,
@@ -32,6 +33,7 @@ pub struct IslandMeta {
 pub struct IslandMetaTagged {
     pub id: u32,
     pub title: String,
+    pub subtitle: String,
     pub desc: String,
     pub date: DateTime<Utc>,
     pub ty: IslandType,
@@ -45,6 +47,7 @@ impl IslandMetaTagged {
         Self {
             id: meta.id,
             title: meta.title,
+            subtitle: meta.subtitle,
             desc: meta.desc,
             date: meta.date,
             ty: meta.ty,

@@ -6,6 +6,7 @@ export enum IslandType {
 export type IslandMeta = {
     id: number,
     title: string,
+    subtitle: string,
     desc: string,
     date: Date,
     ty: IslandType,
