@@ -75,7 +75,7 @@ function CardMain({ card }: { card: IslandMeta }) {
                 </div>
                 <p className="font-sh-sans text-ellipsis overflow-hidden line-clamp-6" style={{ width: "calc(100% - 80px)" }}>{card.desc}</p>
             </div>
-        </div >
+        </div>
     );
 }
 

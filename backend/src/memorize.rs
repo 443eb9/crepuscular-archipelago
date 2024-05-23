@@ -9,11 +9,15 @@ pub struct MemorizeValidator {
 
 impl MemorizeValidator {
     pub fn validate(&self, form: &MemorizeFormWithMeta) -> Result<(), String> {
-        let id = form.stu_id % 100;
+        let Ok(id) = form.stu_id.parse::<u32>() else {
+            return Err("Invalid student number.".to_string());
+        };
+
+        let id = id % 100;
         match self.data.get(id as usize - 1) {
             Some(data) => {
                 if data != &form.name {
-                    return Err(format!("Incorrect sutdent number or name."));
+                    return Err(format!("Invalid sutdent number or name."));
                 }
             }
             None => {

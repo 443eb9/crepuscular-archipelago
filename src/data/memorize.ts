@@ -1,10 +1,10 @@
 import axios from "axios";
-import { combineApi } from "./backend";
+import { combineApi, combineRemoteApi } from "./backend";
 import { MemorizeFormWithMeta } from "./model";
 
 export async function submitMemorize(form: FormData) {
     const payload: MemorizeFormWithMeta = {
-        stu_id: Number.parseInt((form.get("stu_id") ?? "").toString()),
+        stu_id: (form.get("stu_id") ?? "").toString(),
         name: (form.get("name") ?? "").toString(),
 
         wechat: (form.get("wechat") ?? "").toString(),
@@ -23,5 +23,5 @@ export async function submitMemorize(form: FormData) {
         ip: (await axios.get("https://api64.ipify.org?format=json")).data["ip"],
     };
 
-    return axios.post(combineApi("/post/memorize"), payload);
+    return axios.post(combineRemoteApi("/post/memorize"), payload);
 }

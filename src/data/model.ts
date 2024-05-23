@@ -42,7 +42,7 @@ export type IslandCount = {
 }
 
 export type MemorizeFormWithMeta = {
-    stu_id: number,
+    stu_id: string,
     name: string,
 
     wechat: string,

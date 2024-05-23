@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { FormEvent } from "react";
 import InputBox from "../common/input-box";
@@ -39,14 +39,12 @@ export default function MemorizeForm() {
                     </FormRow>
                 </FormSection>
                 <FormSection title="留言" whisper="假如你是李华，不，这次你就是李华(?)">
-                    <button type="submit">
-                        <OutlinedBox className="p-2 h-48">
-                            <textarea className="w-full h-full bg-transparent outline-none resize-none" name="message"></textarea>
-                        </OutlinedBox>
-                    </button>
+                    <OutlinedBox className="p-2 h-48">
+                        <textarea className="w-full h-full bg-transparent outline-none resize-none placeholder:font-bender" name="message" placeholder="Optional"></textarea>
+                    </OutlinedBox>
                 </FormSection>
                 <div className="flex justify-center">
-                    <OutlinedButton className="w-1/2 h-20 text-4xl font-sh-serif font-bold">
+                    <OutlinedButton type="submit" className="w-1/2 h-20 text-4xl font-sh-serif font-bold">
                         提交
                     </OutlinedButton>
                 </div>
@@ -113,6 +111,6 @@ async function onSubmit(event: FormEvent<HTMLFormElement>) {
                 return;
             }
 
-            toast.custom(<Toast title="Success" toast=""></Toast>)
+            toast.custom(<Toast title="Success!" toast=""></Toast>)
         });
 }

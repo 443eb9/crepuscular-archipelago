@@ -73,7 +73,7 @@ pub struct IslandCount {
 
 #[derive(Debug, Deserialize, FromRow)]
 pub struct MemorizeFormWithMeta {
-    pub stu_id: u32,
+    pub stu_id: String,
     pub name: String,
 
     pub wechat: String,
