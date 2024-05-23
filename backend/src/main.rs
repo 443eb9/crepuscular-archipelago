@@ -1,9 +1,11 @@
+use std::sync::Mutex;
+
 use actix_cors::Cors;
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 use sqlx::SqlitePool;
 
 use crate::{
-    memorize::MemorizeValidator,
+    memorize::{MemorizeCoolDown, MemorizeValidator},
     sql::{IslandDB, MemorizeDB},
 };
 
@@ -44,6 +46,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(Data::new(islands_db.clone()))
             .app_data(Data::new(memorize_db.clone()))
             .app_data(Data::new(memorize_validation.clone()))
+            .app_data(Data::new(Mutex::new(MemorizeCoolDown::default())))
             .wrap(Logger::default())
             .wrap(Cors::permissive())
             .service(http::get_all_tags)

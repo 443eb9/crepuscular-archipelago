@@ -72,7 +72,7 @@ pub struct IslandCount {
 }
 
 #[derive(Debug, Deserialize, FromRow)]
-pub struct MemorizeFormWithMeta {
+pub struct MemorizeForm {
     pub stu_id: String,
     pub name: String,
 
@@ -87,7 +87,9 @@ pub struct MemorizeFormWithMeta {
     pub ftr_major: String,
 
     pub message: String,
+}
 
+pub struct MemorizeFormMeta {
     pub time: String,
     pub ip: String,
 }

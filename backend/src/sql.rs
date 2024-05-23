@@ -2,7 +2,8 @@ use futures::{future::join_all, join};
 use sqlx::{sqlite::SqliteQueryResult, Error, SqlitePool};
 
 use crate::model::{
-    IslandCount, IslandFilename, IslandMeta, IslandMetaTagged, MemorizeFormWithMeta, TagData,
+    IslandCount, IslandFilename, IslandMeta, IslandMetaTagged, MemorizeForm, MemorizeFormMeta,
+    TagData,
 };
 
 #[derive(Clone)]
@@ -172,7 +173,8 @@ pub async fn query_island_filename(pool: &IslandDB, id: u32) -> Result<IslandFil
 
 pub async fn insert_memorize_form(
     pool: &MemorizeDB,
-    form: &MemorizeFormWithMeta,
+    form: &MemorizeForm,
+    meta: &MemorizeFormMeta,
 ) -> Result<SqliteQueryResult, Error> {
     sqlx::query(
         "INSERT INTO memorize (stu_id, name, wechat, qq, phone, email, desc, hobby, position, ftr_major, message)
@@ -194,8 +196,8 @@ pub async fn insert_memorize_form(
         .await?;
 
     sqlx::query("INSERT INTO memorize_meta (time, ip) VALUES (?, ?)")
-        .bind(&form.time)
-        .bind(&form.ip)
+        .bind(&meta.time)
+        .bind(&meta.ip)
         .execute(&pool.db)
         .await
 }

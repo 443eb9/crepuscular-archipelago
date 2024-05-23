@@ -111,6 +111,6 @@ async function onSubmit(event: FormEvent<HTMLFormElement>) {
                 return;
             }
 
-            toast.custom(<Toast title="Success!" toast=""></Toast>)
+            toast.custom(<Toast title="Success!" toast={value.data}></Toast>)
         });
 }

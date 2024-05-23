@@ -7,5 +7,6 @@ export function combineApi(endpoint: string) {
 }
 
 export function combineRemoteApi(endpoint: string) {
+    // return combineApi(endpoint);
     return `${REMOTE_BACKEND}${endpoint}`
 }
