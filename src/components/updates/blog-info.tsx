@@ -4,9 +4,10 @@ import { fetchAllTags } from "@/data/island";
 import Tag from "../common/tag";
 import OutlinedBox from "../common/outlined-box";
 import ToggleExclude from "./toggle-exclude";
+import { TagData } from "@/data/model";
 
 export default async function BlogInfo() {
-    const tags = await fetchAllTags();
+    const tags: TagData[] = (await fetchAllTags()).data;
 
     return (
         <OutlinedBox className="flex flex-col gap-4 p-2">

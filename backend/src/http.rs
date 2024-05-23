@@ -1,14 +1,15 @@
 use actix_web::{
     get,
-    web::{Data, Path},
+    http::StatusCode,
+    post,
+    web::{Data, Json, Path},
     HttpResponse, Responder,
 };
-use sqlx::SqlitePool;
 
-use crate::{fs::load_island, sql::*};
+use crate::{fs::load_island, memorize::MemorizeValidator, model::MemorizeFormWithMeta, sql::*};
 
 #[get("/api/get/allTags")]
-pub async fn get_all_tags(pool: Data<SqlitePool>) -> impl Responder {
+pub async fn get_all_tags(pool: Data<IslandDB>) -> impl Responder {
     match query_all_tags(&pool).await {
         Ok(tags) => HttpResponse::Ok().json(tags),
         Err(err) => HttpResponse::BadRequest().json(err.to_string()),
@@ -16,7 +17,7 @@ pub async fn get_all_tags(pool: Data<SqlitePool>) -> impl Responder {
 }
 
 #[get("/api/get/islandCount")]
-pub async fn get_island_count(pool: Data<SqlitePool>) -> impl Responder {
+pub async fn get_island_count(pool: Data<IslandDB>) -> impl Responder {
     match query_island_count(&pool).await {
         Ok(tags) => HttpResponse::Ok().json(tags),
         Err(err) => HttpResponse::BadRequest().json(err.to_string()),
@@ -24,7 +25,7 @@ pub async fn get_island_count(pool: Data<SqlitePool>) -> impl Responder {
 }
 
 #[get("/api/get/islandMeta/{id}")]
-pub async fn get_island_meta(pool: Data<SqlitePool>, id: Path<u32>) -> impl Responder {
+pub async fn get_island_meta(pool: Data<IslandDB>, id: Path<u32>) -> impl Responder {
     match query_island_meta(&pool, *id).await {
         Ok(meta) => HttpResponse::Ok().json(meta),
         Err(err) => HttpResponse::BadRequest().json(err.to_string()),
@@ -33,7 +34,7 @@ pub async fn get_island_meta(pool: Data<SqlitePool>, id: Path<u32>) -> impl Resp
 
 #[get("/api/get/islandsMeta/{start}/{length}/{tagsFilter}")]
 pub async fn get_islands_meta(
-    pool: Data<SqlitePool>,
+    pool: Data<IslandDB>,
     params: Path<(u32, u32, i32)>,
 ) -> impl Responder {
     if params.2 == 0 {
@@ -51,12 +52,37 @@ pub async fn get_islands_meta(
 }
 
 #[get("/api/get/island/{id}")]
-pub async fn get_island(pool: Data<SqlitePool>, id: Path<u32>) -> impl Responder {
+pub async fn get_island(pool: Data<IslandDB>, id: Path<u32>) -> impl Responder {
     match query_island_filename(&pool, *id).await {
         Ok(filename) => match load_island(*id, &filename) {
             Ok(island) => HttpResponse::Ok().json(island),
             Err(err) => HttpResponse::BadRequest().json(err.to_string()),
         },
         Err(err) => HttpResponse::BadRequest().json(err.to_string()),
+    }
+}
+
+#[post("/api/post/memorize")]
+pub async fn submit_memorize(
+    pool: Data<MemorizeDB>,
+    form: Json<MemorizeFormWithMeta>,
+    validator: Data<MemorizeValidator>,
+) -> (impl Responder, StatusCode) {
+    if let Err(err) = validator.validate(&form) {
+        return (
+            HttpResponse::BadRequest().json(err),
+            StatusCode::BAD_REQUEST,
+        );
+    }
+
+    match insert_memorize_form(&pool, &form).await {
+        Ok(_) => (
+            HttpResponse::Ok().json("Successfully submitted."),
+            StatusCode::OK,
+        ),
+        Err(err) => (
+            HttpResponse::BadRequest().json(err.to_string()),
+            StatusCode::BAD_REQUEST,
+        ),
     }
 }

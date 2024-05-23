@@ -1,6 +1,18 @@
+import { AxiosResponse } from "axios";
+
 export enum IslandType {
     Article,
     Achievement,
+}
+
+export type RequestResult<T> = T | string;
+
+export function requestToResult<T>(req: AxiosResponse): RequestResult<T> {
+    if (req.status == 200) {
+        return req.data;
+    } else {
+        return req.statusText;
+    }
 }
 
 export type IslandMeta = {
@@ -27,4 +39,24 @@ export type Island = {
 
 export type IslandCount = {
     count: number,
+}
+
+export type MemorizeFormWithMeta = {
+    stu_id: number,
+    name: string,
+
+    wechat: string,
+    qq: string,
+    phone: string,
+    email: string,
+
+    desc: string,
+    hobby: string,
+    position: string,
+    ftr_major: string,
+
+    message: string,
+
+    time: string,
+    ip: string,
 }

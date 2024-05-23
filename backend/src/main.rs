@@ -2,10 +2,16 @@ use actix_cors::Cors;
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 use sqlx::SqlitePool;
 
+use crate::{
+    memorize::MemorizeValidator,
+    sql::{IslandDB, MemorizeDB},
+};
+
 mod env;
 mod fs;
 mod git;
 mod http;
+mod memorize;
 mod model;
 mod schedule;
 mod sql;
@@ -18,13 +24,26 @@ async fn main() -> std::io::Result<()> {
     schedule::start_schedules();
 
     let storage_root = std::env::var("ISLAND_STORAGE_ROOT").unwrap();
-    let db = SqlitePool::connect(&format!("sqlite://{}archipelago.sqlite3", storage_root))
-        .await
-        .unwrap();
+    let islands_db = IslandDB {
+        db: SqlitePool::connect(&format!("sqlite://{}/archipelago.sqlite3", storage_root))
+            .await
+            .unwrap(),
+    };
+    let memorize_db = MemorizeDB {
+        db: SqlitePool::connect(&format!("sqlite://{}/memorize.sqlite3", storage_root))
+            .await
+            .unwrap(),
+    };
+    let memorize_validation = serde_json::from_str::<MemorizeValidator>(
+        &std::fs::read_to_string(format!("{}/memorize_validator.json", storage_root)).unwrap(),
+    )
+    .unwrap();
 
     HttpServer::new(move || {
         App::new()
-            .app_data(Data::new(db.clone()))
+            .app_data(Data::new(islands_db.clone()))
+            .app_data(Data::new(memorize_db.clone()))
+            .app_data(Data::new(memorize_validation.clone()))
             .wrap(Logger::default())
             .wrap(Cors::permissive())
             .service(http::get_all_tags)
@@ -32,6 +51,7 @@ async fn main() -> std::io::Result<()> {
             .service(http::get_island_meta)
             .service(http::get_islands_meta)
             .service(http::get_island)
+            .service(http::submit_memorize)
     })
     .bind(("localhost", 8080))?
     .run()

@@ -1,5 +1,5 @@
 use chrono::{DateTime, Utc};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_repr::Serialize_repr;
 use sqlx::{prelude::Type, FromRow};
 
@@ -69,4 +69,25 @@ pub struct Island {
 #[derive(Debug, Serialize, FromRow)]
 pub struct IslandCount {
     pub count: u32,
+}
+
+#[derive(Debug, Deserialize, FromRow)]
+pub struct MemorizeFormWithMeta {
+    pub stu_id: u32,
+    pub name: String,
+
+    pub wechat: String,
+    pub qq: String,
+    pub phone: String,
+    pub email: String,
+
+    pub desc: String,
+    pub hobby: String,
+    pub position: String,
+    pub ftr_major: String,
+
+    pub message: String,
+
+    pub time: String,
+    pub ip: String,
 }

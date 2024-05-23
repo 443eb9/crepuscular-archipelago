@@ -1,27 +1,39 @@
 use futures::{future::join_all, join};
-use sqlx::{Error, SqlitePool};
+use sqlx::{sqlite::SqliteQueryResult, Error, SqlitePool};
 
-use crate::model::{IslandCount, IslandFilename, IslandMeta, IslandMetaTagged, TagData};
+use crate::model::{
+    IslandCount, IslandFilename, IslandMeta, IslandMetaTagged, MemorizeFormWithMeta, TagData,
+};
 
-pub async fn query_all_tags(pool: &SqlitePool) -> Result<Vec<TagData>, Error> {
+#[derive(Clone)]
+pub struct IslandDB {
+    pub db: SqlitePool,
+}
+
+#[derive(Clone)]
+pub struct MemorizeDB {
+    pub db: SqlitePool,
+}
+
+pub async fn query_all_tags(pool: &IslandDB) -> Result<Vec<TagData>, Error> {
     Ok(sqlx::query_as("SELECT id, name, amount FROM tags")
-        .fetch_all(pool)
+        .fetch_all(&pool.db)
         .await?)
 }
 
-pub async fn query_island_count(pool: &SqlitePool) -> Result<IslandCount, Error> {
+pub async fn query_island_count(pool: &IslandDB) -> Result<IslandCount, Error> {
     Ok(sqlx::query_as("SELECT COUNT(*) as count FROM islands")
-        .fetch_one(pool)
+        .fetch_one(&pool.db)
         .await?)
 }
 
-pub async fn query_island_meta(pool: &SqlitePool, id: u32) -> Result<IslandMetaTagged, Error> {
+pub async fn query_island_meta(pool: &IslandDB, id: u32) -> Result<IslandMetaTagged, Error> {
     let (meta, tags) = join!(
         sqlx::query_as(
             "SELECT id, title, subtitle, desc, ty, date, banner, wip FROM islands WHERE id = ?"
         )
         .bind(id)
-        .fetch_one(pool),
+        .fetch_one(&pool.db),
         query_island_tags(pool, id)
     );
 
@@ -29,7 +41,7 @@ pub async fn query_island_meta(pool: &SqlitePool, id: u32) -> Result<IslandMetaT
 }
 
 pub async fn query_islands_meta(
-    pool: &SqlitePool,
+    pool: &IslandDB,
     start: u32,
     length: u32,
 ) -> Result<Vec<IslandMetaTagged>, Error> {
@@ -43,7 +55,7 @@ pub async fn query_islands_meta(
     )
     .bind(start)
     .bind(start + length - 1)
-    .fetch_all(pool)
+    .fetch_all(&pool.db)
     .await?;
 
     join_all(
@@ -64,7 +76,7 @@ pub async fn query_islands_meta(
 }
 
 pub async fn query_islands_meta_filtered(
-    pool: &SqlitePool,
+    pool: &IslandDB,
     start: u32,
     length: u32,
     tags_filter: u32,
@@ -124,7 +136,7 @@ pub async fn query_islands_meta_filtered(
         query = query.bind(tag_id);
     }
 
-    let metas: Vec<IslandMeta> = query.fetch_all(pool).await?;
+    let metas: Vec<IslandMeta> = query.fetch_all(&pool.db).await?;
     join_all(metas.iter().map(|meta| query_island_tags(pool, meta.id)))
         .await
         .into_iter()
@@ -138,7 +150,7 @@ pub async fn query_islands_meta_filtered(
         })
 }
 
-async fn query_island_tags(pool: &SqlitePool, id: u32) -> Result<Vec<TagData>, Error> {
+async fn query_island_tags(pool: &IslandDB, id: u32) -> Result<Vec<TagData>, Error> {
     Ok(sqlx::query_as(
         "
             SELECT id, name, amount FROM tags
@@ -147,13 +159,43 @@ async fn query_island_tags(pool: &SqlitePool, id: u32) -> Result<Vec<TagData>, E
         ",
     )
     .bind(id)
-    .fetch_all(pool)
+    .fetch_all(&pool.db)
     .await?)
 }
 
-pub async fn query_island_filename(pool: &SqlitePool, id: u32) -> Result<IslandFilename, Error> {
+pub async fn query_island_filename(pool: &IslandDB, id: u32) -> Result<IslandFilename, Error> {
     Ok(sqlx::query_as("SELECT filename FROM islands WHERE id = ?")
         .bind(id)
-        .fetch_one(pool)
+        .fetch_one(&pool.db)
         .await?)
+}
+
+pub async fn insert_memorize_form(
+    pool: &MemorizeDB,
+    form: &MemorizeFormWithMeta,
+) -> Result<SqliteQueryResult, Error> {
+    sqlx::query(
+        "INSERT INTO memorize (stu_id, name, wechat, qq, phone, email, desc, hobby, position, ftr_major, message)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        "
+        )
+        .bind(&form.stu_id)
+        .bind(&form.name)
+        .bind(&form.wechat)
+        .bind(&form.qq)
+        .bind(&form.phone)
+        .bind(&form.email)
+        .bind(&form.desc)
+        .bind(&form.hobby)
+        .bind(&form.position)
+        .bind(&form.ftr_major)
+        .bind(&form.message)
+        .execute(&pool.db)
+        .await?;
+
+    sqlx::query("INSERT INTO memorize_meta (time, ip) VALUES (?, ?)")
+        .bind(&form.time)
+        .bind(&form.ip)
+        .execute(&pool.db)
+        .await
 }

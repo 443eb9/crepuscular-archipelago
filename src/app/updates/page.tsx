@@ -6,6 +6,9 @@ import { Suspense } from "react";
 import { Metadata } from "next";
 import { fetchIslandCount } from "@/data/island";
 import PageSwitcher from "@/components/updates/page-switcher";
+import toast from "react-hot-toast";
+import { IslandCount } from "@/data/model";
+import Toast from "@/components/common/toast";
 
 export const metadata: Metadata = {
     title: "Updates - Crepuscular Archipelago",
@@ -21,7 +24,17 @@ export default async function Page({ searchParams }: {
     const page = Number.parseInt(searchParams?.page ?? "0");
     const length = Number.parseInt(searchParams?.len ?? "10");
     const tagsFilter = Number.parseInt(searchParams?.tags ?? "0");
-    const islandCount = await fetchIslandCount();
+    const islandCount: IslandCount = await fetchIslandCount()
+        .catch((reason) => {
+            const data = reason["response"]["data"];
+            toast.custom(<Toast title="Error" toast={data == undefined ? reason.toString() : data}></Toast>)
+        })
+        .then((value) => {
+            if (value == null) {
+                return;
+            }
+            return value.data;
+        });
 
     return (
         <main>
