@@ -32,7 +32,7 @@ export async function generateMetadata({ searchParams }: {
 }): Promise<Metadata> {
     const id = Number.parseInt(searchParams?.id ?? "-1");
 
-    const meta = await fetchIslandMeta(id);
+    const meta = (await fetchIslandMeta(id)).data;
 
     return {
         title: `${meta.title} - Crepuscular Archipelago`
