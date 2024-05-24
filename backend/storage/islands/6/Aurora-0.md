@@ -12,7 +12,7 @@
 
 ## <u>反射方程</u> Reflectance Equation
 
-![](../6/6/refl_eq_brdf.png)
+![](https://oss.443eb9.dev/islandsmedia/6/refl_eq_brdf.png)
 
 $$
 L_o = \int_{\boldsymbol{l}\in\Omega} f(\boldsymbol{l}, \boldsymbol{v})L_i(\boldsymbol{p}, \boldsymbol{l})(\boldsymbol{n} \cdot \boldsymbol{l}) dl
@@ -33,7 +33,7 @@ $$
 
 ### 立体角
 
-![](../6/6/refl_eq_sol_ang.png)
+![](https://oss.443eb9.dev/islandsmedia/6/refl_eq_sol_ang.png)
 
 图中蓝色区域即为立体角，可以用这块区域的面积除以半径的平方得到。
 
@@ -172,6 +172,258 @@ $$
 f(\boldsymbol{l},\boldsymbol{v})=\int_{\boldsymbol{m}\in\Theta}f_\mu(\boldsymbol{l},\boldsymbol{v},\boldsymbol{m})G_2(\boldsymbol{l},\boldsymbol{v},\boldsymbol{m})D(\boldsymbol{m})\frac{(\boldsymbol{m}\cdot\boldsymbol{l})^+}{|\boldsymbol{n}\cdot\boldsymbol{l}|}\frac{(\boldsymbol{m}\cdot\boldsymbol{v})^+}{|\boldsymbol{n}\cdot\boldsymbol{v}|}d\boldsymbol{m}
 $$
 
+## 菲涅尔反射 Fresnel Reflectance
+
+菲涅尔反射的一个特点就是在平行与表面法线观察时，物体会呈现它本来的颜色，当视线越来越接近于垂直与法线时，物体会出现接近白色的高光。
+
+为了模拟这个效果，Schlick给出了一个菲涅尔反射的近似方程，它本质上就是根据 $\boldsymbol{n}$ 和 $\boldsymbol{l}$ 之间的夹角的正弦值来将物体本来的固有色和白色插值。
+
+$$
+F(\boldsymbol{n},\boldsymbol{l}) \approx F_0 + (1 - F_0)(1 - (\boldsymbol{n}\cdot\boldsymbol{l})^+)^5
+$$
+
+$$
+F_0 = (\frac{n-1}{n+1})^2
+$$
+
+其中
+- $n$ 为这个材料的折射率(Index of Refraction, IOR)
+- $F_0$ 为这种材料的颜色。对于水，$F_0 = (\frac{n_1-n_2}{n_1+n_2})^2$
+
+再后来的一些应用中，Schlick的近似方程出现了更通用的形式
+
+$$
+F(\boldsymbol{n},\boldsymbol{l}) \approx F_0 + (F_{90} - F_0)(1 - (\boldsymbol{n}\cdot\boldsymbol{l})^+)^5
+$$
+
+其中
+- $F_{90}$ 为另一个颜色，可以更好地显示材料的特征
+
+不同材料之间——金属，非金属，半导体——的菲涅尔反射的表现不尽相同，那么为了量化这一点，引入 $metallic$ 属性，也就是这个表面有多"金属"。
+
+当 $metallic=1$ 时，菲涅尔反射，或者说，使用了菲涅尔反射的高光反射，它的反射颜色 $F_0$ 就是表面的颜色 ，且漫反射颜色 $\rho_{ss}$ 为黑色，当 $metallic=0$ 时，$\rho_{ss}$ 为表面的颜色，而 $F_0$ 变成一个比较灰的颜色。
+
+至于为什么金属表面的漫反射是黑色，是因为金属不存在漫反射。当入射光进入金属，金属内的自由电子会吸收光的能量并再直接反射出来，而没有在次表面发生散射。
+
+有一点比较有意思的，虽然和本文话题没关系，就是书中提到金的 $F_0$ 的红色分量是略高于1的，也许金独特的颜色就是它在整个人类文明中的意义非凡的原因吧。
+
+> Gold's bright and strongly colored reflectance probably contributes to its unique cultural and economic significance throughout the history. --*Real-time Rendering*
+
 ## 高光反射BRDF
 
+首先，当发生高光反射的时候，也就意味着光线经过反射之后可以直接进入摄像机，此时，表面法线可以被认为是一个半角向量(Half Vector)
 
+$$
+h = \frac{\boldsymbol{l}+\boldsymbol{v}}{|\boldsymbol{l}+\boldsymbol{v}|}
+$$
+
+进而可以认为，整个由微表面构成的宏观表面，它的法线就是 $h$ ，或者说每一个微表面的法线都是 $h$ ，因为我们在折腾高光反射，如果某个微表面的法线不是 $h$ 的话，那么它就不会产生高光反射。
+
+于是就推导出高光反射BRDF $f_{spec}$
+
+$$
+f_{spec}(\boldsymbol{l},\boldsymbol{v})=\frac{\boldsymbol{F(\boldsymbol{h},\boldsymbol{l})G_2(\boldsymbol{l},\boldsymbol{v},\boldsymbol{h}),D(\boldsymbol{h})}}{4|\boldsymbol{n}\cdot\boldsymbol{l}||\boldsymbol{n}\cdot\boldsymbol{v}|}
+$$
+
+### 各向同性NDF Isotropic NDFs
+
+各向同性，表示这个材质看上去的样子和我看它的角度没有关系。
+
+它们可以用一个比较通用的方式表示
+
+$$
+D(\boldsymbol{m})=\frac{\chi^+(\boldsymbol{n}\cdot\boldsymbol{m})}{\alpha^2(\boldsymbol{n}\cdot\boldsymbol{m})^4}g\left(\frac{\sqrt{1-(\boldsymbol{n}\cdot\boldsymbol{m})^2}}{\alpha(\boldsymbol{n}\cdot\boldsymbol{m})}\right)
+$$
+
+其中
+- $g$ 代表一个单变量函数。
+
+$$
+a=\frac{\boldsymbol{n}\cdot\boldsymbol{s}}{a\sqrt{1-(\boldsymbol{n}\cdot\boldsymbol{s})^2}}
+$$
+
+$$
+\boldsymbol{s}=\boldsymbol{v} \ or \ \boldsymbol{l}
+$$
+
+#### Beckmann NDF
+
+$$
+D(\boldsymbol{m})=\frac{\chi+(\boldsymbol{n}\cdot\boldsymbol{m})}{\pi\alpha_b^2(\boldsymbol{n}\cdot\boldsymbol{m})^4} e^{\frac{(\boldsymbol{n}\cdot\boldsymbol{m})^2-1}{\alpha_b^2(\boldsymbol{n}\cdot\boldsymbol{m})^2}}
+$$
+
+其中
+- $\alpha_b$ 是这个表面的粗糙程度 $roughness$ ，它和微表面法线的均方根($\sqrt{\frac{1}{n}\sum_i x_i^2}$)相关。
+
+其配套的 $\Lambda$ 函数为
+
+$$
+\Lambda(a)=\frac{\mathrm{erf}(a)-1}{2}+\frac{1}{2a\sqrt{\pi}}e^{-a^2}
+$$
+
+$\mathrm{erf}$ 是一个错误函数，由于其很难求解，因此Beckmann NDF可以用一个近似函数代替
+
+$$
+\Lambda(a) \approx
+\left\{
+    \begin{aligned}
+        &\frac{1-1.259a+0.396a^2}{3.535a+2.181a^2}, where \ a<1.6, \\
+        &0, where \ a \lt 1.6
+    \end{aligned}
+\right.
+$$
+
+#### Blinn-Phong NDF
+
+这个多半是大多数人学渲染第一个碰到的高光模型了吧hhhhhhh
+
+$$
+D(\boldsymbol{m})=\chi^+(\boldsymbol{n}\cdot\boldsymbol{m})\frac{\alpha_p+2}{2\pi}(\boldsymbol{n}\cdot\boldsymbol{m})^{\alpha_p}
+$$
+
+$\alpha_p$ 和表面光滑程度不是成线性关系的，因此在实际应用中，可以用类似于 $m^s$ 的形式将输入值映射成非线性变化的值。
+
+比较神奇的一点是（至少我觉得很神奇）：这里的 $\alpha_p$ 和 Beckmann NDF 的 $\alpha_b$ 可以互相转换
+
+$$
+\alpha_p = 2\alpha_b^{-2}-2
+$$
+
+Blinn-Phong NDF 没有其对应的 $\Lambda$ 函数，不过由于它的 $\alpha_p$ 可以转换成 $\alpha_b$ ，可以使用Beckmann NDF的 $\Lambda$ 函数。
+
+#### GGX Distribution
+
+一个应该是最(?)流行的NDF...吧？就算不是"最"，那也是"很"。
+
+$$
+D(\boldsymbol{m})=\frac{\chi^+(\boldsymbol{n}\cdot\boldsymbol{m})\alpha_g^2}{\pi(1+(\boldsymbol{n}\cdot\boldsymbol{m})^2(\alpha_g^2-1))^2}
+$$
+
+其中的 $\alpha_g$ 有多个来源，比如可以直接使用Beckmann NDF的。在<u>迪士尼原则</u>(Disney Principle)的模型中也可以使用由Burley提出的 $\alpha_g=r^2$ ，其中 $r$ 是你可以控制的 $roughness$。
+
+GGX的配套 $\Lambda$ 函数是
+
+$$
+\Lambda=\frac{-1+\sqrt{1+\frac{1}{a^2}}}{2}
+$$
+
+Lagarde将GGX对应的 $G_2$ 高度相关的遮挡函数简化
+
+$$
+\frac{G_2(\boldsymbol{l},\boldsymbol{v})}{4|\boldsymbol{n}\cdot\boldsymbol{l}||\boldsymbol{n}\cdot\boldsymbol{v}|} \rArr \frac{0.5}{\mu_o\sqrt{\alpha^2+\mu_i(\mu_i-\alpha^2\mu_i)}+\mu_i\sqrt{{\alpha^2+\mu_o-\alpha^2\mu_o}}}
+$$
+
+$$
+\mu_i=(\boldsymbol{n}\cdot\boldsymbol{l})^+
+$$
+
+$$
+\mu_o=(\boldsymbol{n}\cdot\boldsymbol{v})^+
+$$
+
+$\mu_i$ 和 $\mu_o$ 是被简化过的。
+
+Karis提出了特别于GGX的近似版 $G_1$
+
+$$
+G_1(\boldsymbol{s})=\frac{2(\boldsymbol{n}\cdot\boldsymbol{s})}{(\boldsymbol{n}\cdot\boldsymbol{s})(2-\alpha)+\alpha}
+$$
+
+再次提醒，$\boldsymbol{s}$ 表示 $\boldsymbol{v}$ 或 $\boldsymbol{l}$
+
+针对这个 $G_1$ ，Hammon又提出了一个更高效的高度相关的遮挡函数 $G_2$ ，它和BRDF的一部分结合之后，同样可以得到简化
+
+$$
+\frac{G_2(\boldsymbol{l},\boldsymbol{v})}{4|\boldsymbol{n}\cdot\boldsymbol{l}||\boldsymbol{n}\cdot\boldsymbol{v}|} \approx \frac{0.5}{\mathrm{lerp}(2|\boldsymbol{n}\cdot\boldsymbol{l}||\boldsymbol{n}\cdot\boldsymbol{v}|,|\boldsymbol{n}\cdot\boldsymbol{l}|+|\boldsymbol{n}\cdot\boldsymbol{v}|,\alpha)}
+$$
+
+其中
+- $\mathrm{lerp}$ 表示线性插值，$\mathrm{lerp}(a,b,t)=a(1-t)+bt$
+
+#### Generalized Trowbridge-Reitz (GTR) NDF
+
+为了可以控制高光亮斑的形状，Burley提出了
+
+$$
+D(\boldsymbol{m})=\frac{k(\alpha,\gamma)}{\pi(1+(\boldsymbol{n}\cdot\boldsymbol{m})^2(\alpha_g^2-1))^\gamma}
+$$
+
+$$
+k(\alpha,\gamma)=
+\left\{
+    \begin{aligned}
+        &\frac{(\gamma-1)(\alpha^2-1)}{(1-(\alpha^2)^{1-\gamma})}, where \ \gamma \ne 1 \ and \ \alpha \ne 1, \\
+        &\frac{\alpha^2-1}{\ln{\alpha^2}}, where \ \gamma = 1 \ and \ \alpha \ne 1, \\
+        &1, where \ \alpha = 1
+    \end{aligned}
+\right.
+$$
+
+随着 $\gamma$ 下降，亮斑的拖尾变长，反之变短。
+
+不过同时正因为这个NDF形成的亮斑形状不是均匀的，$G_2$ 的寻找变得极为困难，在GTR提出三年后，一张根据 $\gamma$ 值的对应 $G_2$ 值被提出，实际运用中可以采用插值。
+
+#### 其他NDF和方法
+
+书中还提到了Student's-distribution(STD) NDF和Exponential Power Distribution(EPD) NDF，不过这两者都很新，书中并没有提到具体应用。
+
+此外，为了改变高光反射的亮斑形状，还可以使用多个NDF。
+
+### 各向异性NDF Anisotropic NDFs
+
+各向异性就说明这个材料我从不同角度看，得到的结果可以是不一样的。随便抓个不锈钢盆就能明白了。
+
+不同与各向同性的NDF，各向异性的需要除了 $\theta_m$ 之外，一般还需要 $\boldsymbol{m}\cdot\boldsymbol{n},\boldsymbol{m}\cdot\boldsymbol{t},\boldsymbol{m}\cdot\boldsymbol{b}$ 来求解。
+
+$\boldsymbol{n}$ 为法线，$\boldsymbol{t}$ 为切线 $\boldsymbol{b}$ 为副切线，如果你不知道什么是副切线的话，$\boldsymbol{b}=\boldsymbol{n}\times\boldsymbol{t}$ 。
+
+一般创造各向异性NDF的方法是用各向同性的推导
+
+它们也有比较通用的形式
+
+$$
+D(\boldsymbol{m})=\frac{\chi^+(\boldsymbol{n}\cdot\boldsymbol{m})}{\alpha_x\alpha_y(\boldsymbol{n}\cdot\boldsymbol{m})^4}g\left(\frac{\sqrt{\frac{(\boldsymbol{t}\cdot\boldsymbol{m})^2}{\alpha_x^2}+\frac{(\boldsymbol{b}\cdot\boldsymbol{m})^2}{\alpha_y^2}}}{(\boldsymbol{n}\cdot\boldsymbol{m})}\right)
+$$
+
+其中
+- $\alpha_x$ $\alpha_y$ 表示沿 $x$ 或 $y$ 轴的 $roughness$ 。
+
+$$
+a=\frac{\boldsymbol{n}\cdot\boldsymbol{s}}{\sqrt{\alpha_x^2(\boldsymbol{t}\cdot\boldsymbol{s})^2+\alpha_y^2(\boldsymbol{b}\cdot\boldsymbol{s})^2}}
+$$
+
+那么Beckmann NDF的各向异性版本就可以变成
+
+$$
+D(\boldsymbol{m})=\frac{\chi^+(\boldsymbol{n}\cdot\boldsymbol{m})}{\pi\alpha_x\alpha_y(\boldsymbol{n}\cdot\boldsymbol{m})^4}e^{\frac{\frac{(\boldsymbol{t}\cdot\boldsymbol{m})^2}{\alpha_x^2}+\frac{(\boldsymbol{b}\cdot\boldsymbol{m})^2}{\alpha_y^2}}{(\boldsymbol{n}\cdot\boldsymbol{m})^2}}
+$$
+
+以及GGX的
+
+$$
+D(\boldsymbol{m})=\frac{\chi^+(\boldsymbol{n}\cdot\boldsymbol{m})}{\pi\alpha_x\alpha_y(\frac{(\boldsymbol{t}\cdot\boldsymbol{m})^2}{\alpha_x^2}+\frac{(\boldsymbol{b}\cdot\boldsymbol{m})^2}{\alpha_y^2}+(\boldsymbol{n}\cdot\boldsymbol{m})^2)^2}
+$$
+
+还有更通用的方式，就是对 $roughtness$ Burley提出的 $\alpha_g=r^2$ 的基础上，加一个 $k_{aspect}$
+
+$$
+k_{aspect}=\sqrt{1-0.9k_{aniso}}
+$$
+
+$$
+\alpha_x=\frac{r^2}{k_{aspect}}
+$$
+
+$$
+\alpha_y=r^2k_{aspect}
+$$
+
+Imageworks还使用了其他的参数化方式
+
+$$
+\alpha_x=r^2(1+k_{aniso})
+$$
+
+$$
+\alpha_y=r^2(1-k_{aniso})
+$$
