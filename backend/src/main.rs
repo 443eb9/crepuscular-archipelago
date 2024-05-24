@@ -55,6 +55,8 @@ async fn main() -> std::io::Result<()> {
             .service(http::get_islands_meta)
             .service(http::get_island)
             .service(http::submit_memorize)
+            .service(http::download_memorize_db)
+            .service(http::download_memorize_csv)
     })
     .bind(("localhost", 8080))?
     .run()

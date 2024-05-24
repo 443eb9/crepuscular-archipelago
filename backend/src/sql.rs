@@ -201,3 +201,21 @@ pub async fn insert_memorize_form(
         .execute(&pool.db)
         .await
 }
+
+pub async fn query_all_memorize(
+    pool: &MemorizeDB,
+) -> Result<Vec<(MemorizeForm, MemorizeFormMeta)>, Error> {
+    let form: Vec<MemorizeForm> = sqlx::query_as(
+        "SELECT stu_id, name, wechat, qq, phone, email, desc, hobby, position, ftr_major, message
+        FROM memorize
+        ",
+    )
+    .fetch_all(&pool.db)
+    .await?;
+
+    let meta: Vec<MemorizeFormMeta> = sqlx::query_as("SELECT ip, time FROM memorize_meta")
+        .fetch_all(&pool.db)
+        .await?;
+
+    Ok(form.into_iter().zip(meta).collect())
+}

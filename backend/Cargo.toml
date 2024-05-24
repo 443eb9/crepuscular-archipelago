@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 actix-cors = "0.7.0"
 actix-web = "4.5"
+async-stream = "0.3.5"
 chrono = { version = "0.4", features = ["serde"] }
 dotenvy = "0.15.7"
 env_logger = "0.11"

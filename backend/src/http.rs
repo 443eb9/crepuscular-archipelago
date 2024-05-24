@@ -1,17 +1,21 @@
-use std::sync::Mutex;
+use std::{convert::Infallible, sync::Mutex};
 
 use actix_web::{
     get,
-    http::StatusCode,
+    http::{
+        header::{ContentDisposition, ContentType},
+        StatusCode,
+    },
     post,
     web::{Data, Json, Path},
     HttpRequest, HttpResponse, Responder,
 };
+use async_stream::stream;
 use chrono::{SecondsFormat, Utc};
 
 use crate::{
     fs::load_island,
-    memorize::{MemorizeCoolDown, MemorizeValidator},
+    memorize::{self, MemorizeCoolDown, MemorizeValidator},
     model::{MemorizeForm, MemorizeFormMeta},
     sql::*,
 };
@@ -89,7 +93,7 @@ pub async fn submit_memorize(
     let Ok(mut cool_down) = cool_down.lock() else {
         return (
             HttpResponse::Ok()
-                .json("Someone else is submitting there form. Please wait a moment and try again."),
+                .json("Someone else is submitting their form. Please wait a moment and try again."),
             StatusCode::BAD_REQUEST,
         );
     };
@@ -122,4 +126,28 @@ pub async fn submit_memorize(
             StatusCode::BAD_REQUEST,
         ),
     }
+}
+
+#[get("/api/get/memorizeDb")]
+pub async fn download_memorize_db() -> impl Responder {
+    let root = std::env::var("ISLAND_STORAGE_ROOT").unwrap();
+    let db = std::fs::read(format!("{}/memorize.sqlite3", root)).unwrap();
+    HttpResponse::Ok()
+        .content_type(ContentType::octet_stream())
+        .insert_header(ContentDisposition::attachment("memorize.sqlite3"))
+        .streaming(stream!(
+            yield Ok::<_, Infallible>(actix_web::web::Bytes::from(db))
+        ))
+}
+
+#[get("/api/get/memorizeCsv")]
+pub async fn download_memorize_csv(pool: Data<MemorizeDB>) -> impl Responder {
+    let data = query_all_memorize(&pool).await.unwrap();
+    let csv = memorize::generate_csv(data);
+    HttpResponse::Ok()
+        .content_type(ContentType::plaintext())
+        .insert_header(ContentDisposition::attachment("memorize.csv"))
+        .streaming(stream!(
+            yield Ok::<_, Infallible>(actix_web::web::Bytes::from(csv.into_bytes()))
+        ))
 }

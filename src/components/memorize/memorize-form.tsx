@@ -4,9 +4,10 @@ import React, { FormEvent } from "react";
 import InputBox from "../common/input-box";
 import OutlinedBox from "../common/outlined-box";
 import OutlinedButton from "../common/outlined-button";
-import { submitMemorize } from "@/data/memorize";
+import { downloadMemorizeCsv, downloadMemorizeDb, submitMemorize } from "@/data/memorize";
 import toast from "react-hot-toast";
 import Toast from "../common/toast";
+import { combineRemoteApi } from "@/data/backend";
 
 export default function MemorizeForm() {
     return (
@@ -50,14 +51,14 @@ export default function MemorizeForm() {
                 </div>
             </form>
             <div className="italic font-sh-sans">
-                只要这个网站依然可以正常访问，你就可以在这里下载到你和其他同学/老师填写的表格。此外，我也会在钉钉群内分发一份表格。
+                只要这个网站依然可以正常访问，你就可以在这里下载到你和其他同学/老师填写的表格。此外，我也会在钉钉群内发一份表格。
             </div>
             <div className="flex flex-wrap gap-y-2 justify-around">
                 <OutlinedButton className="p-4 w-full max-w-72 text-2xl font-sh-serif font-bold">
-                    下载Sqlite3数据库文件
+                    <a href={combineRemoteApi("/get/memorizeDb")}>下载Sqlite3数据库文件</a>
                 </OutlinedButton>
                 <OutlinedButton className="p-4 w-full max-w-72 text-2xl font-sh-serif font-bold">
-                    生成.xlsx表格并下载
+                    <a href={combineRemoteApi("/get/memorizeCsv")}>生成.csv表格并下载</a>
                 </OutlinedButton>
             </div>
         </div>

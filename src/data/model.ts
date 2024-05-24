@@ -41,7 +41,7 @@ export type IslandCount = {
     count: number,
 }
 
-export type MemorizeFormWithMeta = {
+export type MemorizeForm = {
     stu_id: string,
     name: string,
 
@@ -56,7 +56,4 @@ export type MemorizeFormWithMeta = {
     ftr_major: string,
 
     message: string,
-
-    time: string,
-    ip: string,
 }

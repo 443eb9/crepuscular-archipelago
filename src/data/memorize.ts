@@ -1,9 +1,9 @@
 import axios from "axios";
 import { combineApi, combineRemoteApi } from "./backend";
-import { MemorizeFormWithMeta } from "./model";
+import { MemorizeForm } from "./model";
 
 export async function submitMemorize(form: FormData) {
-    const payload: MemorizeFormWithMeta = {
+    const payload: MemorizeForm = {
         stu_id: (form.get("stu_id") ?? "").toString(),
         name: (form.get("name") ?? "").toString(),
 
@@ -18,10 +18,15 @@ export async function submitMemorize(form: FormData) {
         ftr_major: (form.get("ftr_major") ?? "").toString(),
 
         message: (form.get("message") ?? "").toString(),
-
-        time: new Date().toISOString(),
-        ip: (await axios.get("https://api64.ipify.org?format=json")).data["ip"],
     };
 
     return axios.post(combineRemoteApi("/post/memorize"), payload);
+}
+
+export async function downloadMemorizeDb() {
+    (await axios.get(combineRemoteApi("/get/memorizeDb"), { responseType: "blob" }));
+}
+
+export async function downloadMemorizeCsv() {
+    (await axios.get(combineRemoteApi("/get/memorizeCsv"), { responseType: "stream" }));
 }

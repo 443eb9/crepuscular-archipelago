@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_repr::Serialize_repr;
-use sqlx::{prelude::Type, FromRow};
+use sqlx::{prelude::Type, FromRow, Row};
 
 #[derive(Debug, Serialize_repr, Type)]
 #[repr(u32)]
@@ -71,7 +71,7 @@ pub struct IslandCount {
     pub count: u32,
 }
 
-#[derive(Debug, Deserialize, FromRow)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct MemorizeForm {
     pub stu_id: String,
     pub name: String,
@@ -89,6 +89,32 @@ pub struct MemorizeForm {
     pub message: String,
 }
 
+impl<'a, R: Row> FromRow<'a, R> for MemorizeForm
+where
+    &'a std::primitive::str: sqlx::ColumnIndex<R>,
+    String: Type<<R as Row>::Database>,
+    String: sqlx::Decode<'a, <R as Row>::Database>,
+    u32: Type<<R as Row>::Database>,
+    u32: sqlx::Decode<'a, <R as Row>::Database>,
+{
+    fn from_row(row: &'a R) -> Result<Self, sqlx::Error> {
+        Ok(Self {
+            stu_id: row.try_get::<u32, _>("stu_id")?.to_string(),
+            name: row.try_get("name")?,
+            wechat: row.try_get("wechat")?,
+            qq: row.try_get("qq")?,
+            phone: row.try_get("phone")?,
+            email: row.try_get("email")?,
+            desc: row.try_get("desc")?,
+            hobby: row.try_get("hobby")?,
+            position: row.try_get("position")?,
+            ftr_major: row.try_get("ftr_major")?,
+            message: row.try_get("message")?,
+        })
+    }
+}
+
+#[derive(Debug, Serialize, FromRow)]
 pub struct MemorizeFormMeta {
     pub time: String,
     pub ip: String,
