@@ -366,6 +366,7 @@ dependencies = [
  "env_logger",
  "futures",
  "log",
+ "once_cell",
  "serde",
  "serde_json",
  "serde_repr",

@@ -12,6 +12,7 @@ use actix_web::{
 };
 use async_stream::stream;
 use chrono::{SecondsFormat, Utc};
+use once_cell::sync::Lazy;
 
 use crate::{
     fs::load_island,
@@ -19,6 +20,9 @@ use crate::{
     model::{MemorizeForm, MemorizeFormMeta},
     sql::*,
 };
+
+static COOL_DOWN: Mutex<Lazy<MemorizeCoolDown>> =
+    Mutex::new(Lazy::new(|| MemorizeCoolDown::default()));
 
 #[get("/api/get/allTags")]
 pub async fn get_all_tags(pool: Data<IslandDB>) -> impl Responder {
@@ -79,23 +83,29 @@ pub async fn submit_memorize(
     pool: Data<MemorizeDB>,
     form: Json<MemorizeForm>,
     validator: Data<MemorizeValidator>,
-    cool_down: Data<Mutex<MemorizeCoolDown>>,
 ) -> (impl Responder, StatusCode) {
     let meta = MemorizeFormMeta {
         time: Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true),
         ip: form.ip.clone(),
     };
 
-    let Ok(mut cool_down) = cool_down.lock() else {
+    let Ok(mut cool_down) = COOL_DOWN.lock() else {
         return (
             HttpResponse::Ok().json("有其他人正在提交，请稍后再试。"),
             StatusCode::BAD_REQUEST,
         );
     };
 
-    if cool_down.is_cooling_down(&meta.ip) {
+    let cd = cool_down.get(&meta.ip);
+    log::info!("{:?} {:?} {}", &form, &meta, cd);
+
+    if cd < 600 {
         return (
-            HttpResponse::Ok().json(format!("请不要在10分钟内多次提交。{}", meta.ip)),
+            HttpResponse::Ok().json(format!(
+                "请不要在10分钟内多次提交。{} {}",
+                meta.ip,
+                600 - cd
+            )),
             StatusCode::BAD_REQUEST,
         );
     }
@@ -111,7 +121,7 @@ pub async fn submit_memorize(
         Ok(_) => {
             cool_down.add(meta.ip.clone());
             (
-                HttpResponse::Ok().json(format!("成功记录 {} {}", meta.time, meta.ip)),
+                HttpResponse::Ok().json(format!("成功记录 {} {} {}", meta.time, meta.ip, cd)),
                 StatusCode::OK,
             )
         }

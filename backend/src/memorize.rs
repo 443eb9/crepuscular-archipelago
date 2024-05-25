@@ -15,10 +15,11 @@ impl MemorizeCoolDown {
         self.value.insert(ip, Utc::now());
     }
 
-    pub fn is_cooling_down(&self, ip: &String) -> bool {
+    pub fn get(&self, ip: &String) -> i64 {
         self.value
             .get(ip)
-            .is_some_and(|t| (Utc::now() - *t).num_seconds() < 600)
+            .map(|t| (Utc::now() - *t).num_seconds())
+            .unwrap_or(601)
     }
 }
 
