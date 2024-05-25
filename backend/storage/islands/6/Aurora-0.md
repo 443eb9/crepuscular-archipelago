@@ -28,7 +28,13 @@ $$
 为了求解，这个方程需要被转化成用 $\phi$ 和 $\theta$ 的形式，也就是使用立体角的微分的形式替代向量的微分。
 
 $$
-L_o(\theta_o, \phi_o) = \int_{\phi_i=0}^{2\pi} f(\phi_i, \theta_i, \phi_o, \theta_o)L(\phi_i, \theta_i)\cos \theta_i \sin \theta_i d\theta_i d\phi_i
+L_o(\theta_o, \phi_o) = \int_{\phi_i=0}^{2\pi} \int_{\theta_i=0}^{\frac{\pi}{2}} f(\phi_i, \theta_i, \phi_o, \theta_o)L(\phi_i, \theta_i)\cos \theta_i \sin \theta_i d\theta_i d\phi_i
+$$
+
+使用 $\mu_i$ 代替 $\cos \theta_i$ ，$\mu_o$ 代替 $\cos \theta_o$，还可以进一步简化
+
+$$
+L_o(\theta_o, \phi_o) = \int_{\phi_i=0}^{2\pi} \int_{\mu_i=0}^1 f(\phi_i, \mu_i, \phi_o, \mu_o)L(\phi_i, \mu_i)\mu_i d\mu_i d\phi_i
 $$
 
 ### 立体角
@@ -80,6 +86,20 @@ $$
 
 那你应该还知道，有Blinn-Phong模型提供高光反射的计算，这里不展开了。所以你应该猜到了，BRDF其实是一个由多个函数，比如漫反射函数，高光反射等，定义的函数，它可以决定反射出来的光的颜色（实际上是光在每段波长上面的亮度）。
 
+为了衡量一个BRDF在计算时的能量损耗，可以使用Directional-hemispherical Reflectance $R(\boldsymbol{l})$
+
+$$
+R(\boldsymbol{l})=\int_{\boldsymbol{v}\in\Omega}f(\boldsymbol{l},\boldsymbol{v})(\boldsymbol{n}\cdot\boldsymbol{v})d\boldsymbol{v}
+$$
+
+和Hemispherical-directional Reflectance $R(\boldsymbol{v})$
+
+$$
+R(\boldsymbol{v})=\int_{\boldsymbol{l}\in\Omega}f(\boldsymbol{l},\boldsymbol{v})(\boldsymbol{n}\cdot\boldsymbol{l})d\boldsymbol{l}
+$$
+
+当它们可以被互换使用时，可以用Directional albedo来作为总称。
+
 ## 微表面理论 Microfacet Theory
 
 目前，大部分的BRDF模型都基于这个理论。
@@ -90,8 +110,6 @@ $$
 - 遮挡函数 $G(\boldsymbol{m}, \boldsymbol{v})$ 它表示从 $\boldsymbol{v}$ 方向看下去，法线会被怎么遮挡
 
 这里都是统计学上的，并不是真的每根法线怎么怎么朝向。
-
-**注意了嗷，下面出现的一吨大佬提出来的奇妙函数，大部分都不用记**
 
 还有一些为了计算方便的定义，都比较符合直觉：
 
@@ -193,7 +211,7 @@ $$
 再后来的一些应用中，Schlick的近似方程出现了更通用的形式
 
 $$
-F(\boldsymbol{n},\boldsymbol{l}) \approx F_0 + (F_{90} - F_0)(1 - (\boldsymbol{n}\cdot\boldsymbol{l})^+)^5
+F(\boldsymbol{n},\boldsymbol{l}) \approx F_0 + (F_{90} - F_0)(1 - (\boldsymbol{n}\cdot\boldsymbol{l})^+)^{\frac{1}{p}}
 $$
 
 其中
@@ -427,3 +445,132 @@ $$
 $$
 \alpha_y=r^2(1-k_{aniso})
 $$
+
+### <u>多重表面反射</u> Multiple-Bounce Surface Reflection
+
+由于上述BRDF都没有考虑到光线可以在微表面之间反射，因此会出现比较明显的能量不守恒的现象，也就是表面会随着表面变粗糙而变暗。
+
+于是Imagework提出了一个BRDF的小分量，加上去用于计算微表面间的反射
+
+$$
+f_{ms}(\boldsymbol{l},\boldsymbol{v})=\frac{\overline{F} \ \overline{R_{sF1}}}{\pi(1-\overline{R_{sF1}})(1-\overline{F}(1-\overline{R_{sF1}}))}(1-\overline{R_{sF1}}(\boldsymbol{l})(1-\overline{R_{sF1}}(\boldsymbol{v})))
+$$
+
+$R_{sF1}$ 表示 $f_{sF1}$ ，也就是 $F_0=1$ 的 $f_{spec}$ ，的Directional albedo。因此它只由 $roughtness$ 和 $\theta_i$ 绝对，也就可以保存在一张二维贴图内。
+
+而 $\overline{R_{sF1}}$ 表示 $R_{sF1}$ 在半球上的<u>余弦加权平均</u>(Cosin-weighted Average)，它只由 $roughness$ 一个变量决定，因此可以保存在一张一维贴图内。
+
+$$
+\overline{R_{sF1}}=\frac{\int_{\boldsymbol{s}\in\Omega}R_{sF1}(\boldsymbol{s})(\boldsymbol{n}\cdot\boldsymbol{s})d\boldsymbol{s}}{\int_{\boldsymbol{s}\in\Omega}(\boldsymbol{n}\cdot\boldsymbol{s})d\boldsymbol{s}}=\frac{1}{\pi}\int_{\phi=0}^{2\pi}\int_{\mu=0}^1R_{sF1}(\mu)\mu d\mu d\phi=2\int_{\mu=0}^1R_{sF1}(\mu)\mu d\mu
+$$
+
+$\overline{F}$ 是菲涅尔反射项，同理可得 $\overline{F}=2\int_{\mu=0}^1F(\mu)\mu d\mu$ 。
+
+Imagework也提供了一个对于通用通用的近似解
+
+$$
+\overline{F}=\frac{2p^2F_{90}+(3p+1)F_0}{2p^2+3p+1}
+$$
+
+如果使用了Schlick的菲涅尔近似，那么还可以进一步简化为
+
+$$
+\overline{F}=\frac{20}{21}F_0+\frac{1}{21}
+$$
+
+对于各向异性的材料，Imagework使用了一个在 $\alpha_x$ 和 $\alpha_y$ 间的中间值。
+
+### 漫反射BRDF
+
+实际上这章叫BRDF Models for Subsurface Scattering，不过在不透明的绝缘体(更准确的说，介电质(Dielectric))上，次表面散射就表现为漫反射。
+
+#### <u>光滑次表面模型</u> Smooth-Surface Subsurface Models
+
+对于一个"光滑"的平面，散射光的范围大于微表面的坑洼的程度。
+
+最简单的漫反射BRDF就是
+
+$$
+f_{diff}=\frac{\rho_{ss}}{\pi}
+$$
+
+但是它没有考虑到在视角变化时，因为存在菲涅尔反射，高光反射的强度会产生变化。这就导致反射的光强度和入射光的差别较大，因此可以引入菲涅尔反射来"抵消"一部分漫反射。
+
+如果假设表面光滑到变成一面镜子，那么它的法线就是宏观表面的法线
+
+$$
+f_{diff}(\boldsymbol{l},\boldsymbol{v})=(1-F(\boldsymbol{n},\boldsymbol{l}))\frac{\rho_{ss}}{\pi}
+$$
+
+如果假设表面是由很多微表面组成的，那么就可以使用 $\boldsymbol{h}$ ，也就是刚好发生高光反射时的微表面法线，来代替。
+
+Shirley之后提出了另一个BRDF，它强调了菲涅尔反射造成的能量的转移，可以做到能量守恒
+
+$$
+f_{diff}(\boldsymbol{l},\boldsymbol{v})=\frac{21}{20\pi}\rho_{ss}(1-(1-(\boldsymbol{n}\cdot\boldsymbol{l})^+)^5)(1-(1-(\boldsymbol{n}\cdot\boldsymbol{l})^+)^5)
+$$
+
+其中的菲涅尔反射项用的是Schlick近似式
+
+再之后，Ashikhmin和Shirley又提出了它的通用版本
+
+$$
+f_{diff}(\boldsymbol{l},\boldsymbol{v})=\rho_{ss}\frac{(1-R_{spec}(\boldsymbol{l}))(1-R_{spec}(\boldsymbol{v}))}{\pi(1-\overline{R_{spec}})}
+$$
+
+$R_{spec}$ 为这个整个高光反射BRDF的Directional Albedo，也就是它考虑了菲涅尔反射。
+
+#### <u>粗糙表面次表面模型</u> Rough-Surface Subsurface Models
+
+Burley提出了一个漫反射BRDF，作为Disney Principle BRDF的一部分。
+
+$$
+f_{diff}=\chi^+(\boldsymbol{n}\cdot\boldsymbol{l})\chi^+(\boldsymbol{n}\cdot\boldsymbol{v})\frac{\rho_{ss}}{\pi}((1-k_{ss})f_d+1.25k_{ss}f_{ss})
+$$
+
+其中
+
+$$
+\begin{aligned}
+    &f_d=(1+(F_{D90}-1)(1-\boldsymbol{n}\cdot\boldsymbol{l})^5)(1+(F_{D90}-1)(1-\boldsymbol{n}\cdot\boldsymbol{v})^5) \\
+
+    &F_D{90}=0.5+2\sqrt{\alpha}(\boldsymbol{h}\cdot\boldsymbol{l})^2 \\
+
+    &f_{ss}=\left(\frac{1}{(\boldsymbol{n}\cdot\boldsymbol{l})(\boldsymbol{n}\cdot\boldsymbol{v})}-0.5\right)F_{SS}+0.5 \\
+
+    &F_{SS}=(1+(F_{SS90}-1)(1-\boldsymbol{n}\cdot\boldsymbol{l})^5)(1+(F_{SS90}-1)(1-\boldsymbol{n}\cdot\boldsymbol{v})^5) \\
+
+    &F_{SS90}=\sqrt{\alpha}(\boldsymbol{h}\cdot\boldsymbol{l})^2
+\end{aligned}
+$$
+
+*这tm真的是碳基生物能想出来的公式吗？？？*
+
+其中
+- $\alpha$ 是表面粗糙度 $roughness$
+- $k_{ss}$ 是一个由用户控制的变量，它对 $f_d$ 粗糙漫反射项和 $f_{ss}$ 次表面项进行插值。
+
+那么还有一些基于微表面理论的BRDF，比如Hammon提出的
+
+$$
+f_{diff}(\boldsymbol{l}\cdot\boldsymbol{v})=\chi^+(\boldsymbol{n}\cdot\boldsymbol{l})\chi^+(\boldsymbol{n}\cdot\boldsymbol{v})\frac{\rho_{ss}}{\pi}((1-\alpha_g)f_{smooth}+\alpha f_{rough}+\rho_{ss}f_{multi})
+$$
+
+其中
+
+$$
+\begin{aligned}
+    &f_{smooth}=\frac{21}{20}(1-F_0)(1-(1-\boldsymbol{n}\cdot\boldsymbol{l})^5)(1-(1-\boldsymbol{n}\cdot\boldsymbol{v})^5) \\
+
+    &f_{rough}=k_{facing}(0.9-0.4k_{facing})\left(\frac{0.5+\boldsymbol{n}\cdot\boldsymbol{h}}{\boldsymbol{n}\cdot\boldsymbol{h}}\right) \\
+
+    &k_{facing}=0.5+0.5(\boldsymbol{l}\cdot\boldsymbol{v}) \\
+
+    &f_{multi}=0.3641\alpha_g
+\end{aligned}
+$$
+
+*又是一个碳基生物想不出来的方程 :(*
+
+其中
+- $\alpha_g$ 是GGX模型的 $roughness$
