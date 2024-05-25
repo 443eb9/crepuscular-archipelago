@@ -99,7 +99,7 @@ pub async fn submit_memorize(
 
     if cool_down.is_cooling_down(&meta.ip) {
         return (
-            HttpResponse::Ok().json("请不要在10分钟内多次提交。"),
+            HttpResponse::Ok().json(format!("请不要在10分钟内多次提交。{}", meta.ip)),
             StatusCode::BAD_REQUEST,
         );
     }
@@ -115,8 +115,7 @@ pub async fn submit_memorize(
         Ok(_) => {
             cool_down.add(meta.ip.clone());
             (
-                HttpResponse::Ok()
-                    .json(format!("成功记录 {} {}", meta.time, meta.ip)),
+                HttpResponse::Ok().json(format!("成功记录 {} {}", meta.time, meta.ip)),
                 StatusCode::OK,
             )
         }
