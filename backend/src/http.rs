@@ -92,15 +92,14 @@ pub async fn submit_memorize(
 
     let Ok(mut cool_down) = cool_down.lock() else {
         return (
-            HttpResponse::Ok()
-                .json("Someone else is submitting their form. Please wait a moment and try again."),
+            HttpResponse::Ok().json("有其他人正在提交，请稍后再试。"),
             StatusCode::BAD_REQUEST,
         );
     };
 
     if cool_down.is_cooling_down(&meta.ip) {
         return (
-            HttpResponse::Ok().json("Please don't sent multiple requests in an hour."),
+            HttpResponse::Ok().json("请不要在10分钟内多次提交。"),
             StatusCode::BAD_REQUEST,
         );
     }
@@ -117,7 +116,7 @@ pub async fn submit_memorize(
             cool_down.add(meta.ip.clone());
             (
                 HttpResponse::Ok()
-                    .json(format!("Successfully memorized. {} {}", meta.time, meta.ip)),
+                    .json(format!("成功记录 {} {}", meta.time, meta.ip)),
                 StatusCode::OK,
             )
         }

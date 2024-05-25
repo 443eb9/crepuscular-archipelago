@@ -4,7 +4,7 @@ import React, { FormEvent } from "react";
 import InputBox from "../common/input-box";
 import OutlinedBox from "../common/outlined-box";
 import OutlinedButton from "../common/outlined-button";
-import { downloadMemorizeCsv, downloadMemorizeDb, submitMemorize } from "@/data/memorize";
+import { submitMemorize } from "@/data/memorize";
 import toast from "react-hot-toast";
 import Toast from "../common/toast";
 import { combineRemoteApi } from "@/data/backend";
@@ -39,7 +39,7 @@ export default function MemorizeForm() {
                         <FormUnit title="未来专业(or计划)" name="ftr_major" optional></FormUnit>
                     </FormRow>
                 </FormSection>
-                <FormSection title="留言" whisper="假如你是李华，不，这次你就是李华(?)">
+                <FormSection title="留言" whisper="你甚至可以用留言板和别人聊天(?)">
                     <OutlinedBox className="p-2 h-48">
                         <textarea className="w-full h-full bg-transparent outline-none resize-none placeholder:font-bender" name="message" placeholder="Optional"></textarea>
                     </OutlinedBox>
@@ -51,7 +51,7 @@ export default function MemorizeForm() {
                 </div>
             </form>
             <div className="italic font-sh-sans">
-                只要这个网站依然可以正常访问，你就可以在这里下载到你和其他同学/老师填写的表格。此外，我也会在钉钉群内发一份表格。
+                只要这个网站依然可以正常访问，你就可以在这里下载到你和其他同学填写的表格。此外，我也会在钉钉群内发一份表格。
             </div>
             <div className="flex flex-wrap gap-y-2 justify-around">
                 <OutlinedButton className="p-4 w-full max-w-72 text-2xl font-sh-serif font-bold">

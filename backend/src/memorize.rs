@@ -18,7 +18,7 @@ impl MemorizeCoolDown {
     pub fn is_cooling_down(&self, ip: &String) -> bool {
         self.value
             .get(ip)
-            .is_some_and(|t| (Utc::now() - *t).num_seconds() < 3600)
+            .is_some_and(|t| (Utc::now() - *t).num_seconds() < 600)
     }
 }
 
@@ -29,19 +29,23 @@ pub struct MemorizeValidator {
 
 impl MemorizeValidator {
     pub fn validate(&self, form: &MemorizeForm) -> Result<(), String> {
-        let Ok(id) = form.stu_id.parse::<u32>() else {
-            return Err("Invalid student number.".to_string());
+        let Ok(stu_id) = form.stu_id.parse::<u32>() else {
+            return Err("无效学号".to_string());
         };
 
-        let id = id % 100;
+        let id = stu_id % 100;
+        if stu_id - id != 20240400 {
+            return Err("无效学号".to_string());
+        }
+
         match self.data.get(id as usize - 1) {
             Some(data) => {
                 if data != &form.name {
-                    return Err(format!("Invalid sutdent number or name."));
+                    return Err(format!("无效的学号或姓名"));
                 }
             }
             None => {
-                return Err(format!("Invalid student number {}.", form.stu_id));
+                return Err(format!("无效学号 {}", form.stu_id));
             }
         }
 
@@ -50,7 +54,7 @@ impl MemorizeValidator {
             && form.phone.is_empty()
             && form.email.is_empty()
         {
-            return Err("No contact info provided.".to_string());
+            return Err("请至少填写一种联系方式".to_string());
         }
 
         Ok(())

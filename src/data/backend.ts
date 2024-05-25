@@ -12,6 +12,6 @@ export function combineRemoteApi(endpoint: string) {
     if (env == "production") {
         return `${REMOTE_BACKEND}${endpoint}`
     } else {
-        return combineApi(endpoint);
+        return `${BACKEND}${endpoint}`
     }
 }
