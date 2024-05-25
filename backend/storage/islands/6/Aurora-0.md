@@ -61,7 +61,7 @@ $$
 
 所以上面Reflectance Equation里面，$dl$ 就被这一坨（懒得打）代替了，然后又因为这里都是单位向量和单位球，因此 $\boldsymbol{n}\cdot\boldsymbol{l}$ 就被 $\cos\theta_i$ 代替了。
 
-## 双向反射分布函数 Bidirectional Reflectance Distribution Equation (BRDF)
+## 双向反射分布函数 Bidirectional Reflectance Distribution Function (BRDF)
 
 先随便举个BRDF吧
 
@@ -75,14 +75,12 @@ $$
 如果你有实现过Lambert光照模型（总该实现过吧，要不然直接看PBR有点猛的），那么你应该知道，在这个模型下，$L_o = \rho_{ss}L_i\boldsymbol{n}\cdot\boldsymbol{l}$ ，但它还可以表示为
 
 $$
-L_o = \int_{\boldsymbol{l}\in\Omega} \frac{\rho_{ss}}{\pi}L_i(\boldsymbol{p}, \boldsymbol{l})(\boldsymbol{n} \cdot \boldsymbol{l}) dl
-$$
-
-哎！是不是这个陌生的方程突然就有点眼熟了，它还可以变成
-
-$$
 L_o = \pi * \frac{\rho_ss}{\pi} L_i (\boldsymbol{n}\cdot\boldsymbol{l}) = \rho_{ss}L_i\boldsymbol{n}\cdot\boldsymbol{l}
 $$
+
+哎！是不是这个陌生的方程突然就有点眼熟了！
+
+> 至于这个 $\pi$ 是哪里来的，分是怎么积的，就留给未来学了微积分的我吧~
 
 那你应该还知道，有Blinn-Phong模型提供高光反射的计算，这里不展开了。所以你应该猜到了，BRDF其实是一个由多个函数，比如漫反射函数，高光反射等，定义的函数，它可以决定反射出来的光的颜色（实际上是光在每段波长上面的亮度）。
 
@@ -182,7 +180,7 @@ $$
 G_2(\boldsymbol{l},\boldsymbol{v},\boldsymbol{m}) = \frac{\chi^+(\boldsymbol{m}\cdot\boldsymbol{v})\chi^+(\boldsymbol{m}\cdot\boldsymbol{l})}{1+\max(\Lambda(\boldsymbol{v}),\Lambda(\boldsymbol{l}))+\lambda(\boldsymbol{v},\boldsymbol{l})\min(\Lambda(\boldsymbol{v}),\Lambda(\boldsymbol{v}))}
 $$
 
-其中的 $\lambda$ 函数是个经验函数，比如
+其中的 $\lambda$ 函数是个经验函数，比如上面的那两个，或者是特定NDF推导出的函数。
 
 是时候来完善一下我们的微表面BRDF $f_\mu$ 了，它这时应当兼顾视线，光线的遮挡。
 
@@ -379,7 +377,7 @@ $$
 
 随着 $\gamma$ 下降，亮斑的拖尾变长，反之变短。
 
-不过同时正因为这个NDF形成的亮斑形状不是均匀的，$G_2$ 的寻找变得极为困难，在GTR提出三年后，一张根据 $\gamma$ 值的对应 $G_2$ 值被提出，实际运用中可以采用插值。
+不过同时正因为这个NDF形成的亮斑形状不是均匀的，$G_2$ 的寻找变得极为困难，在GTR提出三年后，一张根据 $\gamma$ 值的对应 $G_2$ 值的表格被提出，实际运用中可以采用插值。
 
 #### 其他NDF和方法
 
@@ -574,3 +572,82 @@ $$
 
 其中
 - $\alpha_g$ 是GGX模型的 $roughness$
+
+## 布料BRDF BRDF Models for Cloth
+
+### 经验模型 Empirical CLoth Models
+
+在游戏*Uncharted 2*中，布料的漫反射模型是
+
+$$
+f_{diff}(\boldsymbol{l},\boldsymbol{v})=\frac{\rho_{ss}}{\pi}\left(k_{rim}((\boldsymbol{v}\cdot\boldsymbol{n}^+)^{\alpha_{rim}}+k_{inner}(1-(\boldsymbol{v}\cdot\boldsymbol{n})^+)^{\alpha_{inner}})+k_{diff}\right)
+$$
+
+在*Uncharted 4*中
+
+$$
+f_{diff}(\boldsymbol{l},\boldsymbol{v})(\boldsymbol{n}\cdot\boldsymbol{l})^+\rArr(c_{scatter}+(\boldsymbol{n}\cdot\boldsymbol{l})^+)^\mp\frac{(\boldsymbol{n}\cdot\boldsymbol{l}+\omega)^\mp}{1+\omega}
+$$
+
+$x^\mp$ 就是 `saturate(x)` ，或者说
+
+$$
+x^\mp=
+\left\{
+    \begin{aligned}
+        &1,where \ x > 1, \\
+        &x,where \ 0 \le x \le 1, \\
+        &0,where \ x < 0,
+    \end{aligned}
+\right.
+$$
+
+### 微表面布料模型 Microfacet Cloth Models
+
+Ashikhmin等人使用了逆高斯分布(Inverse Gaussian Distribution)提出了一个布料NDF，之后的*The Order: 1866*中，使用了一个结合了微表面BRDF和通用化的上述BRDF。它使用了上面这个了来自*Uncharted 4*的方程作为漫反射项。
+
+它的NDF是
+
+$$
+D(\boldsymbol{m})=\frac{\chi^+(\boldsymbol{n}\cdot\boldsymbol{m})}{\pi(1+k_{amp}\alpha^2)}\left(1+\frac{k_{amp}e^{\frac{(\boldsymbol{n}\cdot\boldsymbol{m})^2}{\alpha^2((\boldsymbol{n}\cdot\boldsymbol{m})^2-1)}}}{(1-(\boldsymbol{n}\cdot\boldsymbol{m})^2)^2}\right)
+$$
+
+其中
+- $\alpha$ 控制了逆高斯分布的宽度
+- $k_{amp}$ 控制逆高斯分布的高度
+
+完整的BRDF是
+
+$$
+f(\boldsymbol{l},\boldsymbol{v})=(1-F(\boldsymbol{h},\boldsymbol{l}))\frac{\rho_{ss}}{\pi}+\frac{F(\boldsymbol{h},\boldsymbol{l})D(\boldsymbol{h})}{4(\boldsymbol{n}\cdot\boldsymbol{l}+\boldsymbol{n}\cdot\boldsymbol{v}-(\boldsymbol{n}\cdot\boldsymbol{l})(\boldsymbol{n}\cdot\boldsymbol{v}))}
+$$
+
+Imagework又提出了一个NDF可用于全部 $f_{sheen}$
+
+> sheen n.光彩;光泽<br>
+> The conditioner gives hair a beautiful soft sheen.
+这种护发素能使头发美丽、柔顺，富有光泽。
+>
+> --*Cambridge Dictionary*
+
+$$
+D(\boldsymbol{m})=\frac{\chi^+(\boldsymbol{n}\cdot\boldsymbol{m})(2+\frac{1}{\alpha})(1-(\boldsymbol{n}\cdot\boldsymbol{m})^2)^{\frac{1}{2\alpha}}}{2\pi}
+$$
+
+这个NDF没有准确的Smith遮挡函数可以配套，因此Imagework采用了一个解析函数来近似。
+
+### <u>微柱体布料模型</u> Micro-Cylinder Cloth Models
+
+该模型认为布料表面上存在无数个线段，所以这个和渲染头发的思路相似。
+
+书中提到了Kajiya-Kay BRDF和Banks BRDF之后在学习毛发渲染的时候再具体说吧。（躺
+
+## <u>波光学BRDF</u> Wave Optics BRDF Models
+
+超越几何！波光学的BRDF试图模拟光的衍射，干涉等更为复杂的物理现象。
+
+嘛...不过书里几乎没有给出详细的模型。好（逃
+
+## 材质混合
+
+在实际应用中，一个物体可能是由多个材质混合而成的。这个时候就需要材质混合。但是我觉得这玩意应该放到贴花(Decal)一章将。嗯，就是这样。（逃 again
