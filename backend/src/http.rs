@@ -8,7 +8,7 @@ use actix_web::{
     },
     post,
     web::{Data, Json, Path},
-    HttpRequest, HttpResponse, Responder,
+    HttpResponse, Responder,
 };
 use async_stream::stream;
 use chrono::{SecondsFormat, Utc};
@@ -76,7 +76,6 @@ pub async fn get_island(pool: Data<IslandDB>, id: Path<u32>) -> impl Responder {
 
 #[post("/api/post/memorize")]
 pub async fn submit_memorize(
-    req: HttpRequest,
     pool: Data<MemorizeDB>,
     form: Json<MemorizeForm>,
     validator: Data<MemorizeValidator>,
@@ -84,10 +83,7 @@ pub async fn submit_memorize(
 ) -> (impl Responder, StatusCode) {
     let meta = MemorizeFormMeta {
         time: Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true),
-        ip: req
-            .peer_addr()
-            .map(|a| a.ip().to_string())
-            .unwrap_or_default(),
+        ip: form.ip.clone(),
     };
 
     let Ok(mut cool_down) = cool_down.lock() else {

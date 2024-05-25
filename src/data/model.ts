@@ -56,4 +56,5 @@ export type MemorizeForm = {
     ftr_major: string,
 
     message: string,
+    ip: string,
 }

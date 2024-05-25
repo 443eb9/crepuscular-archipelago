@@ -18,6 +18,7 @@ export async function submitMemorize(form: FormData) {
         ftr_major: (form.get("ftr_major") ?? "").toString(),
 
         message: (form.get("message") ?? "").toString(),
+        ip: (await axios.get("https://api.ipify.org?format=json")).data["ip"],
     };
 
     return axios.post(combineRemoteApi("/post/memorize"), payload);

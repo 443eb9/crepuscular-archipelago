@@ -87,6 +87,7 @@ pub struct MemorizeForm {
     pub ftr_major: String,
 
     pub message: String,
+    pub ip: String,
 }
 
 impl<'a, R: Row> FromRow<'a, R> for MemorizeForm
@@ -110,6 +111,7 @@ where
             position: row.try_get("position")?,
             ftr_major: row.try_get("ftr_major")?,
             message: row.try_get("message")?,
+            ip: String::new(),
         })
     }
 }
