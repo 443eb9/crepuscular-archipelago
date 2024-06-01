@@ -9,6 +9,7 @@ import PageSwitcher from "@/components/updates/page-switcher";
 import toast from "react-hot-toast";
 import { IslandCount } from "@/data/model";
 import Toast from "@/components/common/toast";
+import Footer from "@/components/common/footer";
 
 export const metadata: Metadata = {
     title: "Updates - Crepuscular Archipelago",
@@ -50,14 +51,15 @@ export default async function Page({ searchParams }: {
                     <Suspense>
                         <BlogIslands page={page} length={length} tagsFilter={tagsFilter}></BlogIslands>
                     </Suspense>
-                    <aside className="hidden md:block w-72">
+                    <aside className="hidden md:block">
                         <Suspense>
                             <BlogInfo></BlogInfo>
                         </Suspense>
                     </aside>
                 </ContentWrapper>
-                <ContentWrapper>
+                <ContentWrapper className="flex-col gap-6">
                     <PageSwitcher islandCount={islandCount.count} currentPage={page} currentLength={length}></PageSwitcher>
+                    <Footer></Footer>
                 </ContentWrapper>
             </div>
         </main>
