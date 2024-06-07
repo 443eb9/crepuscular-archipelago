@@ -4,7 +4,6 @@ import GlobalNavBar from "@/components/common/nav/global-nav-bar";
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { fetchIslandMeta } from "@/data/island";
-import Footer from "@/components/common/footer";
 
 export default function Page({ searchParams }: {
     searchParams?: {
@@ -21,7 +20,6 @@ export default function Page({ searchParams }: {
                 <Suspense>
                     <ArticleContainer id={id}></ArticleContainer>
                 </Suspense>
-                <Footer></Footer>
             </ContentWrapper>
         </main>
     );

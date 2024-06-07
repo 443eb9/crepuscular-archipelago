@@ -6,9 +6,7 @@ import { Suspense } from "react";
 import { Metadata } from "next";
 import { fetchIslandCount } from "@/data/island";
 import PageSwitcher from "@/components/updates/page-switcher";
-import toast from "react-hot-toast";
 import { IslandCount } from "@/data/model";
-import Toast from "@/components/common/toast";
 import Footer from "@/components/common/footer";
 
 export const metadata: Metadata = {
@@ -25,17 +23,7 @@ export default async function Page({ searchParams }: {
     const page = Number.parseInt(searchParams?.page ?? "0");
     const length = Number.parseInt(searchParams?.len ?? "10");
     const tagsFilter = Number.parseInt(searchParams?.tags ?? "0");
-    const islandCount: IslandCount = await fetchIslandCount()
-        .catch((reason) => {
-            const data = reason["response"]["data"];
-            toast.custom(<Toast title="Error" toast={data == undefined ? reason.toString() : data}></Toast>)
-        })
-        .then((value) => {
-            if (value == null) {
-                return;
-            }
-            return value.data;
-        });
+    const islandCount: IslandCount = (await fetchIslandCount()).data;
 
     return (
         <main>
@@ -59,7 +47,6 @@ export default async function Page({ searchParams }: {
                 </ContentWrapper>
                 <ContentWrapper className="flex-col gap-6">
                     <PageSwitcher islandCount={islandCount.count} currentPage={page} currentLength={length}></PageSwitcher>
-                    <Footer></Footer>
                 </ContentWrapper>
             </div>
         </main>

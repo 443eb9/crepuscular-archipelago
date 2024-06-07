@@ -37,6 +37,12 @@ $$
 L_o(\theta_o, \phi_o) = \int_{\phi_i=0}^{2\pi} \int_{\mu_i=0}^1 f(\phi_i, \mu_i, \phi_o, \mu_o)L(\phi_i, \mu_i)\mu_i d\mu_i d\phi_i
 $$
 
+在实际应用中，我们取它的近似
+
+$$
+L_{o} \approx \pi f(\boldsymbol{l},\boldsymbol{v})c_{light}(\boldsymbol{n}\cdot\boldsymbol{l})^+
+$$
+
 ### 立体角
 
 ![](https://oss.443eb9.dev/islandsmedia/6/refl_eq_sol_ang.png)
@@ -326,7 +332,8 @@ $$
 Lagarde将GGX对应的 $G_2$ 高度相关的遮挡函数简化
 
 $$
-\frac{G_2(\boldsymbol{l},\boldsymbol{v})}{4|\boldsymbol{n}\cdot\boldsymbol{l}||\boldsymbol{n}\cdot\boldsymbol{v}|} \rArr \frac{0.5}{\mu_o\sqrt{\alpha^2+\mu_i(\mu_i-\alpha^2\mu_i)}+\mu_i\sqrt{{\alpha^2+\mu_o-\alpha^2\mu_o}}}
+\frac{G_2(\boldsymbol{l},\boldsymbol{v})}{4|\boldsymbol{n}\cdot\boldsymbol{l}||\boldsymbol{n}\cdot\boldsymbol{v}|} \rArr \frac{0.5}{\mu_o\sqrt{\alpha^2+\mu_i(\mu_i-\alpha^2\mu_i)}+\mu_i\sqrt{{\alpha^2+
+\mu_o(\mu_o-\alpha^2\mu_o)}}}
 $$
 
 $$
@@ -505,7 +512,7 @@ $$
 Shirley之后提出了另一个BRDF，它强调了菲涅尔反射造成的能量的转移，可以做到能量守恒
 
 $$
-f_{diff}(\boldsymbol{l},\boldsymbol{v})=\frac{21}{20\pi}\rho_{ss}(1-(1-(\boldsymbol{n}\cdot\boldsymbol{l})^+)^5)(1-(1-(\boldsymbol{n}\cdot\boldsymbol{l})^+)^5)
+f_{diff}(\boldsymbol{l},\boldsymbol{v})=\frac{21}{20\pi}\rho_{ss}(1-(1-(\boldsymbol{n}\cdot\boldsymbol{l})^+)^5)(1-(1-(\boldsymbol{n}\cdot\boldsymbol{v})^+)^5)
 $$
 
 其中的菲涅尔反射项用的是Schlick近似式
@@ -648,6 +655,6 @@ $$
 
 嘛...不过书里几乎没有给出详细的模型。好（逃
 
-## 材质混合
+## 混合与过滤 Blendering and Filtering
 
 在实际应用中，一个物体可能是由多个材质混合而成的。这个时候就需要材质混合。但是我觉得这玩意应该放到贴花(Decal)一章将。嗯，就是这样。（逃 again

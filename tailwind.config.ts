@@ -25,6 +25,7 @@ const config: Config = {
       },
       colors: {
         "443eb9": "#443eb9",
+        "warn": "#ffff00",
       },
     },
   },

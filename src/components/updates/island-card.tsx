@@ -8,6 +8,7 @@ import Link from "next/link";
 import { OSS } from "@/data/backend";
 import clsx from "clsx";
 import { TbClockQuestion } from "react-icons/tb";
+import WipTag from "../common/wip-tag";
 
 export default async function IslandCard({ island }: { island: IslandMeta }) {
     return (
@@ -112,14 +113,6 @@ function AchievementCardHeader() {
                 <div className="bg-neutral-900 dark:bg-neutral-50 w-6 h-3 ml-3"></div>
                 <div className="bg-neutral-900 dark:bg-neutral-50 w-2 h-3 ml-2"></div>
             </div>
-        </div>
-    );
-}
-
-function WipTag() {
-    return (
-        <div className="w-10 h-full flex items-center justify-center bg-neutral-900 dark:bg-neutral-50 text-neutral-50 dark:text-neutral-900">
-            <div className="text-center font-bender font-bold">WIP</div>
         </div>
     );
 }

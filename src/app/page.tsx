@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
     return (
-        <main>
+        <main style={{height:"calc(100% - 80px)"}}>
             <div className="absolute top-[10%] md:top-1/4 left-[10%]">
                 <BlogTitleEn></BlogTitleEn>
                 <div className="font-bender">Background under construction...</div>

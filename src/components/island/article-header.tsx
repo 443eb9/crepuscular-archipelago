@@ -5,6 +5,7 @@ import Tag from "../common/tag";
 import Link from "next/link";
 import DiagLines from "../common/decos/diag-lines";
 import { TbClockQuestion } from "react-icons/tb";
+import WipTag from "../common/wip-tag";
 
 export default function ArticleHeader({ meta }: { meta: IslandMeta }) {
     return (
@@ -20,7 +21,14 @@ export default function ArticleHeader({ meta }: { meta: IslandMeta }) {
                 </div>
                 <div className="flex gap-1">
                     {meta.tags.map((tag) => <Tag tag={tag} key={tag.id}></Tag>)}
+                    {meta.wip && <WipTag></WipTag>}
                 </div>
+                {
+                    meta.wip &&
+                    <div className="text-neutral-900 bg-warn">
+                        注意：这是一篇尚未完成的文章，其中可能存在不恰当的表达甚至错误！
+                    </div>
+                }
                 <div className="flex items-center gap-2">
                     {
                         meta.wip
