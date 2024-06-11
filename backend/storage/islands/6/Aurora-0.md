@@ -332,7 +332,7 @@ $$
 Lagarde将GGX对应的 $G_2$ 高度相关的遮挡函数简化
 
 $$
-\frac{G_2(\boldsymbol{l},\boldsymbol{v})}{4|\boldsymbol{n}\cdot\boldsymbol{l}||\boldsymbol{n}\cdot\boldsymbol{v}|} \rArr \frac{0.5}{\mu_o\sqrt{\alpha^2+\mu_i(\mu_i-\alpha^2\mu_i)}+\mu_i\sqrt{{\alpha^2+
+\frac{G_2(\boldsymbol{l},\boldsymbol{v})}{4|\boldsymbol{n}\cdot\boldsymbol{l}||\boldsymbol{n}\cdot\boldsymbol{v}|} \approx \frac{0.5}{\mu_o\sqrt{\alpha^2+\mu_i(\mu_i-\alpha^2\mu_i)}+\mu_i\sqrt{{\alpha^2+
 \mu_o(\mu_o-\alpha^2\mu_o)}}}
 $$
 
@@ -427,7 +427,7 @@ $$
 D(\boldsymbol{m})=\frac{\chi^+(\boldsymbol{n}\cdot\boldsymbol{m})}{\pi\alpha_x\alpha_y(\frac{(\boldsymbol{t}\cdot\boldsymbol{m})^2}{\alpha_x^2}+\frac{(\boldsymbol{b}\cdot\boldsymbol{m})^2}{\alpha_y^2}+(\boldsymbol{n}\cdot\boldsymbol{m})^2)^2}
 $$
 
-还有更通用的方式，就是对 $roughtness$ Burley提出的 $\alpha_g=r^2$ 的基础上，加一个 $k_{aspect}$
+还有更通用的方式，就是对 $roughness$ Burley提出的 $\alpha_g=r^2$ 的基础上，加一个 $k_{aspect}$
 
 $$
 k_{aspect}=\sqrt{1-0.9k_{aniso}}
@@ -461,7 +461,7 @@ $$
 f_{ms}(\boldsymbol{l},\boldsymbol{v})=\frac{\overline{F} \ \overline{R_{sF1}}}{\pi(1-\overline{R_{sF1}})(1-\overline{F}(1-\overline{R_{sF1}}))}(1-\overline{R_{sF1}}(\boldsymbol{l})(1-\overline{R_{sF1}}(\boldsymbol{v})))
 $$
 
-$R_{sF1}$ 表示 $f_{sF1}$ ，也就是 $F_0=1$ 的 $f_{spec}$ ，的Directional albedo。因此它只由 $roughtness$ 和 $\theta_i$ 绝对，也就可以保存在一张二维贴图内。
+$R_{sF1}$ 表示 $f_{sF1}$ ，也就是 $F_0=1$ 的 $f_{spec}$ ，的Directional albedo。因此它只由 $roughness$ 和 $\theta_i$ 绝对，也就可以保存在一张二维贴图内。
 
 而 $\overline{R_{sF1}}$ 表示 $R_{sF1}$ 在半球上的<u>余弦加权平均</u>(Cosin-weighted Average)，它只由 $roughness$ 一个变量决定，因此可以保存在一张一维贴图内。
 
@@ -471,7 +471,7 @@ $$
 
 $\overline{F}$ 是菲涅尔反射项，同理可得 $\overline{F}=2\int_{\mu=0}^1F(\mu)\mu d\mu$ 。
 
-Imagework也提供了一个对于通用通用的近似解
+Imagework也提供了一个通用的近似解
 
 $$
 \overline{F}=\frac{2p^2F_{90}+(3p+1)F_0}{2p^2+3p+1}
@@ -483,7 +483,7 @@ $$
 \overline{F}=\frac{20}{21}F_0+\frac{1}{21}
 $$
 
-对于各向异性的材料，Imagework使用了一个在 $\alpha_x$ 和 $\alpha_y$ 间的中间值。
+对于各向异性的材料的 $roughness$，Imagework使用了一个在 $\alpha_x$ 和 $\alpha_y$ 间的中间值。
 
 ### 漫反射BRDF
 
@@ -582,7 +582,7 @@ $$
 
 ## 布料BRDF BRDF Models for Cloth
 
-### 经验模型 Empirical CLoth Models
+### 经验模型 Empirical Cloth Models
 
 在游戏*Uncharted 2*中，布料的漫反射模型是
 
