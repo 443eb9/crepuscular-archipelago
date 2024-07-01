@@ -8,7 +8,7 @@ import Link from "next/link";
 import { OSS } from "@/data/backend";
 import clsx from "clsx";
 import { TbClockQuestion } from "react-icons/tb";
-import WipTag from "../common/wip-tag";
+import SpTag from "../common/sp-tag";
 
 export default async function IslandCard({ island }: { island: IslandMeta }) {
     return (
@@ -30,7 +30,8 @@ export default async function IslandCard({ island }: { island: IslandMeta }) {
                                 <Tag tag={tag} key={tag.id}></Tag>
                             ))
                         }
-                        {island.wip && <WipTag></WipTag>}
+                        {island.wip && <SpTag content="WIP"></SpTag>}
+                        {!island.is_original && <SpTag content="非原创"></SpTag>}
                     </div>
                     {
                         island.wip

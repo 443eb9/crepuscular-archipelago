@@ -68,7 +68,7 @@ pub fn generate_csv(data: Vec<(MemorizeForm, MemorizeFormMeta)>) -> String {
             "{},{},{},{},{},{},{},{},{},{},{},{},{}\n",
             form.stu_id, form.name, form.wechat, form.qq, form.phone,
             form.email, form.desc, form.hobby, form.position, form.ftr_major,
-            form.message, meta.time, meta.ip
+            form.message, meta.time, meta.ip,
         ));
         acc
     })

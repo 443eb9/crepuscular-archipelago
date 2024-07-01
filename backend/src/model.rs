@@ -8,6 +8,7 @@ use sqlx::{prelude::Type, FromRow, Row};
 pub enum IslandType {
     Article,
     Achievement,
+    Essay,
 }
 
 #[derive(Debug, Serialize, FromRow)]
@@ -27,6 +28,7 @@ pub struct IslandMeta {
     pub ty: IslandType,
     pub banner: bool,
     pub wip: bool,
+    pub is_original: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -40,6 +42,7 @@ pub struct IslandMetaTagged {
     pub tags: Vec<TagData>,
     pub banner: bool,
     pub wip: bool,
+    pub is_original: bool,
 }
 
 impl IslandMetaTagged {
@@ -54,6 +57,7 @@ impl IslandMetaTagged {
             tags,
             banner: meta.banner,
             wip: meta.wip,
+            is_original: meta.is_original,
         }
     }
 }

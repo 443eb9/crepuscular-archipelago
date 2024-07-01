@@ -3,6 +3,7 @@ import { AxiosResponse } from "axios";
 export enum IslandType {
     Article,
     Achievement,
+    Essay,
 }
 
 export type RequestResult<T> = T | string;
@@ -25,6 +26,7 @@ export type IslandMeta = {
     tags: TagData[],
     banner: boolean,
     wip: boolean,
+    is_original: boolean,
 }
 
 export type TagData = {
