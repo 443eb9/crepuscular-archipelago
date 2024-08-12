@@ -12,10 +12,18 @@ export default function PageSwitcher({ islandCount, currentPage, currentLength }
     const searchParams = useSearchParams();
 
     return (
-        <OutlinedBox className="flex content-between w-full p-3 border-x-0 border-dashed">
-            {pages.map((index) => <SwitcherButton key={index} target={index} params={searchParams} className={clsx(
-                { "bg-neutral-900 dark:bg-neutral-50 text-neutral-50 dark:text-neutral-900": index == currentPage, }
-            )}></SwitcherButton>)}
+        <OutlinedBox className="flex content-between w-full p-3 gap-3 border-x-0 border-dashed">
+            {
+                pages.map((index) =>
+                    <SwitcherButton
+                        key={index}
+                        target={index}
+                        params={searchParams}
+                        className={clsx(
+                            { "bg-neutral-900 dark:bg-neutral-50 text-neutral-50 dark:text-neutral-900": index == currentPage, }
+                        )}>
+                    </SwitcherButton>)
+            }
         </OutlinedBox>
     );
 }

@@ -4,9 +4,9 @@ import ContentWrapper from "@/components/common/content-wrapper";
 import BlogIslands from "@/components/updates/blog-islands";
 import { Suspense } from "react";
 import { Metadata } from "next";
-import { fetchIslandCount } from "@/data/island";
+import { fetchIslandCount, fetchIslandsMeta } from "@/data/island";
 import PageSwitcher from "@/components/updates/page-switcher";
-import { IslandCount } from "@/data/model";
+import { IslandCount, IslandMeta } from "@/data/model";
 
 export const metadata: Metadata = {
     title: "Updates - Crepuscular Archipelago",
@@ -22,7 +22,8 @@ export default async function Page({ searchParams }: {
     const page = Number.parseInt(searchParams?.page ?? "0");
     const length = Number.parseInt(searchParams?.len ?? "10");
     const tagsFilter = Number.parseInt(searchParams?.tags ?? "0");
-    const islandCount: IslandCount = (await fetchIslandCount()).data;
+    let islands: IslandMeta[] = (await fetchIslandsMeta(page, length, tagsFilter)).data;
+    let total: IslandCount = (await fetchIslandCount(tagsFilter)).data;
 
     return (
         <main>
@@ -36,7 +37,7 @@ export default async function Page({ searchParams }: {
                 </aside>
                 <ContentWrapper className="gap-10">
                     <Suspense>
-                        <BlogIslands page={page} length={length} tagsFilter={tagsFilter}></BlogIslands>
+                        <BlogIslands islands={islands}></BlogIslands>
                     </Suspense>
                     <aside className="hidden max-w-72 md:block">
                         <Suspense>
@@ -45,7 +46,7 @@ export default async function Page({ searchParams }: {
                     </aside>
                 </ContentWrapper>
                 <ContentWrapper className="flex-col gap-6">
-                    <PageSwitcher islandCount={islandCount.count} currentPage={page} currentLength={length}></PageSwitcher>
+                    <PageSwitcher islandCount={total.count} currentPage={page} currentLength={length}></PageSwitcher>
                 </ContentWrapper>
             </div>
         </main>

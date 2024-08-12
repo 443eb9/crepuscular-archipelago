@@ -32,11 +32,18 @@ pub async fn get_all_tags(pool: Data<IslandDB>) -> impl Responder {
     }
 }
 
-#[get("/api/get/islandCount")]
-pub async fn get_island_count(pool: Data<IslandDB>) -> impl Responder {
-    match query_island_count(&pool).await {
-        Ok(tags) => HttpResponse::Ok().json(tags),
-        Err(err) => HttpResponse::BadRequest().json(err.to_string()),
+#[get("/api/get/islandCount/{tagsFilter}")]
+pub async fn get_island_count(pool: Data<IslandDB>, params: Path<i32>) -> impl Responder {
+    if *params == 0 {
+        match query_island_count(&pool).await {
+            Ok(tags) => HttpResponse::Ok().json(tags),
+            Err(err) => HttpResponse::BadRequest().json(err.to_string()),
+        }
+    } else {
+        match query_island_count_filtered(&pool, *params).await {
+            Ok(tags) => HttpResponse::Ok().json(tags),
+            Err(err) => HttpResponse::BadRequest().json(err.to_string()),
+        }
     }
 }
 
@@ -48,7 +55,7 @@ pub async fn get_island_meta(pool: Data<IslandDB>, id: Path<u32>) -> impl Respon
     }
 }
 
-#[get("/api/get/islandsMeta/{start}/{length}/{tagsFilter}")]
+#[get("/api/get/islandsMeta/{page}/{length}/{tagsFilter}")]
 pub async fn get_islands_meta(
     pool: Data<IslandDB>,
     params: Path<(u32, u32, i32)>,
@@ -59,8 +66,7 @@ pub async fn get_islands_meta(
             Err(err) => HttpResponse::BadRequest().json(err.to_string()),
         }
     } else {
-        let actual_filter = unsafe { std::mem::transmute(params.2) };
-        match query_islands_meta_filtered(&pool, params.0, params.1, actual_filter).await {
+        match query_islands_meta_filtered(&pool, params.0, params.1, params.2).await {
             Ok(meta) => HttpResponse::Ok().json(meta),
             Err(err) => HttpResponse::BadRequest().json(err.to_string()),
         }

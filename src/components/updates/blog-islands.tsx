@@ -3,8 +3,7 @@ import IslandCard from "./island-card";
 import { Suspense } from "react";
 import { IslandMeta, IslandType } from "@/data/model";
 
-export default async function BlogIslands({ page, length, tagsFilter }: { page: number, length: number, tagsFilter: number }) {
-    let islands: IslandMeta[] = (await fetchIslandsMeta(page * length + 1, length, tagsFilter)).data;
+export default async function BlogIslands({ islands }: { islands: IslandMeta[] }) {
     let maybeContents: string[] = new Array(islands.length).fill('');
     for (let i = 0; i < islands.length; i++) {
         if (islands[i].ty == IslandType.Note) {

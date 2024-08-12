@@ -28,6 +28,53 @@ pub async fn query_island_count(pool: &IslandDB) -> Result<IslandCount, Error> {
         .await?)
 }
 
+pub async fn query_island_count_filtered(
+    pool: &IslandDB,
+    tags_filter: i32,
+) -> Result<IslandCount, Error> {
+    let (filter_ids, filter_conditions, is_exclude_mode) = parse_filter(tags_filter);
+
+    let sql = {
+        if is_exclude_mode {
+            format!(
+                "
+                SELECT COUNT(*) AS count FROM islands
+                WHERE NOT EXISTS (
+                    SELECT 1
+                    FROM island_tags
+                    WHERE island_id = id
+                    AND tag_id IN ({})
+                )
+                ",
+                &filter_conditions,
+            )
+        } else {
+            format!(
+                "
+                WITH Filtered AS (
+                    SELECT id FROM islands
+                    LEFT OUTER JOIN island_tags ON id = island_id
+                    AND tag_id IN ({})
+                    GROUP BY id
+                    HAVING COUNT(tag_id) = {}
+                )
+                SELECT COUNT(*) as count FROM Filtered AS COUNT
+                ",
+                &filter_conditions,
+                filter_ids.len()
+            )
+        }
+    };
+
+    let mut query = sqlx::query_as(&sql);
+
+    for tag_id in filter_ids {
+        query = query.bind(tag_id);
+    }
+
+    Ok(query.fetch_one(&pool.db).await?)
+}
+
 pub async fn query_island_meta(pool: &IslandDB, id: u32) -> Result<IslandMetaTagged, Error> {
     let (meta, tags) = join!(
         sqlx::query_as(
@@ -44,9 +91,20 @@ pub async fn query_island_meta(pool: &IslandDB, id: u32) -> Result<IslandMetaTag
 
 pub async fn query_islands_meta(
     pool: &IslandDB,
-    start: u32,
+    page: u32,
     length: u32,
 ) -> Result<Vec<IslandMetaTagged>, Error> {
+    let total = query_island_count(pool).await?.count;
+
+    if page * length > total {
+        return Ok(Vec::new());
+    }
+
+    let end = total - page * length;
+    let start = total
+        .checked_sub((page + 1) * length - 1)
+        .unwrap_or_default();
+
     let metas = sqlx::query_as(
         "
             SELECT id, title, subtitle, desc, ty, date, banner, wip, is_original FROM islands
@@ -56,12 +114,12 @@ pub async fn query_islands_meta(
         ",
     )
     .bind(start)
-    .bind(start + length - 1)
+    .bind(end)
     .fetch_all(&pool.db)
     .await?;
 
     join_all(
-        (start..start + length)
+        (start..=end)
             .into_iter()
             .map(|id| query_island_tags(pool, id)),
     )
@@ -79,52 +137,94 @@ pub async fn query_islands_meta(
 
 pub async fn query_islands_meta_filtered(
     pool: &IslandDB,
-    start: u32,
+    page: u32,
     length: u32,
-    tags_filter: u32,
+    tags_filter: i32,
 ) -> Result<Vec<IslandMetaTagged>, Error> {
-    let is_exclude_mode = (tags_filter & (1 << 31)) != 0;
-    let filter_ids = (0..30)
-        .into_iter()
-        .filter_map(|bit| {
-            if (tags_filter & (1 << bit)) != 0 {
-                Some(bit)
-            } else {
-                None
-            }
-        })
-        .collect::<Vec<_>>();
+    let total = query_island_count_filtered(pool, tags_filter).await?.count;
 
-    let filter_conditions = filter_ids
-        .iter()
-        .map(|_| "?")
-        .collect::<Vec<_>>()
-        .join(", ");
+    if page * length > total {
+        return Ok(Vec::new());
+    }
+
+    let end = total - page * length;
+    let start = total
+        .checked_sub((page + 1) * length - 1)
+        .unwrap_or_default();
+
+    let (filter_ids, filter_conditions, is_exclude_mode) = parse_filter(tags_filter);
 
     let sql = {
         if is_exclude_mode {
             format!(
-                "
-                    SELECT id, title, subtitle, desc, ty, date, banner, wip, is_original FROM islands
-                    WHERE id BETWEEN ? AND ?
-                    AND NOT EXISTS (
-                        SELECT 1
-                        FROM island_tags
-                        WHERE island_id = id
-                        AND tag_id IN ({})
+                "WITH FilteredIslands AS (
+                        SELECT
+                            id,
+                            title,
+                            subtitle,
+                            desc,
+                            ty,
+                            date,
+                            banner,
+                            wip,
+                            is_original,
+                            ROW_NUMBER() OVER (ORDER BY id DESC) AS rn
+                        FROM islands
+                        WHERE NOT EXISTS (
+                            SELECT 1
+                            FROM island_tags
+                            WHERE island_id = islands.id
+                            AND tag_id IN ({})
+                        )
                     )
+                    SELECT
+                        id,
+                        title,
+                        subtitle,
+                        desc,
+                        ty,
+                        date,
+                        banner,
+                        wip,
+                        is_original
+                    FROM FilteredIslands
+                    WHERE rn BETWEEN ? AND ?
                 ",
                 &filter_conditions,
             )
         } else {
             format!(
                 "
-                    SELECT id, title, subtitle, desc, ty, date, banner, wip, is_original FROM islands
-                    LEFT OUTER JOIN island_tags ON id = island_id
-                    WHERE id BETWEEN ? AND ?
-                    AND tag_id IN ({})
-                    GROUP BY id
-                    HAVING COUNT(tag_id) = {}
+                    WITH FilteredIslands AS (
+                        SELECT
+                            id,
+                            title,
+                            subtitle,
+                            desc,
+                            ty,
+                            date,
+                            banner,
+                            wip,
+                            is_original,
+                            ROW_NUMBER() OVER (ORDER BY id DESC) AS rn
+                        FROM islands
+                        LEFT OUTER JOIN island_tags ON id = island_id
+                        AND tag_id IN ({})
+                        GROUP BY id, title, subtitle, desc, ty, date, banner, wip, is_original
+                        HAVING COUNT(tag_id) = {}
+                    )
+                    SELECT
+                        id,
+                        title,
+                        subtitle,
+                        desc,
+                        ty,
+                        date,
+                        banner,
+                        wip,
+                        is_original
+                    FROM FilteredIslands
+                    WHERE rn BETWEEN ? AND ?
                 ",
                 &filter_conditions,
                 filter_ids.len()
@@ -132,11 +232,13 @@ pub async fn query_islands_meta_filtered(
         }
     };
 
-    let mut query = sqlx::query_as(&sql).bind(start).bind(start + length - 1);
+    let mut query = sqlx::query_as(&sql);
 
     for tag_id in filter_ids {
         query = query.bind(tag_id);
     }
+
+    query = query.bind(start).bind(end);
 
     let metas: Vec<IslandMeta> = query.fetch_all(&pool.db).await?;
     join_all(metas.iter().map(|meta| query_island_tags(pool, meta.id)))
@@ -219,4 +321,27 @@ pub async fn query_all_memorize(
         .await?;
 
     Ok(form.into_iter().zip(meta).collect())
+}
+
+fn parse_filter(filter: i32) -> (Vec<u32>, String, bool) {
+    let tags_filter = unsafe { std::mem::transmute::<_, u32>(filter) };
+    let is_exclude_mode = (tags_filter & (1 << 31)) != 0;
+    let filter_ids = (0..30)
+        .into_iter()
+        .filter_map(|bit| {
+            if (tags_filter & (1 << bit)) != 0 {
+                Some(bit)
+            } else {
+                None
+            }
+        })
+        .collect::<Vec<_>>();
+
+    let filter_conditions = filter_ids
+        .iter()
+        .map(|_| "?")
+        .collect::<Vec<_>>()
+        .join(", ");
+
+    (filter_ids, filter_conditions, is_exclude_mode)
 }
