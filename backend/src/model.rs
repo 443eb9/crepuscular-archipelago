@@ -8,7 +8,7 @@ use sqlx::{prelude::Type, FromRow, Row};
 pub enum IslandType {
     Article,
     Achievement,
-    Essay,
+    Note,
 }
 
 #[derive(Debug, Serialize, FromRow)]

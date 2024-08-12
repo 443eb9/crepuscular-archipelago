@@ -9,8 +9,9 @@ import { OSS } from "@/data/backend";
 import clsx from "clsx";
 import { TbClockQuestion } from "react-icons/tb";
 import SpTag from "../common/sp-tag";
+import MarkdownContainer from "../common/markdown-container";
 
-export default async function IslandCard({ island }: { island: IslandMeta }) {
+export default function IslandCard({ island, content }: { island: IslandMeta, content?: string }) {
     return (
         <div className="relative">
             <OutlinedBox className={clsx(
@@ -21,7 +22,7 @@ export default async function IslandCard({ island }: { island: IslandMeta }) {
                 {
                     island.ty == IslandType.Article
                         ? <Link href={`/island?id=${island.id}`}><CardMain card={island}></CardMain></Link>
-                        : <CardMain card={island}></CardMain>
+                        : <CardMain card={island} content={content}></CardMain>
                 }
                 <div className="flex justify-between">
                     <div className="flex items-center gap-1">
@@ -55,7 +56,7 @@ export default async function IslandCard({ island }: { island: IslandMeta }) {
     );
 }
 
-function CardMain({ card }: { card: IslandMeta }) {
+function CardMain({ card, content }: { card: IslandMeta, content?: string }) {
     return (
         <div>
             {getHeader(card)}
@@ -76,6 +77,9 @@ function CardMain({ card }: { card: IslandMeta }) {
                     <div className="w-2 h-1 bg-neutral-900 dark:bg-neutral-50 ml-3"></div>
                 </div>
                 <p className="font-sh-sans text-ellipsis overflow-hidden line-clamp-6" style={{ width: "calc(100% - 80px)" }}>{card.desc}</p>
+                {
+                    content != undefined && <MarkdownContainer body={content}></MarkdownContainer>
+                }
             </div>
         </div>
     );
@@ -83,7 +87,7 @@ function CardMain({ card }: { card: IslandMeta }) {
 
 function getHeader(card: IslandMeta) {
     switch (card.ty) {
-        case IslandType.Achievement:
+        case IslandType.Achievement | IslandType.Note:
             return <AchievementCardHeader></AchievementCardHeader>;
         case IslandType.Article:
             return <ArticleCardHeader card={card}></ArticleCardHeader>;
@@ -94,7 +98,16 @@ function getHeader(card: IslandMeta) {
 function ArticleCardHeader({ card }: { card: IslandMeta }) {
     return (
         <div className="mb-2">
-            {card.banner && <OutlinedBox className="w-full bg-cover" style={{ aspectRatio: "10 / 3", backgroundImage: `url(${OSS}/${card.id}/BANNER.png)` }}></OutlinedBox>}
+            {
+                card.banner &&
+                <OutlinedBox
+                    className="w-full bg-cover"
+                    style={{
+                        aspectRatio: "10 / 3",
+                        backgroundImage: `url(${OSS}/${card.id}/BANNER.png)`
+                    }}
+                >
+                </OutlinedBox>}
         </div>
     );
 }

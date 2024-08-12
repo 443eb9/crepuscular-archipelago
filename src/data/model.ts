@@ -3,7 +3,7 @@ import { AxiosResponse } from "axios";
 export enum IslandType {
     Article,
     Achievement,
-    Essay,
+    Note,
 }
 
 export type RequestResult<T> = T | string;
