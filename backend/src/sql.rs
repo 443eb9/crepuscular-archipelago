@@ -245,6 +245,7 @@ pub async fn query_islands_meta_filtered(
         .await
         .into_iter()
         .zip(metas)
+        .rev()
         .try_fold(Vec::new(), |mut acc, (tags, meta)| match tags {
             Ok(tags) => {
                 acc.push(IslandMetaTagged::new(meta, tags));
