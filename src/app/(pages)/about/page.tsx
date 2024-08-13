@@ -26,7 +26,7 @@ export default function Page() {
                 <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
                 <div className="font-bold">
                     <div className="flex gap-2">
-                        <DiagLines scale="120" className="w-10 h-21"></DiagLines>
+                        <DiagLines scale="400%" className="w-10 h-21"></DiagLines>
                         <div className="">
                             <h2 className="text-5xl font-sh-serif">留言板</h2>
                             <h2 className="text-4xl font-bender italic font-normal">Message Board</h2>
