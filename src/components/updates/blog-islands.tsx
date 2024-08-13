@@ -1,4 +1,4 @@
-import { fetchIsland, fetchIslandsMeta } from "@/data/island";
+import { fetchIsland } from "@/data/island";
 import IslandCard from "./island-card";
 import { Suspense } from "react";
 import { IslandMeta, IslandType } from "@/data/model";
@@ -20,7 +20,7 @@ export default async function BlogIslands({ islands }: { islands: IslandMeta[] }
                     if (data.ty == IslandType.Note) {
                         return (
                             <Suspense key={i}>
-                                <IslandCard island={data} key={data.id} content={maybeContents[islands.length - 1 -i]}></IslandCard>
+                                <IslandCard island={data} key={data.id} content={maybeContents[islands.length - 1 - i]}></IslandCard>
                             </Suspense>
                         );
                     } else {

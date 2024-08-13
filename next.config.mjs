@@ -6,8 +6,6 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'oss.443eb9.dev',
-                port: '',
-                pathname: '',
             }
         ]
     }

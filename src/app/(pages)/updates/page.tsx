@@ -7,6 +7,7 @@ import { Metadata } from "next";
 import { fetchIslandCount, fetchIslandsMeta } from "@/data/island";
 import PageSwitcher from "@/components/updates/page-switcher";
 import { IslandCount, IslandMeta } from "@/data/model";
+import LinkExchange from "@/components/updates/link-exchange";
 
 export const metadata: Metadata = {
     title: "Updates - Crepuscular Archipelago",
@@ -39,10 +40,11 @@ export default async function Page({ searchParams }: {
                     <Suspense>
                         <BlogIslands islands={islands}></BlogIslands>
                     </Suspense>
-                    <aside className="hidden max-w-72 md:block">
+                    <aside className="hidden max-w-72 md:flex md:flex-col gap-5">
                         <Suspense>
                             <BlogInfo></BlogInfo>
                         </Suspense>
+                        {/* <LinkExchange></LinkExchange> */}
                     </aside>
                 </ContentWrapper>
                 <ContentWrapper className="flex-col gap-6">

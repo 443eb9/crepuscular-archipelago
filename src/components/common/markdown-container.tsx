@@ -14,20 +14,26 @@ export default function MarkdownContainer({ body }: { body: string }) {
             rehypePlugins={[rehypeRaw, rehypeKatex]}
             remarkPlugins={[remarkGfm, remarkMath]}
             components={{
-                // img(props) {
-                //     return (
-                //         <Image
-                //             src={props.src ?? ""}
-                //             alt="Failed to load :("
-                //             width={numberStringUndefinedToNumber(props.width)}
-                //             height={numberStringUndefinedToNumber(props.height)}
-                //         >
-                //         </Image>
-                //     );
-                // },
+                img(props) {
+                    return (
+                        <Image
+                            src={props.src ?? ""}
+                            alt={props.alt ?? ""}
+                            draggable={false}
+                            style={{
+                                width: "100%",
+                                height: "auto"
+                            }}
+                            sizes="100vw"
+                            width={0}
+                            height={0}
+                        >
+                        </Image>
+                    );
+                },
                 code(props) {
-                    const { children, className, node, ...rest } = props
-                    const match = /language-(\w+)/.exec(className || '')
+                    const { children, className, node, ...rest } = props;
+                    const match = /language-(\w+)/.exec(className || '');
                     return (
                         match ? (
                             <SyntaxHighlighter
@@ -48,14 +54,4 @@ export default function MarkdownContainer({ body }: { body: string }) {
             {body}
         </Markdown>
     )
-}
-
-function numberStringUndefinedToNumber(value: number | string | undefined) {
-    if (typeof value == 'number') {
-        return value;
-    } else if (typeof value == 'string') {
-        return parseFloat(value);
-    } else {
-        return 0;
-    }
 }

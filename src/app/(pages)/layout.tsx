@@ -3,7 +3,7 @@ import Footer from "@/components/common/footer";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
-        <div className="" lang="en">
+        <div className="h-full" lang="en">
             {children}
             <ContentWrapper className="my-5">
                 <Footer></Footer>

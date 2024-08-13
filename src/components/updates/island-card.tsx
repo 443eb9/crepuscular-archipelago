@@ -1,15 +1,16 @@
-import { FaClock } from "react-icons/fa6";
 import Tag from "../common/tag";
 import { IslandMeta, IslandType } from "@/data/model";
-import { RiMedal2Line } from "react-icons/ri";
 import OutlinedBox from "../common/outlined-box";
 import DiagLines from "../common/decos/diag-lines";
 import Link from "next/link";
 import { OSS } from "@/data/backend";
 import clsx from "clsx";
-import { TbClockQuestion } from "react-icons/tb";
 import SpTag from "../common/sp-tag";
 import MarkdownContainer from "../common/markdown-container";
+import Image from "next/image";
+import { TbClockQuestion } from "react-icons/tb";
+import { FaClock } from "react-icons/fa6";
+import { RiMedal2Line } from "react-icons/ri"
 
 export default function IslandCard({ island, content }: { island: IslandMeta, content?: string }) {
     return (
@@ -101,13 +102,19 @@ function ArticleCardHeader({ card }: { card: IslandMeta }) {
             {
                 card.banner &&
                 <OutlinedBox
-                    className="w-full bg-cover"
+                    className="relative w-full"
                     style={{
                         aspectRatio: "10 / 3",
-                        backgroundImage: `url(${OSS}/${card.id}/BANNER.png)`
                     }}
                 >
-                </OutlinedBox>}
+                    <Image
+                        src={`${OSS}/${card.id}/BANNER.png`}
+                        alt={`Banner ${card.id}`}
+                        draggable={false}
+                        fill
+                    ></Image>
+                </OutlinedBox>
+            }
         </div>
     );
 }
