@@ -4,20 +4,20 @@ export default function EndpointDottedSegment({ thickness, dotSize, style }: { t
             <div
                 className="bg-neutral-900 dark:bg-neutral-50 aspect-square"
                 style={{
-                    width: dotSize
+                    width: dotSize,
                 }}>
             </div>
             <div
                 className="w-full h-0 border-neutral-900 dark:border-neutral-50"
                 style={{
                     borderTopWidth: thickness,
-                    borderStyle: style
+                    borderStyle: style,
                 }}>
             </div>
             <div
                 className="bg-neutral-900 dark:bg-neutral-50 aspect-square"
                 style={{
-                    width: dotSize
+                    width: dotSize,
                 }}>
             </div>
         </div>

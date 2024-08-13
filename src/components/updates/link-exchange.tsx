@@ -1,6 +1,7 @@
 import { Links } from "@/data/link-exchange-data";
 import EndpointDottedSegment from "../common/decos/endpoint-dotted-segment";
 import OutlinedBox from "../common/outlined-box";
+import EmphasizedBox from "../common/decos/emphasized-box";
 
 export default function LinkExchange() {
     return (
@@ -39,8 +40,14 @@ export default function LinkExchange() {
 
 function LinkElement({ avatar, name, link }: { avatar: string, name: string, link: string }) {
     return (
-        <a target="_bland" href={link} className="flex gap-5 items-center p-3">
-            <OutlinedBox className="w-10 h-10 bg-cover" style={{ backgroundImage: `url(${avatar})` }}></OutlinedBox>
+        <a target="_blank" href={link} className="flex gap-5 items-center p-3">
+            <EmphasizedBox
+                className="w-12 h-12 p-1"
+                thickness={3}
+                length={10}
+            >
+                <img src={avatar} alt="" draggable={false} />
+            </EmphasizedBox>
             <div className="font-sh-sans text-small">{name}</div>
         </a>
     );

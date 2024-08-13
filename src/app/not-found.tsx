@@ -10,9 +10,8 @@ export default function NotFound() {
                 <div className="font-bender font-bold text-5xl">Fatal: Unknown Coordinate</div>
                 <div className="font-argon">
                     <div className="">Terminal Output:</div>
-                    <div className="">&gt; [INFO][{new Date().toISOString()}][Teleporter] Trying to teleport to a island.</div>
+                    <div className="">&gt; [INFO][{new Date().toISOString()}][Teleporter] Start teleporting to island {Math.floor(Math.random() * 10000000)}.</div>
                     <div className="">&gt; [FATAL][{new Date().toISOString()}][Teleporter] Undefined island coordinate.</div>
-                    <div className="">&gt; [WARN][{new Date().toISOString()}][GPS] Unknown location.</div>
                     <div className="">&gt; [FATAL][{new Date().toISOString()}][Renderer] Failed to render the scene.</div>
                 </div>
             </ContentWrapper>

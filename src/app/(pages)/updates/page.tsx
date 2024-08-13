@@ -49,6 +49,9 @@ export default async function Page({ searchParams }: {
                 </ContentWrapper>
                 <ContentWrapper className="flex-col gap-6">
                     <PageSwitcher islandCount={total.count} currentPage={page} currentLength={length}></PageSwitcher>
+                    <div className="block md:hidden">
+                        <LinkExchange></LinkExchange>
+                    </div>
                 </ContentWrapper>
             </div>
         </main>
