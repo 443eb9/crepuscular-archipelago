@@ -40,11 +40,13 @@ export default async function Page({ searchParams }: {
                     <Suspense>
                         <BlogIslands islands={islands}></BlogIslands>
                     </Suspense>
-                    <aside className="hidden max-w-72 md:flex md:flex-col gap-5">
-                        <Suspense>
-                            <BlogInfo></BlogInfo>
-                        </Suspense>
-                        <LinkExchange></LinkExchange>
+                    <aside className="hidden md:flex w-full max-w-72">
+                        <div className="fixed max-w-72 md:flex md:flex-col gap-5">
+                            <Suspense>
+                                <BlogInfo></BlogInfo>
+                            </Suspense>
+                            <LinkExchange></LinkExchange>
+                        </div>
                     </aside>
                 </ContentWrapper>
                 <ContentWrapper className="flex-col gap-6">
