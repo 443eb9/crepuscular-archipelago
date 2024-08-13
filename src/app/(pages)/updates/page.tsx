@@ -44,7 +44,7 @@ export default async function Page({ searchParams }: {
                         <Suspense>
                             <BlogInfo></BlogInfo>
                         </Suspense>
-                        {/* <LinkExchange></LinkExchange> */}
+                        <LinkExchange></LinkExchange>
                     </aside>
                 </ContentWrapper>
                 <ContentWrapper className="flex-col gap-6">
