@@ -7,6 +7,14 @@ import OutlinedBox from "../common/outlined-box";
 import clsx from "clsx";
 
 export default function PageSwitcher({ islandCount, currentPage, currentLength }: { islandCount: number, currentPage: number, currentLength: number }) {
+    if (islandCount == 0) {
+        return (
+            <div className="text-2xl font-bender">
+                No islands meeting the criteria were found. :(
+            </div>
+        );
+    }
+
     const totalPage = Math.ceil(islandCount / currentLength);
     const pages = Array.from(Array(totalPage).keys());
     const searchParams = useSearchParams();
@@ -21,8 +29,10 @@ export default function PageSwitcher({ islandCount, currentPage, currentLength }
                         params={searchParams}
                         className={clsx(
                             { "bg-neutral-900 dark:bg-neutral-50 text-neutral-50 dark:text-neutral-900": index == currentPage, }
-                        )}>
-                    </SwitcherButton>)
+                        )}
+                    >
+                    </SwitcherButton>
+                )
             }
         </OutlinedBox>
     );

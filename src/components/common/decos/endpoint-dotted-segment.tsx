@@ -1,6 +1,6 @@
-export default function EndpointDottedSegment({ thickness, dotSize, style }: { thickness: number, dotSize: number, style: "solid" | "dashed" | "dotted" }) {
+export default function EndpointDottedSegment({ thickness, dotSize, style, className }: { thickness: number, dotSize: number, style: "solid" | "dashed" | "dotted", className?: string }) {
     return (
-        <div className="flex justify-between items-center w-full">
+        <div className={`flex justify-between items-center w-full ${className}`}>
             <div
                 className="bg-neutral-900 dark:bg-neutral-50 aspect-square"
                 style={{
