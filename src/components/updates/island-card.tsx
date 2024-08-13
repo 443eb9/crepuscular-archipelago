@@ -7,7 +7,6 @@ import { OSS } from "@/data/backend";
 import clsx from "clsx";
 import SpTag from "../common/sp-tag";
 import MarkdownContainer from "../common/markdown-container";
-import Image from "next/image";
 import { TbClockQuestion } from "react-icons/tb";
 import { FaClock } from "react-icons/fa6";
 import { RiMedal2Line } from "react-icons/ri"
@@ -102,19 +101,13 @@ function ArticleCardHeader({ card }: { card: IslandMeta }) {
             {
                 card.banner &&
                 <OutlinedBox
-                    className="relative w-full"
+                    className="w-full bg-cover"
                     style={{
                         aspectRatio: "10 / 3",
+                        backgroundImage: `url(${OSS}/${card.id}/BANNER.png)`
                     }}
                 >
-                    <Image
-                        src={`${OSS}/${card.id}/BANNER.png`}
-                        alt={`Banner ${card.id}`}
-                        draggable={false}
-                        fill
-                    ></Image>
-                </OutlinedBox>
-            }
+                </OutlinedBox>}
         </div>
     );
 }

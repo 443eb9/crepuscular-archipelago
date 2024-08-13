@@ -1,4 +1,3 @@
-import Image from "next/image";
 import OutlinedBox from "../common/outlined-box";
 
 export default function LinkExchange() {
@@ -16,8 +15,8 @@ export default function LinkExchange() {
 function LinkElement({ avatar, name, link }: { avatar: string, name: string, link: string }) {
     return (
         <div className="">
-            <Image src={avatar} width={100} height={100} alt={name}></Image>
-            <h4></h4>
+            
+            <a target="_blank">{name}</a>
         </div>
     );
 }
