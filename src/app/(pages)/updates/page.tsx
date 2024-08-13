@@ -19,9 +19,9 @@ export default async function Page({ searchParams }: {
         tags?: string,
     }
 }) {
-    const page = Number.parseInt(searchParams?.page ?? "0");
-    const length = Number.parseInt(searchParams?.len ?? "10");
-    const tagsFilter = Number.parseInt(searchParams?.tags ?? "0");
+    const page = parseInt(searchParams?.page ?? "0");
+    const length = parseInt(searchParams?.len ?? "10");
+    const tagsFilter = parseInt(searchParams?.tags ?? "0");
     let islands: IslandMeta[] = (await fetchIslandsMeta(page, length, tagsFilter)).data;
     let total: IslandCount = (await fetchIslandCount(tagsFilter)).data;
 

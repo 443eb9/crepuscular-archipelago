@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
     return (
-        <main style={{height:"calc(100% - 80px)"}}>
+        <main className="">
             <div className="absolute top-[10%] md:top-1/4 left-[10%]">
                 <BlogTitleEn></BlogTitleEn>
                 <div className="font-bender">Background under construction...</div>
@@ -20,7 +20,10 @@ export default function Page() {
                 <BlogTitleCn></BlogTitleCn>
             </div>
             <div className="absolute left-[10%] bottom-1/4">
-                <NavButtons className="w-20 h-10 md:w-40 md:h-20 text-lg md:text-3xl" containerClassName="gap-4 md:gap-10 flex-col md:flex-row"></NavButtons>
+                <NavButtons
+                    className="w-20 h-10 md:w-40 md:h-20 text-lg md:text-3xl"
+                    containerClassName="gap-4 md:gap-10 flex-col md:flex-row"
+                ></NavButtons>
             </div>
         </main>
     );
