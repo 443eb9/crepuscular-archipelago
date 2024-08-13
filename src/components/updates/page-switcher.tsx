@@ -7,6 +7,8 @@ import OutlinedBox from "../common/outlined-box";
 import clsx from "clsx";
 
 export default function PageSwitcher({ islandCount, currentPage, currentLength }: { islandCount: number, currentPage: number, currentLength: number }) {
+    const searchParams = useSearchParams();
+    
     if (islandCount == 0) {
         return (
             <div className="text-2xl font-bender">
@@ -17,7 +19,6 @@ export default function PageSwitcher({ islandCount, currentPage, currentLength }
 
     const totalPage = Math.ceil(islandCount / currentLength);
     const pages = Array.from(Array(totalPage).keys());
-    const searchParams = useSearchParams();
 
     return (
         <OutlinedBox className="flex content-between w-full p-3 gap-3 border-x-0 border-dashed">
