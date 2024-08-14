@@ -33,8 +33,8 @@ export default function Page() {
                         </div>
                     </div>
                     <div className="flex gap-5 mt-2">
-                        <div className="w-48 h-2 bg-neutral-900 dark:bg-neutral-50"></div>
-                        <div className="w-16 h-2 bg-neutral-900 dark:bg-neutral-50"></div>
+                        <div className="w-48 h-2 bg-light-contrast dark:bg-dark-contrast"></div>
+                        <div className="w-16 h-2 bg-light-contrast dark:bg-dark-contrast"></div>
                     </div>
                     <GiscusSection></GiscusSection>
                 </div>

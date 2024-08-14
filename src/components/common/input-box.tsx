@@ -6,8 +6,8 @@ export default function InputBox({ className, placeholder, name }: { className?:
                 name={name}
                 className={`
                     w-full p-1 h-full bg-transparent outline-none border-b-2
-                    border-neutral-200 dark:border-neutral-700 focus:border-neutral-900
-                    focus:dark:border-neutral-50 placeholder:font-bender ${className}`}
+                    border-light-unfocused dark:border-dark-unfocused focus:border-light-contrast
+                    focus:dark:border-dark-contrast placeholder:font-bender ${className}`}
                 placeholder={placeholder}
             />
         </div>

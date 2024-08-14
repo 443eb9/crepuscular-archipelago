@@ -26,6 +26,12 @@ const config: Config = {
       colors: {
         "443eb9": "#443eb9",
         "warn": "#ffff00",
+        // light-contrast
+        "light-contrast": "#171717",
+        // neutral-50
+        "dark-contrast": "#fafafa",
+        "light-unfocused": "#e5e5e5",
+        "dark-unfocused": "#404040",
       },
     },
   },

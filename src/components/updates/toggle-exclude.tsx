@@ -1,9 +1,9 @@
 'use client';
 
 import { useSearchParams } from "next/navigation";
-import clsx from "clsx";
 import Link from "next/link";
 import { tryAppendTag } from "../common/tag";
+import Toggle from "../common/toggle";
 
 export default function ToggleExclude() {
     const paramsRO = useSearchParams();
@@ -12,15 +12,9 @@ export default function ToggleExclude() {
 
     return (
         <Link href={`/updates?${tryAppendTag(31, tagsFilter, paramsRO).toString()}`}>
-            <div className="flex items-center gap-2">
-                <div className={clsx(
-                    `size-4 border-neutral-900 dark:border-neutral-50 hover:bg-neutral-900 hover:dark:bg-neutral-50 hover:text-neutral-50 hover:dark:text-neutral-900 border-2 font-bold cursor-pointer`,
-                    {
-                        "bg-neutral-900 dark:bg-neutral-50 text-neutral-50 dark:text-neutral-900": isEnabled,
-                    }
-                )}></div>
+            <Toggle enabled={isEnabled}>
                 <div className="font-bender">Exclude Mode</div>
-            </div>
+            </Toggle>
         </Link>
     );
 }

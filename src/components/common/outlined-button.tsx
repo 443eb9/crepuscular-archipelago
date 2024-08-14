@@ -8,7 +8,16 @@ export default function OutlinedButton(
     }
 ) {
     return (
-        <button name={name} type={type} onClick={onClick} className={`flex justify-center items-center border-neutral-900 dark:border-neutral-50 hover:dark:bg-neutral-50 hover:text-neutral-50 hover:border-2 border-2 hover:bg-neutral-900 hover:dark:text-neutral-900 ${className}`}
+        <button
+            name={name}
+            type={type}
+            onClick={onClick}
+            className={
+                `flex justify-center items-center
+                border-light-contrast dark:border-dark-contrast 
+                hover:dark:bg-dark-contrast hover:text-dark-contrast hover:border-2 border-2
+                hover:bg-light-contrast hover:dark:text-light-contrast ${className}`
+            }
         >
             {children}
         </button>

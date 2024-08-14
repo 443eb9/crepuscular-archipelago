@@ -1,6 +1,6 @@
 export default function Footer() {
     return (
-        <div className="flex flex-col w-full font-bender italic text-neutral-500 text-sm">
+        <div className="flex flex-col w-full font-bender italic text-dark-contrast0 text-sm">
             <p>
                 Copyright 2024-2024 443eb9#C Under <a className="underline" href="https://creativecommons.org/licenses/by/4.0/deed">CC BY 4.0 DEED</a>
             </p>

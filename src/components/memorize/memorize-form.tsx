@@ -89,7 +89,7 @@ function FormSection({ className, title, children, whisper }: { className?: stri
         <div className="flex flex-col gap-4">
             <div className="flex gap-5 items-baseline">
                 <div className="font-sh-serif font-bold text-2xl">{title}</div>
-                <div className="font-sh-serif font-bold italic text-sm text-neutral-500">{whisper}</div>
+                <div className="font-sh-serif font-bold italic text-sm text-dark-contrast0">{whisper}</div>
             </div>
             <div className={`flex flex-col gap-y-2 w-full ${className}`}>
                 {children}

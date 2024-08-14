@@ -5,9 +5,9 @@ import Link from 'next/link';
 
 export default function GlobalNavBar() {
     return (
-        <div className="fixed top-0 flex w-full h-14 pl-5 md:pl-20 md:pr-20 justify-between items-center shadow-md border-neutral-900 dark:border-neutral-50 border-b-2 backdrop-blur-md z-10">
+        <div className="fixed top-0 flex w-full h-14 pl-5 md:pl-20 md:pr-20 justify-between items-center shadow-md border-light-contrast dark:border-dark-contrast border-b-2 backdrop-blur-md z-10">
             <div className="hidden md:flex flex-shrink-0 gap-2">
-                <Link href={"/"} className="font-bender font-bold text-2xl hover:border-b-2 border-neutral-900 dark:border-neutral-50">Crepuscular Archipelago</Link >
+                <Link href={"/"} className="font-bender font-bold text-2xl hover:border-b-2 border-light-contrast dark:border-dark-contrast">Crepuscular Archipelago</Link >
                 <ThemeSwither></ThemeSwither>
             </div>
             <div className="flex flex-shrink-0 gap-2">

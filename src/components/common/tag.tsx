@@ -14,9 +14,9 @@ export default function Tag({ tag, showAmount, className }: { tag: TagData, show
     return (
         <Link href={`/updates?${tryAppendTag(tag.id, filter, paramsRO)}`}>
             <div className={clsx(
-                `flex gap-1 border-neutral-900 dark:border-neutral-50 hover:bg-neutral-900 hover:dark:bg-neutral-50 hover:text-neutral-50 hover:dark:text-neutral-900 border-2 p-1 font-sh-serif text-xs font-bold cursor-pointer ${className}`,
+                `flex gap-1 border-light-contrast dark:border-dark-contrast hover:bg-light-contrast hover:dark:bg-dark-contrast hover:text-dark-contrast hover:dark:text-light-contrast border-2 p-1 font-sh-serif text-xs font-bold cursor-pointer ${className}`,
                 {
-                    "bg-neutral-900 dark:bg-neutral-50 text-neutral-50 dark:text-neutral-900": isEnabled,
+                    "bg-light-contrast dark:bg-dark-contrast text-dark-contrast dark:text-light-contrast": isEnabled,
                 }
             )}>
                 <div className="">{tag.name}</div>

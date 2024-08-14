@@ -21,7 +21,9 @@ export default function LinkExchange() {
                                     name={data.name}
                                     link={data.link}
                                 ></LinkElement>
-                                <div className="mr-4 italic font-bold text-4xl font-bender text-neutral-200 dark:text-neutral-700">#{i}</div>
+                                <div className="mr-4 italic font-bold text-4xl font-bender text-light-unfocused dark:text-dark-unfocused">
+                                    #{i}
+                                </div>
                             </div>
                             <EndpointDottedSegment
                                 thickness={1}

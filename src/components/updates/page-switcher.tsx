@@ -29,7 +29,7 @@ export default function PageSwitcher({ islandCount, currentPage, currentLength }
                         target={index}
                         params={searchParams}
                         className={clsx(
-                            { "bg-neutral-900 dark:bg-neutral-50 text-neutral-50 dark:text-neutral-900": index == currentPage, }
+                            { "bg-light-contrast dark:bg-dark-contrast text-dark-contrast dark:text-light-contrast": index == currentPage, }
                         )}
                     >
                     </SwitcherButton>
