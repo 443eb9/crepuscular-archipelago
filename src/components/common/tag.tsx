@@ -1,7 +1,7 @@
 'use client';
 
 import { TagData } from "@/data/model";
-import { searchParamBitXor } from "@/data/search-param-util";
+import { searchParamBitXor, searchParamReset } from "@/data/search-param-util";
 import clsx from "clsx";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -13,7 +13,7 @@ export default function Tag({ tag, showAmount, className }: { tag: TagData, show
     const isEnabled = (filter & (1 << tag.id)) != 0;
 
     return (
-        <Link href={`/updates?${searchParamBitXor(tag.id, "tags", paramsRO)}`}>
+        <Link href={`/updates?${searchParamReset(["page"], searchParamBitXor(tag.id, "tags", paramsRO)).toString()}`}>
             <div className={clsx(
                 `border-light-contrast dark:border-dark-contrast
                 hover:bg-light-contrast hover:dark:bg-dark-contrast

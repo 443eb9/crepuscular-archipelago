@@ -3,7 +3,7 @@
 import Link from "next/link";
 import RadioButtonGroup from "../common/interact/radio-button-group";
 import ToggleExclude from "./toggle-exclude";
-import { searchParamBitGet, searchParamBitSet } from "@/data/search-param-util";
+import { searchParamBitGet, searchParamBitSet, searchParamReset } from "@/data/search-param-util";
 import { useSearchParams } from "next/navigation";
 
 export default function AdvancedFilters() {
@@ -19,7 +19,10 @@ export default function AdvancedFilters() {
                     { k: "And &&", v: false },
                     { k: "Or ||", v: true },
                 ].map((node, _) =>
-                    <Link key={node.k} href={`/updates?${searchParamBitSet(2, node.v, "advf", searchParams)}`}>
+                    <Link
+                        key={node.k}
+                        href={`/updates?${searchParamReset(["page"], searchParamBitSet(2, node.v, "advf", searchParams))}`}
+                    >
                         <div className="font-bender text-medium">{node.k}</div>
                     </Link>
                 )}
