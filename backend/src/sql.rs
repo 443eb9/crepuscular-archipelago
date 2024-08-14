@@ -239,7 +239,7 @@ pub async fn query_islands_meta_filtered(
                     is_original
                 FROM FilteredIslands
                 WHERE rn BETWEEN ? AND ?
-                    ",
+                ",
                 &tags_filter.sql_conditions, and_restriction
             )
         } else {
@@ -274,7 +274,7 @@ pub async fn query_islands_meta_filtered(
                     is_original
                 FROM FilteredIslands
                 WHERE rn BETWEEN ? AND ?
-                GROUP BY id
+                GROUP BY id ORDER BY id DESC
                 ",
                 &tags_filter.sql_conditions, and_restriction
             )
@@ -294,6 +294,7 @@ pub async fn query_islands_meta_filtered(
         .await
         .into_iter()
         .zip(metas)
+        .rev()
         .try_fold(Vec::new(), |mut acc, (tags, meta)| match tags {
             Ok(tags) => {
                 acc.push(IslandMetaTagged::new(meta, tags));
