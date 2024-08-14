@@ -3,7 +3,7 @@
 import Link from "next/link";
 import RadioButtonGroup from "../common/interact/radio-button-group";
 import ToggleExclude from "./toggle-exclude";
-import { searchParamBitGet, searchParamBitSet } from "@/data/util";
+import { searchParamBitGet, searchParamBitSet } from "@/data/search-param-util";
 import { useSearchParams } from "next/navigation";
 
 export default function AdvancedFilters() {

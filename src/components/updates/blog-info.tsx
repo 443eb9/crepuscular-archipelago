@@ -7,6 +7,7 @@ import { TagData } from "@/data/model";
 import InputBox from "../common/interact/input-box";
 import EndpointDottedSegment from "../common/decos/endpoint-dotted-segment";
 import AdvancedFilters from "./advanced-filters";
+import ResetFilters from "./reset-filters";
 
 export default async function BlogInfo() {
     const tags: TagData[] = (await fetchAllTags()).data;
@@ -22,9 +23,7 @@ export default async function BlogInfo() {
                 </div>
             </div>
             <div className="flex flex-col">
-                <div>
-                    <h1 className="font-bender font-bold text-lg">Locate:</h1>
-                </div>
+                <h1 className="font-bender font-bold text-lg">Locate:</h1>
                 <div className="flex flex-wrap gap-1">
                     {
                         tags.map((tag) => (
@@ -35,6 +34,7 @@ export default async function BlogInfo() {
                 <EndpointDottedSegment thickness={1} dotSize={5} style="dashed" className="my-2"></EndpointDottedSegment>
                 <h1 className="font-bender font-bold text-lg">Advanced Filters:</h1>
                 <AdvancedFilters></AdvancedFilters>
+                <ResetFilters></ResetFilters>
             </div>
         </OutlinedBox>
     );

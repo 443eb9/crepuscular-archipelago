@@ -1,7 +1,7 @@
 'use client';
 
 import { TagData } from "@/data/model";
-import { searchParamBitXor } from "@/data/util";
+import { searchParamBitXor } from "@/data/search-param-util";
 import clsx from "clsx";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";

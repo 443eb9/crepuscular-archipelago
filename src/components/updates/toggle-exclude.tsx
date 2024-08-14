@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Toggle from "../common/interact/toggle";
-import { searchParamBitGet, searchParamBitXor } from "@/data/util";
+import { searchParamBitGet, searchParamBitXor } from "@/data/search-param-util";
 
 export default function ToggleExclude() {
     const paramsRO = useSearchParams();
