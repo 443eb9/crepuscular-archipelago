@@ -36,7 +36,7 @@ export default function Page() {
                         <div className="w-48 h-2 bg-light-contrast dark:bg-dark-contrast"></div>
                         <div className="w-16 h-2 bg-light-contrast dark:bg-dark-contrast"></div>
                     </div>
-                    <GiscusSection></GiscusSection>
+                    <GiscusSection className="mt-4"></GiscusSection>
                 </div>
             </ContentWrapper>
         </main>
