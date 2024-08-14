@@ -1,5 +1,5 @@
 import { FiGithub } from "react-icons/fi";
-import OutlinedButton from "../common/outlined-button";
+import OutlinedButton from "../common/interact/outlined-button";
 import { IoMailOutline } from "react-icons/io5";
 import OutlinedBox from "../common/outlined-box";
 import Link from "next/link";

@@ -1,9 +1,9 @@
 'use client';
 
 import React, { FormEvent } from "react";
-import InputBox from "../common/input-box";
+import InputBox from "../common/interact/input-box";
 import OutlinedBox from "../common/outlined-box";
-import OutlinedButton from "../common/outlined-button";
+import OutlinedButton from "../common/interact/outlined-button";
 import { submitMemorize } from "@/data/memorize";
 import toast from "react-hot-toast";
 import Toast from "../common/toast";

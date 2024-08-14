@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import OutlinedButton from "../common/outlined-button";
+import OutlinedButton from "../common/interact/outlined-button";
 import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
 import OutlinedBox from "../common/outlined-box";
 import clsx from "clsx";

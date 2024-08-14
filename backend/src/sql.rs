@@ -34,6 +34,10 @@ pub async fn query_island_count_filtered(
 ) -> Result<IslandCount, Error> {
     let (filter_ids, filter_conditions, is_exclude_mode) = parse_filter(tags_filter);
 
+    if filter_ids.is_empty() {
+        return query_island_count(pool).await;
+    }
+
     let sql = {
         if is_exclude_mode {
             format!(
@@ -153,6 +157,10 @@ pub async fn query_islands_meta_filtered(
         .unwrap_or_default();
 
     let (filter_ids, filter_conditions, is_exclude_mode) = parse_filter(tags_filter);
+
+    if filter_ids.is_empty() {
+        return query_islands_meta(pool, page, length).await;
+    }
 
     let sql = {
         if is_exclude_mode {

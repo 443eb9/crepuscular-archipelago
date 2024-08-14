@@ -1,11 +1,11 @@
 import { IoSearchSharp } from "react-icons/io5";
-import OutlinedButton from "../common/outlined-button";
+import OutlinedButton from "../common/interact/outlined-button";
 import { fetchAllTags } from "@/data/island";
 import Tag from "../common/tag";
 import OutlinedBox from "../common/outlined-box";
 import ToggleExclude from "./toggle-exclude";
 import { TagData } from "@/data/model";
-import InputBox from "../common/input-box";
+import InputBox from "../common/interact/input-box";
 
 export default async function BlogInfo() {
     const tags: TagData[] = (await fetchAllTags()).data;

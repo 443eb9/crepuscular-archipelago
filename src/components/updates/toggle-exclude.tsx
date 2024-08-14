@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { tryAppendTag } from "../common/tag";
-import Toggle from "../common/toggle";
+import Toggle from "../common/interact/toggle";
 
 export default function ToggleExclude() {
     const paramsRO = useSearchParams();

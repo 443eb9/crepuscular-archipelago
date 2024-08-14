@@ -4,7 +4,11 @@ export default function OutlinedButton(
     {
         name, type, onClick, children, className
     }: {
-        name?: string, type?: "submit" | "reset" | "button", onClick?: MouseEventHandler<HTMLButtonElement>, children?: React.ReactNode, className?: string
+        name?: string,
+        type?: "submit" | "reset" | "button",
+        onClick?: MouseEventHandler<HTMLButtonElement>,
+        children?: React.ReactNode,
+        className?: string
     }
 ) {
     return (
