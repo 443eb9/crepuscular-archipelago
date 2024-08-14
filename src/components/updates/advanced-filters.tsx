@@ -19,7 +19,7 @@ export default function AdvancedFilters() {
                     { k: "And &&", v: false },
                     { k: "Or ||", v: true },
                 ].map((node, _) =>
-                    <Link href={`/updates?${searchParamBitSet(2, node.v, "advf", searchParams)}`}>
+                    <Link key={node.k} href={`/updates?${searchParamBitSet(2, node.v, "advf", searchParams)}`}>
                         <div className="font-bender text-medium">{node.k}</div>
                     </Link>
                 )}
