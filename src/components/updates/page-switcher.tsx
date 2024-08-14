@@ -11,7 +11,7 @@ export default function PageSwitcher({ islandCount, currentPage, currentLength }
     
     if (islandCount == 0) {
         return (
-            <div className="text-2xl font-bender">
+            <div className="text-2xl font-bender w-full">
                 No islands meeting the criteria were found. :(
             </div>
         );

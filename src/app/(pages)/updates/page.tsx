@@ -25,7 +25,7 @@ export default async function Page({ searchParams }: {
     const length = parseInt(searchParams?.len ?? "10");
     const tagsFilter = parseInt(searchParams?.tags ?? "0");
     const advancedFilter = parseInt(searchParams?.advf ?? "0");
-    
+
     let islands: IslandMeta[] = (await fetchIslandsMeta(page, length, tagsFilter, advancedFilter)).data;
     let total: IslandCount = (await fetchIslandCount(tagsFilter, advancedFilter)).data;
     const params = new URLSearchParams(searchParams);
@@ -41,9 +41,15 @@ export default async function Page({ searchParams }: {
                     </Suspense>
                 </aside>
                 <ContentWrapper className="gap-10">
-                    <Suspense>
-                        <BlogIslands islands={islands} params={params}></BlogIslands>
-                    </Suspense>
+                    <div className="flex flex-col gap-8 w-full">
+                        <Suspense>
+                            <BlogIslands islands={islands} params={params}></BlogIslands>
+                        </Suspense>
+                        <PageSwitcher islandCount={total.count} currentPage={page} currentLength={length}></PageSwitcher>
+                        <div className="block md:hidden">
+                            <LinkExchange></LinkExchange>
+                        </div>
+                    </div>
                     <aside className="hidden md:flex w-full max-w-72">
                         <div className="fixed max-w-72 md:flex md:flex-col gap-5">
                             <Suspense>
@@ -52,12 +58,6 @@ export default async function Page({ searchParams }: {
                             <LinkExchange></LinkExchange>
                         </div>
                     </aside>
-                </ContentWrapper>
-                <ContentWrapper className="flex-col gap-6">
-                    <PageSwitcher islandCount={total.count} currentPage={page} currentLength={length}></PageSwitcher>
-                    <div className="block md:hidden">
-                        <LinkExchange></LinkExchange>
-                    </div>
                 </ContentWrapper>
             </div>
         </main>

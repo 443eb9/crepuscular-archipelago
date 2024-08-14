@@ -49,15 +49,12 @@ pub async fn query_island_count_filtered(
         } else {
             format!(
                 "
-                GROUP BY island_id
                 HAVING COUNT(tag_id) = {}
                 ",
                 tags_filter.filtered_ids.len()
             )
         }
     };
-
-    dbg!(&and_restriction);
 
     let sql = {
         if advanced_filter.is_exclude {
@@ -69,6 +66,7 @@ pub async fn query_island_count_filtered(
                     FROM island_tags
                     WHERE island_id = id
                     AND tag_id IN ({})
+                    GROUP BY island_id
                     {}
                 )
                 ",
@@ -81,6 +79,7 @@ pub async fn query_island_count_filtered(
                     SELECT id FROM islands
                     JOIN island_tags ON id = island_id
                     AND tag_id IN ({})
+                    GROUP BY island_id
                     {}
                 )
                 SELECT COUNT(*) as count FROM Filtered
@@ -170,8 +169,6 @@ pub async fn query_islands_meta_filtered(
         .await?
         .count;
 
-    dbg!(total);
-
     if page * length > total {
         return Ok(Vec::new());
     }
@@ -194,13 +191,14 @@ pub async fn query_islands_meta_filtered(
         } else {
             format!(
                 "
-                GROUP BY island_id
                 HAVING COUNT(tag_id) = {}
                 ",
                 tags_filter.filtered_ids.len()
             )
         }
     };
+
+    dbg!(total, start, end, &advanced_filter);
 
     let sql = {
         if advanced_filter.is_exclude {
@@ -217,13 +215,14 @@ pub async fn query_islands_meta_filtered(
                         banner,
                         wip,
                         is_original,
-                        ROW_NUMBER() OVER (ORDER BY id DESC) AS rn
+                        ROW_NUMBER() OVER (ORDER BY id) AS rn
                     FROM islands
                     WHERE NOT EXISTS (
                         SELECT island_id, tag_id
                         FROM island_tags
                         WHERE island_id = islands.id
                         AND tag_id IN ({})
+                        GROUP BY island_id
                         {}
                     )
                 )
@@ -256,10 +255,11 @@ pub async fn query_islands_meta_filtered(
                         banner,
                         wip,
                         is_original,
-                        ROW_NUMBER() OVER (ORDER BY id DESC) AS rn
+                        ROW_NUMBER() OVER (ORDER BY id) AS rn
                     FROM islands
                     JOIN island_tags ON id = island_id
                     AND tag_id IN ({})
+                    GROUP BY island_id
                     {}
                 )
                 SELECT
@@ -274,7 +274,7 @@ pub async fn query_islands_meta_filtered(
                     is_original
                 FROM FilteredIslands
                 WHERE rn BETWEEN ? AND ?
-                GROUP BY id ORDER BY id DESC
+                GROUP BY id
                 ",
                 &tags_filter.sql_conditions, and_restriction
             )
@@ -294,7 +294,6 @@ pub async fn query_islands_meta_filtered(
         .await
         .into_iter()
         .zip(metas)
-        .rev()
         .try_fold(Vec::new(), |mut acc, (tags, meta)| match tags {
             Ok(tags) => {
                 acc.push(IslandMetaTagged::new(meta, tags));
