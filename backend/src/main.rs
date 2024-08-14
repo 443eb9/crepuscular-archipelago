@@ -8,6 +8,7 @@ use crate::{
 };
 
 mod env;
+mod filter;
 mod fs;
 mod http;
 mod memorize;

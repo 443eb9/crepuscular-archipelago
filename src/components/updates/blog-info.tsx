@@ -3,9 +3,10 @@ import OutlinedButton from "../common/interact/outlined-button";
 import { fetchAllTags } from "@/data/island";
 import Tag from "../common/tag";
 import OutlinedBox from "../common/outlined-box";
-import ToggleExclude from "./toggle-exclude";
 import { TagData } from "@/data/model";
 import InputBox from "../common/interact/input-box";
+import EndpointDottedSegment from "../common/decos/endpoint-dotted-segment";
+import AdvancedFilters from "./advanced-filters";
 
 export default async function BlogInfo() {
     const tags: TagData[] = (await fetchAllTags()).data;
@@ -22,8 +23,7 @@ export default async function BlogInfo() {
             </div>
             <div className="flex flex-col">
                 <div>
-                    <h1 className="font-bender font-bold text-lg">Travel To:</h1>
-                    <ToggleExclude></ToggleExclude>
+                    <h1 className="font-bender font-bold text-lg">Locate:</h1>
                 </div>
                 <div className="flex flex-wrap gap-1">
                     {
@@ -32,6 +32,9 @@ export default async function BlogInfo() {
                         ))
                     }
                 </div>
+                <EndpointDottedSegment thickness={1} dotSize={5} style="dashed" className="my-2"></EndpointDottedSegment>
+                <h1 className="font-bender font-bold text-lg">Advanced Filters:</h1>
+                <AdvancedFilters></AdvancedFilters>
             </div>
         </OutlinedBox>
     );

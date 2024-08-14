@@ -1,9 +1,10 @@
 'use client';
 
 import { TagData } from "@/data/model";
+import { searchParamBitXor } from "@/data/util";
 import clsx from "clsx";
 import Link from "next/link";
-import { ReadonlyURLSearchParams, usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 export default function Tag({ tag, showAmount, className }: { tag: TagData, showAmount?: boolean, className?: string }) {
     const paramsRO = useSearchParams();
@@ -12,7 +13,7 @@ export default function Tag({ tag, showAmount, className }: { tag: TagData, show
     const isEnabled = (filter & (1 << tag.id)) != 0;
 
     return (
-        <Link href={`/updates?${tryAppendTag(tag.id, filter, paramsRO)}`}>
+        <Link href={`/updates?${searchParamBitXor(tag.id, "tags", paramsRO)}`}>
             <div className={clsx(
                 `border-light-contrast dark:border-dark-contrast
                 hover:bg-light-contrast hover:dark:bg-dark-contrast
@@ -27,11 +28,4 @@ export default function Tag({ tag, showAmount, className }: { tag: TagData, show
             </div>
         </Link>
     );
-}
-
-export function tryAppendTag(value: number, filter: number, ro: ReadonlyURLSearchParams) {
-    const tags = filter ^ (1 << value);
-    const params = new URLSearchParams(ro);
-    params.set("tags", tags.toString());
-    return params.toString();
 }

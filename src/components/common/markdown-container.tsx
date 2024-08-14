@@ -1,10 +1,10 @@
 import Markdown from "react-markdown"
-import SyntaxHighlighter from "react-syntax-highlighter"
 import rehypeKatex from "rehype-katex"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 import mdStyle from "./md-style"
+import {Prism as SyntaxHighlighter} from "react-syntax-highlighter"
 
 export default function MarkdownContainer({ body }: { body: string }) {
     return (
@@ -30,7 +30,7 @@ export default function MarkdownContainer({ body }: { body: string }) {
                                 {children}
                             </code>
                         )
-                    )
+                    );
                 },
             }}>
             {body}

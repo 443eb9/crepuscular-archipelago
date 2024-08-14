@@ -1,4 +1,4 @@
-use std::{convert::Infallible, sync::Mutex};
+use std::{convert::Infallible, fmt::Debug, sync::Mutex};
 
 use actix_web::{
     get,
@@ -13,6 +13,7 @@ use actix_web::{
 use async_stream::stream;
 use chrono::{SecondsFormat, Utc};
 use once_cell::sync::Lazy;
+use serde::Serialize;
 
 use crate::{
     fs::load_island,
@@ -24,64 +25,67 @@ use crate::{
 static COOL_DOWN: Mutex<Lazy<MemorizeCoolDown>> =
     Mutex::new(Lazy::new(|| MemorizeCoolDown::default()));
 
-#[get("/api/get/allTags")]
-pub async fn get_all_tags(pool: Data<IslandDB>) -> impl Responder {
-    match query_all_tags(&pool).await {
-        Ok(tags) => HttpResponse::Ok().json(tags),
-        Err(err) => HttpResponse::BadRequest().json(err.to_string()),
-    }
+macro_rules! sql_query_request {
+    ($query: ident, $($param: expr),+) => {
+        match $query($($param,)+).await {
+            Ok(ok) => HttpResponse::Ok().json(ok),
+            Err(err) => HttpResponse::BadRequest().json(err.to_string()),
+        }
+    };
 }
 
-#[get("/api/get/islandCount/{tagsFilter}")]
-pub async fn get_island_count(pool: Data<IslandDB>, params: Path<i32>) -> impl Responder {
-    if *params == 0 {
-        match query_island_count(&pool).await {
-            Ok(tags) => HttpResponse::Ok().json(tags),
-            Err(err) => HttpResponse::BadRequest().json(err.to_string()),
+macro_rules! sql_query_attempt {
+    ($query: ident, $($param: expr),+) => {
+        match $query($($param,)+).await {
+            Ok(ok) => ok,
+            Err(err) => return HttpResponse::BadRequest().json(err.to_string()),
         }
+    };
+}
+
+#[get("/api/get/allTags")]
+pub async fn get_all_tags(pool: Data<IslandDB>) -> impl Responder {
+    sql_query_request!(query_all_tags, &pool)
+}
+
+#[get("/api/get/islandCount/{tagsFilter}/{advancedFilter}")]
+pub async fn get_island_count(pool: Data<IslandDB>, params: Path<(i32, i32)>) -> impl Responder {
+    if *params == (0, 0) {
+        sql_query_request!(query_island_count, &pool)
     } else {
-        match query_island_count_filtered(&pool, *params).await {
-            Ok(tags) => HttpResponse::Ok().json(tags),
-            Err(err) => HttpResponse::BadRequest().json(err.to_string()),
-        }
+        sql_query_request!(query_island_count_filtered, &pool, params.0, params.1)
     }
 }
 
 #[get("/api/get/islandMeta/{id}")]
 pub async fn get_island_meta(pool: Data<IslandDB>, id: Path<u32>) -> impl Responder {
-    match query_island_meta(&pool, *id).await {
-        Ok(meta) => HttpResponse::Ok().json(meta),
-        Err(err) => HttpResponse::BadRequest().json(err.to_string()),
-    }
+    sql_query_request!(query_island_meta, &pool, *id)
 }
 
-#[get("/api/get/islandsMeta/{page}/{length}/{tagsFilter}")]
+#[get("/api/get/islandsMeta/{page}/{length}/{tagsFilter}/{advancedFilter}")]
 pub async fn get_islands_meta(
     pool: Data<IslandDB>,
-    params: Path<(u32, u32, i32)>,
+    params: Path<(u32, u32, i32, i32)>,
 ) -> impl Responder {
-    if params.2 == 0 {
-        match query_islands_meta(&pool, params.0, params.1).await {
-            Ok(meta) => HttpResponse::Ok().json(meta),
-            Err(err) => HttpResponse::BadRequest().json(err.to_string()),
-        }
+    if params.2 == 0 && params.3 == 0 {
+        sql_query_request!(query_islands_meta, &pool, params.0, params.1)
     } else {
-        match query_islands_meta_filtered(&pool, params.0, params.1, params.2).await {
-            Ok(meta) => HttpResponse::Ok().json(meta),
-            Err(err) => HttpResponse::BadRequest().json(err.to_string()),
-        }
+        sql_query_request!(
+            query_islands_meta_filtered,
+            &pool,
+            params.0,
+            params.1,
+            params.2,
+            params.3
+        )
     }
 }
 
 #[get("/api/get/island/{id}")]
 pub async fn get_island(pool: Data<IslandDB>, id: Path<u32>) -> impl Responder {
-    match query_island_filename(&pool, *id).await {
-        Ok(filename) => match load_island(*id, &filename) {
-            Ok(island) => HttpResponse::Ok().json(island),
-            Err(err) => HttpResponse::BadRequest().json(err.to_string()),
-        },
-        Err(err) => HttpResponse::BadRequest().json(err.to_string()),
-    }
+    let filename = sql_query_attempt!(query_island_filename, &pool, *id);
+
+    result_to_response(load_island(*id, &filename))
 }
 
 #[post("/api/post/memorize")]
@@ -160,4 +164,11 @@ pub async fn download_memorize_csv(pool: Data<MemorizeDB>) -> impl Responder {
         .streaming(stream!(
             yield Ok::<_, Infallible>(actix_web::web::Bytes::from(csv.into_bytes()))
         ))
+}
+
+fn result_to_response<T: Serialize, E: Debug>(result: Result<T, E>) -> HttpResponse {
+    match result {
+        Ok(ok) => HttpResponse::Ok().json(ok),
+        Err(err) => HttpResponse::BadRequest().json(format!("{:?}", err)),
+    }
 }

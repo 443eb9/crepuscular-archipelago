@@ -32,6 +32,7 @@ const config: Config = {
         "dark-contrast": "#fafafa",
         "light-unfocused": "#e5e5e5",
         "dark-unfocused": "#404040",
+        "light-dark-neutral": "#737373"
       },
     },
   },

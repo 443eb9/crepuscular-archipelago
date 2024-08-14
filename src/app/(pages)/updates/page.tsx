@@ -18,13 +18,16 @@ export default async function Page({ searchParams }: {
         page?: string,
         len?: string,
         tags?: string,
+        advf?: string
     }
 }) {
     const page = parseInt(searchParams?.page ?? "0");
     const length = parseInt(searchParams?.len ?? "10");
     const tagsFilter = parseInt(searchParams?.tags ?? "0");
-    let islands: IslandMeta[] = (await fetchIslandsMeta(page, length, tagsFilter)).data;
-    let total: IslandCount = (await fetchIslandCount(tagsFilter)).data;
+    const advancedFilter = parseInt(searchParams?.advf ?? "0");
+    
+    let islands: IslandMeta[] = (await fetchIslandsMeta(page, length, tagsFilter, advancedFilter)).data;
+    let total: IslandCount = (await fetchIslandCount(tagsFilter, advancedFilter)).data;
 
     return (
         <main>
