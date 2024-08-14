@@ -11,17 +11,16 @@ import { TbClockQuestion } from "react-icons/tb";
 import { FaClock } from "react-icons/fa6";
 import { RiMedal2Line } from "react-icons/ri"
 
-export default function IslandCard({ island, content }: { island: IslandMeta, content?: string }) {
+export default function IslandCard({ island, content, params }: { island: IslandMeta, content?: string, params: URLSearchParams }) {
     return (
         <div className="relative">
             <OutlinedBox className={clsx(
                 "flex flex-col justify-between w-full p-4 shadow-md gap-2 min-h-[200px]",
                 { "border-dashed": island.wip }
-            )}
-            >
+            )}>
                 {
                     island.ty == IslandType.Article
-                        ? <Link href={`/island?id=${island.id}`}><CardMain card={island}></CardMain></Link>
+                        ? <Link href={`/island?id=${island.id}&${params.toString()}`}><CardMain card={island}></CardMain></Link>
                         : <CardMain card={island} content={content}></CardMain>
                 }
                 <div className="flex justify-between">

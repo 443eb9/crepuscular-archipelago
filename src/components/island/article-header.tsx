@@ -7,11 +7,13 @@ import DiagLines from "../common/decos/diag-lines";
 import { TbClockQuestion } from "react-icons/tb";
 import SpTag from "../common/sp-tag";
 
-export default function ArticleHeader({ meta }: { meta: IslandMeta }) {
+export default function ArticleHeader({ meta, params }: { meta: IslandMeta, params: URLSearchParams }) {
+    params.delete("id");
+
     return (
         <OutlinedBox className="flex justify-between p-5">
             <div className="flex flex-col gap-1">
-                <Link href={"/updates"} className="font-argon font-bold">
+                <Link href={`/updates?${params.toString()}`} className="font-argon font-bold">
                     &lt; $ cd .._
                 </Link>
                 <h1 className="w-24 font-bender text-lg font-bold px-2 bg-light-contrast dark:bg-dark-contrast text-dark-contrast dark:text-light-contrast">{`# ${meta.id}`}</h1>

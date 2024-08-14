@@ -1,9 +1,10 @@
 'use client'
 
 import Giscus from "@giscus/react";
+import { useTheme } from "next-themes";
 
 export default function GiscusSection({ className }: { className?: string }) {
-    const theme = localStorage.getItem("theme") ?? "light";
+    const theme = useTheme().resolvedTheme ?? "light";
 
     return (
         <div className={className}>

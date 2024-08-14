@@ -3,7 +3,7 @@ import IslandCard from "./island-card";
 import { Suspense } from "react";
 import { IslandMeta, IslandType } from "@/data/model";
 
-export default async function BlogIslands({ islands }: { islands: IslandMeta[] }) {
+export default async function BlogIslands({ islands, params }: { islands: IslandMeta[], params: URLSearchParams }) {
     let maybeContents: string[] = new Array(islands.length).fill('');
     for (let i = 0; i < islands.length; i++) {
         if (islands[i].ty == IslandType.Note) {
@@ -20,13 +20,22 @@ export default async function BlogIslands({ islands }: { islands: IslandMeta[] }
                     if (data.ty == IslandType.Note) {
                         return (
                             <Suspense key={i}>
-                                <IslandCard island={data} key={data.id} content={maybeContents[islands.length - 1 - i]}></IslandCard>
+                                <IslandCard
+                                    island={data}
+                                    key={data.id}
+                                    content={maybeContents[islands.length - 1 - i]}
+                                    params={params}
+                                ></IslandCard>
                             </Suspense>
                         );
                     } else {
                         return (
                             <Suspense key={i}>
-                                <IslandCard island={data} key={data.id}></IslandCard>
+                                <IslandCard
+                                    island={data}
+                                    key={data.id}
+                                    params={params}
+                                ></IslandCard>
                             </Suspense>
                         );
                     }

@@ -9,6 +9,10 @@ import GiscusSection from "@/components/island/giscus";
 export default function Page({ searchParams }: {
     searchParams?: {
         id?: string,
+        page?: string,
+        len?: string,
+        tags?: string,
+        advf?: string,
     }
 }) {
     const id = Number.parseInt(searchParams?.id ?? "-1");
@@ -19,7 +23,7 @@ export default function Page({ searchParams }: {
             <div className="h-20"></div>
             <ContentWrapper className="flex-col gap-5">
                 <Suspense>
-                    <ArticleContainer id={id}></ArticleContainer>
+                    <ArticleContainer id={id} params={new URLSearchParams(searchParams)}></ArticleContainer>
                 </Suspense>
                 <GiscusSection></GiscusSection>
             </ContentWrapper>

@@ -28,6 +28,7 @@ export default async function Page({ searchParams }: {
     
     let islands: IslandMeta[] = (await fetchIslandsMeta(page, length, tagsFilter, advancedFilter)).data;
     let total: IslandCount = (await fetchIslandCount(tagsFilter, advancedFilter)).data;
+    const params = new URLSearchParams(searchParams);
 
     return (
         <main>
@@ -41,7 +42,7 @@ export default async function Page({ searchParams }: {
                 </aside>
                 <ContentWrapper className="gap-10">
                     <Suspense>
-                        <BlogIslands islands={islands}></BlogIslands>
+                        <BlogIslands islands={islands} params={params}></BlogIslands>
                     </Suspense>
                     <aside className="hidden md:flex w-full max-w-72">
                         <div className="fixed max-w-72 md:flex md:flex-col gap-5">
