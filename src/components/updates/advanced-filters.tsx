@@ -20,7 +20,7 @@ export default function AdvancedFilters() {
                     { k: "Or ||", v: true },
                 ].map((node, _) =>
                     <Link href={`/updates?${searchParamBitSet(2, node.v, "advf", searchParams)}`}>
-                        {node.k}
+                        <div className="font-bender text-medium">{node.k}</div>
                     </Link>
                 )}
                 enabled={searchParamBitGet(2, "advf", searchParams) ? 1 : 0}
