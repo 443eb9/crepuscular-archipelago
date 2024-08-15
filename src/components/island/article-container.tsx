@@ -26,7 +26,10 @@ export default async function ArticleContainer({ id, params }: { id: number, par
                     ? <BackendErrorFallback error={article}></BackendErrorFallback>
                     : <ArticleBody body={article.data.content}></ArticleBody>
             }
-            <ArticleFooter giscus={!(meta instanceof ErrorResponse) && !(article instanceof ErrorResponse)}></ArticleFooter>
+            <ArticleFooter
+                giscus={!(meta instanceof ErrorResponse) && !(article instanceof ErrorResponse)}
+                params={params}
+            ></ArticleFooter>
         </div>
     );
 }

@@ -2,12 +2,18 @@ import { Links } from "@/data/link-exchange-data";
 import EndpointDottedSegment from "../common/decos/endpoint-dotted-segment";
 import OutlinedBox from "../common/outlined-box";
 import EmphasizedBox from "../common/decos/emphasized-box";
+import ZhEnLabel from "../common/zh-en-label";
 
 export default function LinkExchange() {
     return (
         <OutlinedBox className="w-full p-2 pb-4">
-            <h2 className="font-sh-serif text-3xl font-bold">友链</h2>
-            <h3 className="h1 font-bender text-medium italic mb-2">Link Exchange</h3>
+            <ZhEnLabel
+                zh="友链"
+                en="Link Exchange"
+                className="flex-col"
+                zhClassName="font-sh-serif text-3xl font-bold"
+                enClassName="text-medium italic "
+            ></ZhEnLabel>
             <EndpointDottedSegment thickness={1} dotSize={4} style="solid"></EndpointDottedSegment>
             {
                 Links.map((data, i) => {

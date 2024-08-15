@@ -16,7 +16,9 @@ export default function ArticleHeader({ meta, params }: { meta: IslandMeta, para
                 <Link href={`/updates?${params.toString()}`} className="font-argon font-bold">
                     &lt; $ cd .._
                 </Link>
-                <h1 className="w-24 font-bender text-lg font-bold px-2 bg-light-contrast dark:bg-dark-contrast text-dark-contrast dark:text-light-contrast">{`# ${meta.id}`}</h1>
+                <h1 className="w-24 font-bender text-lg font-bold px-2
+                bg-light-contrast dark:bg-dark-contrast
+                text-dark-contrast dark:text-light-contrast">{`# ${meta.id}`}</h1>
                 <div className="flex flex-col">
                     <h1 className="font-sh-serif text-2xl font-bold mb-1">{meta.title}</h1>
                     <h2 className="font-sh-serif font-bold italic text-md mb-1">{meta.subtitle}</h2>

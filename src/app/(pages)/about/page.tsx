@@ -5,6 +5,7 @@ import DiagLines from "@/components/common/decos/diag-lines";
 import EmphasizedBox from "@/components/common/decos/emphasized-box";
 import EndpointDottedSegment from "@/components/common/decos/endpoint-dotted-segment";
 import GlobalNavBar from "@/components/common/nav/global-nav-bar";
+import ZhEnLabel from "@/components/common/zh-en-label";
 import GiscusSection from "@/components/island/giscus";
 import { Projects } from "@/data/about-projects";
 import { ErrorResponse } from "@/data/island";
@@ -78,11 +79,14 @@ function AboutSection({ title, enTitle, children }: { title: string, enTitle: st
     return (
         <div className="">
             <div className="flex gap-2">
-                <DiagLines scale="400%" className="w-10 h-21"></DiagLines>
-                <div className="">
-                    <h2 className="text-5xl font-sh-serif font-bold">{title}</h2>
-                    <h2 className="text-4xl font-bender italic">{enTitle}</h2>
-                </div>
+                <DiagLines scale="400%" className="w-10"></DiagLines>
+                <ZhEnLabel
+                    zh={title}
+                    en={enTitle}
+                    className="flex-col"
+                    zhClassName="text-5xl font-sh-serif font-bold"
+                    enClassName="text-4xl font-bender italic"
+                ></ZhEnLabel>
             </div>
             <div className="flex gap-5 mt-2">
                 <div className="w-48 h-2 bg-light-contrast dark:bg-dark-contrast"></div>

@@ -8,6 +8,7 @@ import EndpointDottedSegment from "../common/decos/endpoint-dotted-segment";
 import AdvancedFilters from "./advanced-filters";
 import ResetFilters from "./reset-filters";
 import BackendErrorFallback from "../common/backend-error-fallback";
+import ZhEnLabel from "../common/zh-en-label";
 
 export default async function BlogInfo() {
     const tags = await fetchAllTags();
@@ -15,7 +16,7 @@ export default async function BlogInfo() {
     return (
         <OutlinedBox className="flex flex-col gap-4 p-2">
             <div className="flex gap-2 items-center h-10 w-full">
-                <InputBox placeholder="Search Islands(WIP)"></InputBox>
+                <InputBox placeholder="Search (WIP)"></InputBox>
                 <div>
                     <OutlinedButton className="w-10 h-10">
                         <IoSearchSharp className="text-2xl"></IoSearchSharp>
@@ -23,7 +24,7 @@ export default async function BlogInfo() {
                 </div>
             </div>
             <div className="flex flex-col">
-                <h1 className="font-bender font-bold text-lg">Locate:</h1>
+                <ZhEnLabel zh="定位" en="Locate" className="font-bold text-large"></ZhEnLabel>
                 <div className="flex flex-wrap gap-1">
                     {
                         tags instanceof ErrorResponse
@@ -34,7 +35,7 @@ export default async function BlogInfo() {
                     }
                 </div>
                 <EndpointDottedSegment thickness={1} dotSize={5} style="dashed" className="my-2"></EndpointDottedSegment>
-                <h1 className="font-bender font-bold text-lg">Advanced Filters:</h1>
+                <ZhEnLabel zh="高级过滤" en="Advanced Filtering" className="font-bold text-large"></ZhEnLabel>
                 <AdvancedFilters></AdvancedFilters>
                 <ResetFilters></ResetFilters>
             </div>

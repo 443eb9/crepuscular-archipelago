@@ -1,14 +1,16 @@
 import Link from "next/link";
-import OutlinedBox from "../common/outlined-box";
 import GiscusSection from "./giscus";
+import OutlinedButton from "../common/interact/outlined-button";
 
-export default function ArticleFooter({ giscus }: { giscus: boolean }) {
+export default function ArticleFooter({ giscus, params }: { giscus: boolean, params: URLSearchParams }) {
+    params.delete("id");
+
     return (
         <div>
-            <Link href={"/updates"}>
-                <OutlinedBox className="font-argon font-bold text-4xl p-5 mb-4">
-                    &lt; $ cd .._
-                </OutlinedBox>
+            <Link href={`/updates?${params.toString()}`}>
+                <OutlinedButton className="font-argon font-bold text-4xl p-5 mb-4 w-full">
+                    <div className="w-full text-left">&lt; $ cd .._</div>
+                </OutlinedButton>
                 {
                     giscus
                         ? <GiscusSection></GiscusSection>
