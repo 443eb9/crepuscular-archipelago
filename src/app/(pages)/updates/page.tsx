@@ -6,7 +6,6 @@ import { Suspense } from "react";
 import { Metadata } from "next";
 import { ErrorResponse, fetchIslandCount, fetchIslandsMeta } from "@/data/island";
 import PageSwitcher from "@/components/updates/page-switcher";
-import LinkExchange from "@/components/updates/link-exchange";
 import BackendErrorFallback from "@/components/common/backend-error-fallback";
 
 export const metadata: Metadata = {
@@ -54,16 +53,12 @@ export default async function Page({ searchParams }: {
                                 ? <BackendErrorFallback error={total}></BackendErrorFallback>
                                 : <PageSwitcher islandCount={total.data.count} currentPage={page} currentLength={length}></PageSwitcher>
                         }
-                        <div className="block md:hidden">
-                            <LinkExchange></LinkExchange>
-                        </div>
                     </div>
                     <aside className="hidden md:flex w-full max-w-72">
                         <div className="fixed max-w-72 md:flex md:flex-col gap-5">
                             <Suspense>
                                 <BlogInfo></BlogInfo>
                             </Suspense>
-                            <LinkExchange></LinkExchange>
                         </div>
                     </aside>
                 </ContentWrapper>

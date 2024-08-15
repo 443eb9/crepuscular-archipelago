@@ -21,7 +21,6 @@ export default function IslandCard({ island, content, params }: { island: Island
         }
         const div: HTMLDivElement = container.current;
         if (div.offsetHeight >= 250) {
-            console.log(div.offsetHeight);
             setExpandable(true);
         }
     });
@@ -29,7 +28,7 @@ export default function IslandCard({ island, content, params }: { island: Island
     return (
         <div className="relative">
             <OutlinedBox className={clsx(
-                "flex flex-col justify-between w-full p-4 shadow-md gap-2 min-h-[200px]",
+                "flex flex-col justify-between p-4 shadow-md gap-2 min-h-[200px]",
                 { "border-dashed": island.wip }
             )}>
                 <div>

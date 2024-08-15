@@ -1,5 +1,5 @@
 import axios from "axios";
-import { combineApi, combineRemoteApi } from "./backend";
+import { combineRemoteApi } from "./backend";
 import { MemorizeForm } from "./model";
 
 export async function submitMemorize(form: FormData) {

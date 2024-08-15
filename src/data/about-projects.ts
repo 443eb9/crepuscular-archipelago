@@ -1,4 +1,4 @@
-export const Projects = [
+export const AboutProjects = [
     {
         owner: "443eb9",
         name: "Dystopia",

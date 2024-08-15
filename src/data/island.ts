@@ -1,4 +1,4 @@
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { combineApi } from "./backend";
 import { get } from "./requests";
 import { Island, IslandCount, IslandMeta, TagData } from "./model";
