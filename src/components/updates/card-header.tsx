@@ -3,26 +3,36 @@ import OutlinedBox from "../common/outlined-box";
 import { OSS } from "@/data/backend";
 import { RiMedal2Line } from "react-icons/ri";
 
-export default function CardHeader({ island: card }: { island: IslandMeta }) {
-    switch (card.ty) {
+export default function CardHeader({ island }: { island: IslandMeta }) {
+    let header;
+    switch (island.ty) {
         case IslandType.Achievement | IslandType.Note:
-            return <AchievementCardHeader></AchievementCardHeader>;
+            header = <AchievementCardHeader></AchievementCardHeader>;
         case IslandType.Article:
-            return <ArticleCardHeader card={card}></ArticleCardHeader>;
+            header = <ArticleCardHeader island={island}></ArticleCardHeader>;
         default: <div></div>
-    }
+    };
+
+    return (
+        <div>
+            <h2 className=
+                "absolute font-bender font-bold leading-none pl-2 py-[2px] text-[10px] w-20 -top-1 left-3 text-dark-contrast dark:text-light-contrast bg-light-contrast dark:bg-dark-contrast"
+            >{`# ${island.id}`}</h2>
+            {header}
+        </div>
+    );
 }
 
-function ArticleCardHeader({ card }: { card: IslandMeta }) {
+function ArticleCardHeader({ island }: { island: IslandMeta }) {
     return (
-        <div className="mb-2">
+        <div>
             {
-                card.banner &&
+                island.banner &&
                 <OutlinedBox
-                    className="w-full bg-cover"
+                    className="w-full bg-cover mb-2"
                     style={{
                         aspectRatio: "10 / 3",
-                        backgroundImage: `url(${OSS}/${card.id}/BANNER.png)`
+                        backgroundImage: `url(${OSS}/${island.id}/BANNER.png)`
                     }}
                 >
                 </OutlinedBox>

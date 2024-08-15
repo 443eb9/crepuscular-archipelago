@@ -25,30 +25,15 @@ export default async function BlogIslands({ islands, params }: { islands: Island
             {
                 islands instanceof ErrorResponse
                     ? <BackendErrorFallback error={islands}></BackendErrorFallback>
-                    : islands.reverse().map((data, i) => {
-                        if (data.ty == IslandType.Note) {
-                            return (
-                                <Suspense key={i}>
-                                    <IslandCard
-                                        island={data}
-                                        key={data.id}
-                                        content={maybeContents[islands.length - 1 - i]}
-                                        params={params}
-                                    ></IslandCard>
-                                </Suspense>
-                            );
-                        } else {
-                            return (
-                                <Suspense key={i}>
-                                    <IslandCard
-                                        island={data}
-                                        key={data.id}
-                                        params={params}
-                                    ></IslandCard>
-                                </Suspense>
-                            );
-                        }
-                    }
+                    : islands.reverse().map((data, i) =>
+                        <Suspense key={i}>
+                            <IslandCard
+                                island={data}
+                                key={data.id}
+                                content={data.ty == IslandType.Note ? maybeContents[islands.length - 1 - i] : undefined}
+                                params={params}
+                            ></IslandCard>
+                        </Suspense>
                     )
             }
         </div>

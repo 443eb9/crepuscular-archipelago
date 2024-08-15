@@ -6,11 +6,9 @@ import Link from "next/link";
 export default function CardBody({ island: island, content, params }: { island: IslandMeta, content?: ReactNode, params: URLSearchParams }) {
     const body = (
         <div>
-            <h2 className=
-                "absolute font-bender font-bold leading-none pl-2 py-[2px] text-[10px] w-20 -top-1 left-3 text-dark-contrast dark:text-light-contrast bg-light-contrast dark:bg-dark-contrast"
-            >{`# ${island.id}`}</h2>
             {
-                island.ty == IslandType.Article && <DiagLines className="absolute right-5 size-10" scale="300%"></DiagLines>
+                island.ty != IslandType.Achievement
+                && <DiagLines className="absolute right-5 size-10" scale="300%"></DiagLines>
             }
             <div className="flex flex-col">
                 <h1 className="font-sh-serif font-bold text-xl mb-1">{island.title}</h1>
