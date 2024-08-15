@@ -1,16 +1,16 @@
 import { IoSearchSharp } from "react-icons/io5";
 import OutlinedButton from "../common/interact/outlined-button";
-import { fetchAllTags } from "@/data/island";
+import { ErrorResponse, fetchAllTags } from "@/data/island";
 import Tag from "../common/tag";
 import OutlinedBox from "../common/outlined-box";
-import { TagData } from "@/data/model";
 import InputBox from "../common/interact/input-box";
 import EndpointDottedSegment from "../common/decos/endpoint-dotted-segment";
 import AdvancedFilters from "./advanced-filters";
 import ResetFilters from "./reset-filters";
+import BackendErrorFallback from "../common/backend-error-fallback";
 
 export default async function BlogInfo() {
-    const tags: TagData[] = (await fetchAllTags()).data;
+    const tags = await fetchAllTags();
 
     return (
         <OutlinedBox className="flex flex-col gap-4 p-2">
@@ -26,9 +26,11 @@ export default async function BlogInfo() {
                 <h1 className="font-bender font-bold text-lg">Locate:</h1>
                 <div className="flex flex-wrap gap-1">
                     {
-                        tags.map((tag) => (
-                            <Tag tag={tag} showAmount key={tag.name}></Tag>
-                        ))
+                        tags instanceof ErrorResponse
+                            ? <BackendErrorFallback error={tags}></BackendErrorFallback>
+                            : tags.data.map((tag) => (
+                                <Tag tag={tag} showAmount key={tag.name}></Tag>
+                            ))
                     }
                 </div>
                 <EndpointDottedSegment thickness={1} dotSize={5} style="dashed" className="my-2"></EndpointDottedSegment>

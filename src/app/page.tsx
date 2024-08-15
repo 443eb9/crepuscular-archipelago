@@ -3,13 +3,14 @@ import BlogTitleCn from '@/components/index/blog-title-cn';
 import BlogTitleEn from '@/components/index/blog-title-en';
 import NavButtons from '@/components/common/nav/nav-buttons';
 import { Metadata } from 'next';
+import axios, { AxiosError } from 'axios';
 
 export const metadata: Metadata = {
     title: "443eb9#C - Crepuscular Archipelago",
     description: "443eb9#C's blog - Islands that owned by 443eb9#C."
 }
 
-export default function Page() {
+export default async function Page() {
     return (
         <main className="">
             <div className="absolute top-[10%] md:top-1/4 left-[10%]">

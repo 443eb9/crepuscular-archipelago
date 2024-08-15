@@ -7,6 +7,7 @@ import EndpointDottedSegment from "@/components/common/decos/endpoint-dotted-seg
 import GlobalNavBar from "@/components/common/nav/global-nav-bar";
 import GiscusSection from "@/components/island/giscus";
 import { Projects } from "@/data/about-projects";
+import { ErrorResponse } from "@/data/island";
 import { get } from "@/data/requests";
 import { Metadata } from "next";
 import { ReactNode } from "react";
@@ -40,8 +41,9 @@ export default async function Page() {
                                             <div>
                                                 <a className="text-2xl font-bold" target="_blank" href={`https://github.com/${project.owner}/${project.name}`}>{project.name}</a>
                                                 {
-                                                    typeof response != "string"
-                                                        ? <div>
+                                                    response instanceof ErrorResponse
+                                                        ? <div className="">Rate limit exceeded, please try again later. :(</div>
+                                                        : <div>
                                                             <h3>Language: {response.data.language}</h3>
                                                             <h3>{response.data.stargazers_count} Star(s)</h3>
                                                             <div className="flex gap-5">
@@ -53,7 +55,6 @@ export default async function Page() {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        : <div className="">Rate limit exceeded, please try again later. :(</div>
                                                 }
                                             </div>
                                             <div className="text-light-dark-neutral text-3xl font-bold italic mr-2">{project.owner}</div>

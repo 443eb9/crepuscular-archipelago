@@ -11,7 +11,7 @@ use actix_web::{
     HttpResponse, Responder,
 };
 use async_stream::stream;
-use chrono::{SecondsFormat, Utc};
+use chrono::{SecondsFormat, Timelike, Utc};
 use once_cell::sync::Lazy;
 use serde::Serialize;
 
@@ -170,5 +170,17 @@ fn result_to_response<T: Serialize, E: Debug>(result: Result<T, E>) -> HttpRespo
     match result {
         Ok(ok) => HttpResponse::Ok().json(ok),
         Err(err) => HttpResponse::BadRequest().json(format!("{:?}", err)),
+    }
+}
+
+#[get("/api/get/errorTest")]
+pub async fn error_test() -> impl Responder {
+    let t = Utc::now().second();
+    match t % 4 {
+        0 => HttpResponse::BadRequest().json("BadRequest error test."),
+        1 => HttpResponse::NotFound().json("NotFound error test."),
+        2 => HttpResponse::Forbidden().json("Forbidden error test."),
+        3 => HttpResponse::BadGateway().json("BadGateway error test."),
+        _ => unreachable!(),
     }
 }

@@ -4,10 +4,10 @@ import ContentWrapper from "@/components/common/content-wrapper";
 import BlogIslands from "@/components/updates/blog-islands";
 import { Suspense } from "react";
 import { Metadata } from "next";
-import { fetchIslandCount, fetchIslandsMeta } from "@/data/island";
+import { ErrorResponse, fetchIslandCount, fetchIslandsMeta } from "@/data/island";
 import PageSwitcher from "@/components/updates/page-switcher";
-import { IslandCount, IslandMeta } from "@/data/model";
 import LinkExchange from "@/components/updates/link-exchange";
+import BackendErrorFallback from "@/components/common/backend-error-fallback";
 
 export const metadata: Metadata = {
     title: "Updates - Crepuscular Archipelago",
@@ -26,8 +26,8 @@ export default async function Page({ searchParams }: {
     const tagsFilter = parseInt(searchParams?.tags ?? "0");
     const advancedFilter = parseInt(searchParams?.advf ?? "0");
 
-    let islands: IslandMeta[] = (await fetchIslandsMeta(page, length, tagsFilter, advancedFilter)).data;
-    let total: IslandCount = (await fetchIslandCount(tagsFilter, advancedFilter)).data;
+    let islands = await fetchIslandsMeta(page, length, tagsFilter, advancedFilter);
+    let total = await fetchIslandCount(tagsFilter, advancedFilter);
     const params = new URLSearchParams(searchParams);
 
     return (
@@ -42,10 +42,18 @@ export default async function Page({ searchParams }: {
                 </aside>
                 <ContentWrapper className="gap-10">
                     <div className="flex flex-col gap-8 w-full">
-                        <Suspense>
-                            <BlogIslands islands={islands} params={params}></BlogIslands>
-                        </Suspense>
-                        <PageSwitcher islandCount={total.count} currentPage={page} currentLength={length}></PageSwitcher>
+                        {
+                            islands instanceof ErrorResponse
+                                ? <BackendErrorFallback error={islands}></BackendErrorFallback>
+                                : <Suspense>
+                                    <BlogIslands islands={islands.data} params={params}></BlogIslands>
+                                </Suspense>
+                        }
+                        {
+                            total instanceof ErrorResponse
+                                ? <BackendErrorFallback error={total}></BackendErrorFallback>
+                                : <PageSwitcher islandCount={total.data.count} currentPage={page} currentLength={length}></PageSwitcher>
+                        }
                         <div className="block md:hidden">
                             <LinkExchange></LinkExchange>
                         </div>

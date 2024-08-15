@@ -37,7 +37,7 @@ pub async fn query_island_count_filtered(
     advanced_filter: i32,
 ) -> Result<IslandCount, Error> {
     let tags_filter = TagsFilter::new(tags_filter);
-    let advanced_filter = dbg!(AdvancedFilter::new(advanced_filter));
+    let advanced_filter = AdvancedFilter::new(advanced_filter);
 
     if tags_filter.filtered_ids.is_empty() {
         return query_island_count(pool).await;
@@ -197,8 +197,6 @@ pub async fn query_islands_meta_filtered(
             )
         }
     };
-
-    dbg!(total, start, end, &advanced_filter);
 
     let sql = {
         if advanced_filter.is_exclude {

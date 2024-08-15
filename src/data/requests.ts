@@ -1,12 +1,10 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { ErrorResponse } from "./island";
 
 const axiosInstance = axios.create();
 
 export async function get(url: string) {
-    try {
-        return await axiosInstance.get(url);
-    } catch (error) {
-        console.log(error);
-        return (error as AxiosError<{ message: string }>).response?.data?.message ?? "";
-    }
+    return await axiosInstance.get(url).catch((reason: AxiosError) => {
+        return new ErrorResponse(reason.response)
+    });
 }

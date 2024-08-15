@@ -51,6 +51,7 @@ async fn main() -> std::io::Result<()> {
             .service(http::submit_memorize)
             .service(http::download_memorize_db)
             .service(http::download_memorize_csv)
+            .service(http::error_test)
     })
     .bind(("localhost", 8080))?
     .run()

@@ -3,7 +3,7 @@ import ContentWrapper from "@/components/common/content-wrapper";
 import GlobalNavBar from "@/components/common/nav/global-nav-bar";
 import { Suspense } from "react";
 import { Metadata } from "next";
-import { fetchIslandMeta } from "@/data/island";
+import { ErrorResponse, fetchIslandMeta } from "@/data/island";
 import GiscusSection from "@/components/island/giscus";
 
 export default function Page({ searchParams }: {
@@ -25,7 +25,6 @@ export default function Page({ searchParams }: {
                 <Suspense>
                     <ArticleContainer id={id} params={new URLSearchParams(searchParams)}></ArticleContainer>
                 </Suspense>
-                <GiscusSection></GiscusSection>
             </ContentWrapper>
         </main>
     );
@@ -38,9 +37,16 @@ export async function generateMetadata({ searchParams }: {
 }): Promise<Metadata> {
     const id = Number.parseInt(searchParams?.id ?? "-1");
 
-    const meta = (await fetchIslandMeta(id)).data;
+    const meta = await fetchIslandMeta(id);
+
+    let title;
+    if (meta instanceof ErrorResponse) {
+        title = "Undefined Coordinate";
+    } else {
+        title = meta.data.title;
+    }
 
     return {
-        title: `${meta.title} - Crepuscular Archipelago`
+        title: `${title} - Crepuscular Archipelago`
     }
 }

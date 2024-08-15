@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_repr::Serialize_repr;
 use sqlx::{prelude::Type, FromRow, Row};
 
-#[derive(Debug, Serialize_repr, Type)]
+#[derive(Debug, Serialize_repr, Type, PartialEq, Eq)]
 #[repr(u32)]
 pub enum IslandType {
     Article,

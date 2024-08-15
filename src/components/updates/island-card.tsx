@@ -10,8 +10,9 @@ import MarkdownContainer from "../common/markdown-container";
 import { TbClockQuestion } from "react-icons/tb";
 import { FaClock } from "react-icons/fa6";
 import { RiMedal2Line } from "react-icons/ri"
+import { ReactNode } from "react";
 
-export default function IslandCard({ island, content, params }: { island: IslandMeta, content?: string, params: URLSearchParams }) {
+export default function IslandCard({ island, content, params }: { island: IslandMeta, content?: ReactNode, params: URLSearchParams }) {
     return (
         <div className="relative">
             <OutlinedBox className={clsx(
@@ -55,7 +56,7 @@ export default function IslandCard({ island, content, params }: { island: Island
     );
 }
 
-function CardMain({ card, content }: { card: IslandMeta, content?: string }) {
+function CardMain({ card, content }: { card: IslandMeta, content?: ReactNode }) {
     return (
         <div>
             {getHeader(card)}
@@ -77,7 +78,7 @@ function CardMain({ card, content }: { card: IslandMeta, content?: string }) {
                 </div>
                 <p className="font-sh-sans text-ellipsis overflow-hidden line-clamp-6" style={{ width: "calc(100% - 80px)" }}>{card.desc}</p>
                 {
-                    content != undefined && <MarkdownContainer body={content}></MarkdownContainer>
+                    content != undefined && content
                 }
             </div>
         </div>
