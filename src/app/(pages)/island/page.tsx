@@ -4,7 +4,6 @@ import GlobalNavBar from "@/components/common/nav/global-nav-bar";
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { ErrorResponse, fetchIslandMeta } from "@/data/island";
-import GiscusSection from "@/components/island/giscus";
 
 export default function Page({ searchParams }: {
     searchParams?: {
