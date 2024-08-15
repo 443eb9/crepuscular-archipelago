@@ -24,7 +24,12 @@ export default function CardFooter({ island }: { island: IslandMeta }) {
                     </div>
                     : <div className="flex items-center gap-1">
                         <FaClock></FaClock>
-                        <div className="font-bender">{new Date(island.date).toLocaleDateString()}</div>
+                        <div
+                            className="font-bender"
+                            suppressHydrationWarning
+                        >
+                            {new Date(island.date).toLocaleDateString()}
+                        </div>
                     </div>
             }
         </div>
