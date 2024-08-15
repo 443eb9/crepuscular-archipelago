@@ -6,17 +6,18 @@ import { RiMedal2Line } from "react-icons/ri";
 export default function CardHeader({ island }: { island: IslandMeta }) {
     let header;
     switch (island.ty) {
-        case IslandType.Achievement | IslandType.Note:
+        case IslandType.Achievement:
             header = <AchievementCardHeader></AchievementCardHeader>;
+            break;
         case IslandType.Article:
             header = <ArticleCardHeader island={island}></ArticleCardHeader>;
-        default: <div></div>
+            break;
     };
 
     return (
         <div>
-            <h2 className=
-                "absolute font-bender font-bold leading-none pl-2 py-[2px] text-[10px] w-20 -top-1 left-3 text-dark-contrast dark:text-light-contrast bg-light-contrast dark:bg-dark-contrast"
+            <h2 className="absolute font-bender font-bold leading-none pl-2 py-[2px] text-[10px] w-20 -top-1 left-3
+                text-dark-contrast dark:text-light-contrast bg-light-contrast dark:bg-dark-contrast"
             >{`# ${island.id}`}</h2>
             {header}
         </div>
@@ -43,7 +44,7 @@ function ArticleCardHeader({ island }: { island: IslandMeta }) {
 
 function AchievementCardHeader() {
     return (
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center mb-1">
             <div className="hidden md:flex">
                 <div className="bg-light-contrast dark:bg-dark-contrast w-2 h-3 mr-2"></div>
                 <div className="bg-light-contrast dark:bg-dark-contrast w-6 h-3 mr-3"></div>

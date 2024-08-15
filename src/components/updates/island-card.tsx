@@ -10,12 +10,14 @@ export default function IslandCard({ island, content, params }: { island: Island
     return (
         <div className="relative">
             <OutlinedBox className={clsx(
-                "flex flex-col justify-between w-full p-4 shadow-md gap-2 min-h-[200px] max-h-[420px] overflow-clip mt-1",
+                "flex flex-col justify-between w-full p-4 shadow-md gap-2 min-h-[200px]",
                 { "border-dashed": island.wip }
             )}>
                 <div>
                     <CardHeader island={island}></CardHeader>
-                    <CardBody island={island} params={params} content={content}></CardBody>
+                    <div className="max-h-[250px] overflow-clip">
+                        <CardBody island={island} params={params} content={content}></CardBody>
+                    </div>
                 </div>
                 <CardFooter island={island}></CardFooter>
             </OutlinedBox>
