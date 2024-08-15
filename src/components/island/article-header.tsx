@@ -6,6 +6,7 @@ import Link from "next/link";
 import DiagLines from "../common/decos/diag-lines";
 import { TbClockQuestion } from "react-icons/tb";
 import SpTag from "../common/sp-tag";
+import HoverInvertBox from "../common/anim/hover-invert-box";
 
 export default function ArticleHeader({ meta, params }: { meta: IslandMeta, params: URLSearchParams }) {
     params.delete("id");
@@ -13,9 +14,14 @@ export default function ArticleHeader({ meta, params }: { meta: IslandMeta, para
     return (
         <OutlinedBox className="flex justify-between p-5">
             <div className="flex flex-col gap-1">
-                <Link href={`/updates?${params.toString()}`} className="font-argon font-bold">
-                    &lt; $ cd .._
-                </Link>
+                <HoverInvertBox from="left">
+                    <Link
+                        href={`/updates?${params.toString()}`}
+                        className="font-argon font-bold bg-dark-contrast dark:bg-light-contrast p-1"
+                    >
+                        &lt; $ cd .._
+                    </Link>
+                </HoverInvertBox>
                 <h1 className="w-24 font-bender text-lg font-bold px-2
                 bg-light-contrast dark:bg-dark-contrast
                 text-dark-contrast dark:text-light-contrast">{`# ${meta.id}`}</h1>
