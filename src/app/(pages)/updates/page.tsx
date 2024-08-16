@@ -4,9 +4,10 @@ import ContentWrapper from "@/components/common/content-wrapper";
 import BlogIslands from "@/components/updates/blog-islands";
 import { Suspense } from "react";
 import { Metadata } from "next";
-import { ErrorResponse, fetchIslandCount, fetchIslandsMeta } from "@/data/island";
+import { fetchIslandCount, fetchIslandsMeta } from "@/data/api";
 import PageSwitcher from "@/components/updates/page-switcher";
-import BackendErrorFallback from "@/components/common/backend-error-fallback";
+import NetworkErrorFallback from "@/components/common/network-error-fallback";
+import { ErrorResponse } from "@/data/requests";
 
 export const metadata: Metadata = {
     title: "Updates - Crepuscular Archipelago",
@@ -43,14 +44,14 @@ export default async function Page({ searchParams }: {
                     <div className="flex flex-col gap-8 w-full">
                         {
                             islands instanceof ErrorResponse
-                                ? <BackendErrorFallback error={islands}></BackendErrorFallback>
+                                ? <NetworkErrorFallback error={islands}></NetworkErrorFallback>
                                 : <Suspense>
                                     <BlogIslands islands={islands.data} params={params}></BlogIslands>
                                 </Suspense>
                         }
                         {
                             total instanceof ErrorResponse
-                                ? <BackendErrorFallback error={total}></BackendErrorFallback>
+                                ? <NetworkErrorFallback error={total}></NetworkErrorFallback>
                                 : <PageSwitcher islandCount={total.data.count} currentPage={page} currentLength={length}></PageSwitcher>
                         }
                     </div>

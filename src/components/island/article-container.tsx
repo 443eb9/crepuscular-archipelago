@@ -1,8 +1,8 @@
 import ArticleBody from "./article-body";
-import { ErrorResponse, fetchIsland, fetchIslandMeta } from "@/data/island";
+import { ErrorResponse, fetchIsland, fetchIslandMeta } from "@/data/api";
 import ArticleHeader from "./article-header";
 import ArticleFooter from "./article-footer";
-import BackendErrorFallback from "../common/backend-error-fallback";
+import NetworkErrorFallback from "../common/network-error-fallback";
 import { IslandType } from "@/data/model";
 import { notFound } from "next/navigation";
 
@@ -18,12 +18,12 @@ export default async function ArticleContainer({ id, params }: { id: number, par
         <div className="flex flex-col gap-10 w-full">
             {
                 meta instanceof ErrorResponse
-                    ? <BackendErrorFallback error={meta}></BackendErrorFallback>
+                    ? <NetworkErrorFallback error={meta}></NetworkErrorFallback>
                     : <ArticleHeader meta={meta.data} params={params}></ArticleHeader>
             }
             {
                 article instanceof ErrorResponse
-                    ? <BackendErrorFallback error={article}></BackendErrorFallback>
+                    ? <NetworkErrorFallback error={article}></NetworkErrorFallback>
                     : <ArticleBody body={article.data.content}></ArticleBody>
             }
             <ArticleFooter

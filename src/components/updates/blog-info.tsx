@@ -1,14 +1,15 @@
 import { IoSearchSharp } from "react-icons/io5";
 import OutlinedButton from "../common/interact/outlined-button";
-import { ErrorResponse, fetchAllTags } from "@/data/island";
+import { fetchAllTags } from "@/data/api";
 import Tag from "../common/tag";
 import OutlinedBox from "../common/outlined-box";
 import InputBox from "../common/interact/input-box";
 import EndpointDottedSegment from "../common/decos/endpoint-dotted-segment";
 import AdvancedFilters from "./advanced-filters";
 import ResetFilters from "./reset-filters";
-import BackendErrorFallback from "../common/backend-error-fallback";
+import NetworkErrorFallback from "../common/network-error-fallback";
 import ZhEnLabel from "../common/zh-en-label";
+import { ErrorResponse } from "@/data/requests";
 
 export default async function BlogInfo() {
     const tags = await fetchAllTags();
@@ -28,7 +29,7 @@ export default async function BlogInfo() {
                 <div className="flex flex-wrap gap-1">
                     {
                         tags instanceof ErrorResponse
-                            ? <BackendErrorFallback error={tags}></BackendErrorFallback>
+                            ? <NetworkErrorFallback error={tags}></NetworkErrorFallback>
                             : tags.data.map((tag) => (
                                 <Tag tag={tag} showAmount key={tag.name}></Tag>
                             ))

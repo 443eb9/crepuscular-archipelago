@@ -1,16 +1,7 @@
-import { AxiosResponse } from "axios";
 import { combineApi } from "./backend";
 import { get } from "./requests";
-import { Island, IslandCount, IslandMeta, TagData } from "./model";
-
-export class ErrorResponse {
-    error: undefined | AxiosResponse<any, any>
-
-    constructor(error: undefined | AxiosResponse<any, any>) {
-        this.error = error
-    }
-}
-export type Response<T> = ErrorResponse | AxiosResponse<T, any>;
+import { Island, IslandCount, IslandMeta, LinkExchangeData, ProjectData, TagData } from "./model";
+import { Response } from "./requests";
 
 export async function fetchAllTags(): Promise<Response<TagData[]>> {
     return get(combineApi("/get/allTags"));
@@ -30,4 +21,12 @@ export async function fetchIslandsMeta(page: number, length: number, tagsFilter:
 
 export async function fetchIsland(id: number): Promise<Response<Island>> {
     return get(combineApi(`/get/island/${id}`));
+}
+
+export async function fetchLinkExchangeList(): Promise<Response<LinkExchangeData[]>> {
+    return get(combineApi("/get/linkExchange"));
+}
+
+export async function fetchProjectList(): Promise<Response<ProjectData[]>> {
+    return get(combineApi("/get/projects"));
 }

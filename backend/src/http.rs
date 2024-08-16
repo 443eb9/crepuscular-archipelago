@@ -16,7 +16,7 @@ use once_cell::sync::Lazy;
 use serde::Serialize;
 
 use crate::{
-    fs::load_island,
+    fs::{load_island, load_link_exchange_list, load_projects_list},
     memorize::{self, MemorizeCoolDown, MemorizeValidator},
     model::{MemorizeForm, MemorizeFormMeta},
     sql::*,
@@ -86,6 +86,16 @@ pub async fn get_island(pool: Data<IslandDB>, id: Path<u32>) -> impl Responder {
     let filename = sql_query_attempt!(query_island_filename, &pool, *id);
 
     result_to_response(load_island(*id, &filename))
+}
+
+#[get("/api/get/linkExchange")]
+pub async fn get_link_exchange_list() -> impl Responder {
+    HttpResponse::Ok().json(load_link_exchange_list())
+}
+
+#[get("/api/get/projects")]
+pub async fn get_projects_list() -> impl Responder {
+    HttpResponse::Ok().json(load_projects_list())
 }
 
 #[post("/api/post/memorize")]

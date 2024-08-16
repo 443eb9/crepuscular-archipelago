@@ -9,6 +9,7 @@ import GlobalNavBar from "@/components/common/nav/global-nav-bar";
 import OutlinedBox from "@/components/common/outlined-box";
 import GiscusSection from "@/components/island/giscus";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
     title: "About - Crepuscular Archipelago",
@@ -33,13 +34,17 @@ export default async function Page() {
                 <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
                 <AboutSection title="友链" enTitle="Link Exchange">
                     <div className="font-sh-sans italic text-light-dark-neutral">
-                        想加上自己的可以来Github开PR修改src/data/about-link-exchange.ts ヾ(≧▽≦*)o
+                        想加上自己的可以来Github开PR修改backend/storage/json/link_exchange_list.json ヾ(≧▽≦*)o
                     </div>
-                    <LinkExchange></LinkExchange>
+                    <Suspense>
+                        <LinkExchange></LinkExchange>
+                    </Suspense>
                 </AboutSection>
                 <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
                 <AboutSection title="一些项目" enTitle="Projects">
-                    <Projects></Projects>
+                    <Suspense>
+                        <Projects></Projects>
+                    </Suspense>
                 </AboutSection>
                 <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
                 <AboutSection title="留言板" enTitle="Message Board">

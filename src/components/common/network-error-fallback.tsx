@@ -1,7 +1,7 @@
-import { ErrorResponse } from "@/data/island";
+import { ErrorResponse } from "@/data/requests";
 import EmphasizedBox from "./decos/emphasized-box";
 
-export default function BackendErrorFallback({ className, error }: { className?: string, error: ErrorResponse }) {
+export default function NetworkErrorFallback({ className, error }: { className?: string, error: ErrorResponse }) {
     const resp = error.error;
 
     return (

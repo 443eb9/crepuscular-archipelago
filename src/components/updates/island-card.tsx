@@ -23,7 +23,7 @@ export default function IslandCard({ island, content, params }: { island: Island
         if (div.offsetHeight >= 250) {
             setExpandable(true);
         }
-    });
+    }, []);
 
     return (
         <div className="relative">

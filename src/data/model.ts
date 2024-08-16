@@ -60,3 +60,15 @@ export type MemorizeForm = {
     message: string,
     ip: string,
 }
+
+export type LinkExchangeData = {
+    avatar: string,
+    name: string,
+    link: string,
+    message: string,
+}
+
+export type ProjectData = {
+    owner: string,
+    name: string,
+}
