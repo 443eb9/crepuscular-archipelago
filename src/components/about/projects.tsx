@@ -7,7 +7,7 @@ export default async function Projects() {
     const projects = await fetchProjectList();
 
     return (
-        <div className="grid md:grid-cols-2 gap-5 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
             {
                 projects instanceof ErrorResponse
                     ? <NetworkErrorFallback error={projects}></NetworkErrorFallback>

@@ -34,7 +34,7 @@ export default async function Page() {
                 <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
                 <AboutSection title="友链" enTitle="Link Exchange">
                     <div className="font-sh-sans italic text-light-dark-neutral">
-                        想加上自己的可以来Github开PR修改backend/storage/json/link_exchange_list.json ヾ(≧▽≦*)o
+                        想加上自己的可以来Github开PR，步骤写在readme里面 ヾ(≧▽≦*)o
                     </div>
                     <Suspense>
                         <LinkExchange></LinkExchange>

@@ -1,4 +1,4 @@
-import { combineApi } from "./backend";
+import { combineApi, combineRemoteApi } from "./backend";
 import { get } from "./requests";
 import { Island, IslandCount, IslandMeta, LinkExchangeData, ProjectData, TagData } from "./model";
 import { Response } from "./requests";

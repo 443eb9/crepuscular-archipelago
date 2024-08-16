@@ -25,7 +25,7 @@ export default async function LinkExchange() {
                                         </EmphasizedBox>
                                         <div className="flex flex-col">
                                             <div className="font-sh-sans text-small">{data.name}</div>
-                                            <div className="">{data.message}</div>
+                                            <div className="text-light-dark-neutral font-sh-sans text-small">{data.message}</div>
                                         </div>
                                     </a>
                                     <div className="mr-4 italic font-bold text-4xl font-bender text-light-unfocused dark:text-dark-unfocused">
