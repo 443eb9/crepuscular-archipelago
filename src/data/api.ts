@@ -23,10 +23,6 @@ export async function fetchIsland(id: number): Promise<Response<Island>> {
     return get(combineApi(`/get/island/${id}`));
 }
 
-export async function fetchLinkExchangeList(): Promise<Response<LinkExchangeData[]>> {
-    return get(combineApi("/get/linkExchange"));
-}
-
 export async function fetchProjectList(): Promise<Response<ProjectData[]>> {
     return get(combineApi("/get/projects"));
 }

@@ -127,14 +127,6 @@ pub struct MemorizeFormMeta {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct LinkExchange {
-    pub avatar: String,
-    pub name: String,
-    pub link: String,
-    pub message: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
 pub struct Project {
     pub owner: String,
     pub name: String,

@@ -9,6 +9,7 @@ import GlobalNavBar from "@/components/common/nav/global-nav-bar";
 import OutlinedBox from "@/components/common/outlined-box";
 import GiscusSection from "@/components/island/giscus";
 import { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
@@ -34,7 +35,7 @@ export default async function Page() {
                 <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
                 <AboutSection title="友链" enTitle="Link Exchange">
                     <div className="font-sh-sans italic text-light-dark-neutral">
-                        想加上自己的可以来Github开PR，步骤写在readme里面 ヾ(≧▽≦*)o
+                        想加上自己的可以来<Link href={"https://github.com/443eb9/aetheric-cargo"}><u>这里</u></Link> ヾ(≧▽≦*)o
                     </div>
                     <Suspense>
                         <LinkExchange></LinkExchange>

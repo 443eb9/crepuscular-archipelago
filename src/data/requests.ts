@@ -7,6 +7,7 @@ export class ErrorResponse {
         this.error = error
     }
 }
+
 export type Response<T> = ErrorResponse | AxiosResponse<T, any>;
 
 const axiosInstance = axios.create();

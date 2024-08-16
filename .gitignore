@@ -4,7 +4,8 @@
 package-lock.json
 
 # rust backend
-/backend/target
+/target
+Cargo.lock
 
 # dependencies
 /node_modules

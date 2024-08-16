@@ -40,7 +40,6 @@ async fn main() -> std::io::Result<()> {
             .service(http::get_island_meta)
             .service(http::get_islands_meta)
             .service(http::get_island)
-            .service(http::get_link_exchange_list)
             .service(http::get_projects_list)
             .service(http::submit_memorize)
             .service(http::download_memorize_db)
