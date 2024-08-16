@@ -2,10 +2,7 @@ use actix_cors::Cors;
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 use sqlx::SqlitePool;
 
-use crate::{
-    memorize::MemorizeValidator,
-    sql::{IslandDB, MemorizeDB},
-};
+use crate::sql::{IslandDB, MemorizeDB};
 
 mod env;
 mod filter;
@@ -31,16 +28,11 @@ async fn main() -> std::io::Result<()> {
             .await
             .unwrap(),
     };
-    let memorize_validation = serde_json::from_str::<MemorizeValidator>(
-        &std::fs::read_to_string(format!("{}/memorize_validator.json", storage_root)).unwrap(),
-    )
-    .unwrap();
 
     HttpServer::new(move || {
         App::new()
             .app_data(Data::new(islands_db.clone()))
             .app_data(Data::new(memorize_db.clone()))
-            .app_data(Data::new(memorize_validation.clone()))
             .wrap(Logger::default())
             .wrap(Cors::permissive())
             .service(http::get_all_tags)

@@ -17,7 +17,7 @@ use serde::Serialize;
 
 use crate::{
     fs::{load_island, load_link_exchange_list, load_projects_list},
-    memorize::{self, MemorizeCoolDown, MemorizeValidator},
+    memorize::{self, MemorizeCoolDown},
     model::{MemorizeForm, MemorizeFormMeta},
     sql::*,
 };
@@ -102,7 +102,6 @@ pub async fn get_projects_list() -> impl Responder {
 pub async fn submit_memorize(
     pool: Data<MemorizeDB>,
     form: Json<MemorizeForm>,
-    validator: Data<MemorizeValidator>,
 ) -> (impl Responder, StatusCode) {
     let meta = MemorizeFormMeta {
         time: Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true),
@@ -130,9 +129,20 @@ pub async fn submit_memorize(
         );
     }
 
-    if let Err(err) = validator.validate(&form) {
+    if form.stu_id.parse::<u32>().is_err() {
         return (
-            HttpResponse::BadRequest().json(err),
+            HttpResponse::BadRequest().json("无效学号"),
+            StatusCode::BAD_REQUEST,
+        );
+    };
+
+    if form.wechat.is_empty()
+        && form.qq.is_empty()
+        && form.phone.is_empty()
+        && form.email.is_empty()
+    {
+        return (
+            HttpResponse::BadRequest().json("请至少留一种联系方式"),
             StatusCode::BAD_REQUEST,
         );
     }
