@@ -3,7 +3,8 @@ import ContentWrapper from "@/components/common/content-wrapper";
 import GlobalNavBar from "@/components/common/nav/global-nav-bar";
 import { Suspense } from "react";
 import { Metadata } from "next";
-import { ErrorResponse, fetchIslandMeta } from "@/data/api";
+import { fetchIslandMeta } from "@/data/api";
+import { ErrorResponse } from "@/data/requests";
 
 export default function Page({ searchParams }: {
     searchParams?: {

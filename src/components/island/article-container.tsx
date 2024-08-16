@@ -1,10 +1,11 @@
 import ArticleBody from "./article-body";
-import { ErrorResponse, fetchIsland, fetchIslandMeta } from "@/data/api";
+import { fetchIsland, fetchIslandMeta } from "@/data/api";
 import ArticleHeader from "./article-header";
 import ArticleFooter from "./article-footer";
 import NetworkErrorFallback from "../common/network-error-fallback";
 import { IslandType } from "@/data/model";
 import { notFound } from "next/navigation";
+import { ErrorResponse } from "@/data/requests";
 
 export default async function ArticleContainer({ id, params }: { id: number, params: URLSearchParams }) {
     const meta = await fetchIslandMeta(id);
