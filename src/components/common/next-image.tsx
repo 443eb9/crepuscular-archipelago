@@ -14,7 +14,8 @@ export default function NextImage({ className, unoptimized, src, alt }: { classN
             sizes="100vw"
             width={0}
             height={0}
-            unoptimized={unoptimized}
+            // unoptimized={unoptimized}
+            unoptimized
         >
         </Image>
     );
