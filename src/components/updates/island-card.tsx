@@ -20,7 +20,7 @@ export default function IslandCard({ island, content, params }: { island: Island
             return;
         }
         const div: HTMLDivElement = container.current;
-        if (div.offsetHeight >= 250) {
+        if (div.offsetHeight > 249) {
             setExpandable(true);
         }
     }, []);

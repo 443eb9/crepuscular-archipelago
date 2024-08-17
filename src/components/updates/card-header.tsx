@@ -2,6 +2,7 @@ import { IslandMeta, IslandType } from "@/data/model";
 import OutlinedBox from "../common/outlined-box";
 import { OSS } from "@/data/backend";
 import { RiMedal2Line } from "react-icons/ri";
+import NextImage from "../common/next-image";
 
 export default function CardHeader({ island }: { island: IslandMeta }) {
     let header;
@@ -29,14 +30,16 @@ function ArticleCardHeader({ island }: { island: IslandMeta }) {
         <div>
             {
                 island.banner &&
-                <OutlinedBox
-                    className="w-full bg-cover mb-2"
-                    style={{
-                        aspectRatio: "10 / 3",
-                        backgroundImage: `url(${OSS}/${island.id}/BANNER.png)`
-                    }}
-                >
-                </OutlinedBox>
+                <div className="mb-2">
+                    <OutlinedBox
+                        className="relative w-full bg-cover"
+                        style={{
+                            aspectRatio: "10 / 3",
+                        }}
+                    >
+                        <NextImage src={`${OSS}/${island.id}/BANNER.png`} alt="Banner"></NextImage>
+                    </OutlinedBox>
+                </div>
             }
         </div>
     );

@@ -1,6 +1,6 @@
-import { combineApi, combineRemoteApi } from "./backend";
+import { combineApi } from "./backend";
 import { get } from "./requests";
-import { Island, IslandCount, IslandMeta, LinkExchangeData, ProjectData, TagData } from "./model";
+import { Island, IslandCount, IslandMeta, ProjectData, TagData } from "./model";
 import { Response } from "./requests";
 
 export async function fetchAllTags(): Promise<Response<TagData[]>> {
