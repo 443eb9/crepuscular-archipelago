@@ -118,6 +118,7 @@ pub async fn query_islands_meta(
     length: u32,
 ) -> Result<Vec<IslandMetaTagged>, Error> {
     let total = query_island_count(pool).await?.count;
+    dbg!(total);
 
     if page * length > total {
         return Ok(Vec::new());
@@ -151,7 +152,7 @@ pub async fn query_islands_meta(
     .zip(metas)
     .try_fold(Vec::new(), |mut acc, (tags, meta)| match tags {
         Ok(tags) => {
-            acc.push(IslandMetaTagged::new(meta, tags));
+            acc.push(dbg!(IslandMetaTagged::new(meta, tags)));
             Ok(acc)
         }
         Err(err) => Err(err),

@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use serde_repr::Serialize_repr;
 use sqlx::{prelude::Type, FromRow, Row};
@@ -24,7 +24,7 @@ pub struct IslandMeta {
     pub title: String,
     pub subtitle: String,
     pub desc: String,
-    pub date: DateTime<Utc>,
+    pub date: Option<NaiveDateTime>,
     pub ty: IslandType,
     pub banner: bool,
     pub wip: bool,
@@ -37,7 +37,7 @@ pub struct IslandMetaTagged {
     pub title: String,
     pub subtitle: String,
     pub desc: String,
-    pub date: DateTime<Utc>,
+    pub date: Option<NaiveDateTime>,
     pub ty: IslandType,
     pub tags: Vec<TagData>,
     pub banner: bool,
