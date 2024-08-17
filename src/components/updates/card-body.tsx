@@ -10,7 +10,7 @@ export default function CardBody({ island: island, content, params }: { island: 
                 island.ty != IslandType.Achievement
                 && <DiagLines className="absolute right-5 size-10" scale="300%"></DiagLines>
             }
-            <div className="flex flex-col">
+            <div className="flex flex-col" style={{maxWidth: "calc(100% - 50px)"}}>
                 <h1 className="font-sh-serif font-bold text-xl mb-1">{island.title}</h1>
                 <h2 className="font-sh-serif font-bold italic text-md mb-1">{island.subtitle}</h2>
             </div>
