@@ -1,5 +1,4 @@
 import BlogInfo from "@/components/updates/blog-info";
-import GlobalNavBar from "@/components/common/nav/global-nav-bar";
 import ContentWrapper from "@/components/common/content-wrapper";
 import BlogIslands from "@/components/updates/blog-islands";
 import { Suspense } from "react";
@@ -32,8 +31,6 @@ export default async function Page({ searchParams }: {
 
     return (
         <main>
-            <GlobalNavBar></GlobalNavBar>
-            <div className="flex-1 h-20"></div>
             <div className="flex flex-col gap-10 pr-2 md:pr-0">
                 <aside className="block md:hidden px-5">
                     <Suspense>

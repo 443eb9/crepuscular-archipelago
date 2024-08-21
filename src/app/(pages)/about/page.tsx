@@ -5,7 +5,6 @@ import Projects from "@/components/about/projects";
 import SelfIntro from "@/components/about/self-intro";
 import ContentWrapper from "@/components/common/content-wrapper";
 import EndpointDottedSegment from "@/components/common/decos/endpoint-dotted-segment";
-import GlobalNavBar from "@/components/common/nav/global-nav-bar";
 import OutlinedBox from "@/components/common/outlined-box";
 import GiscusSection from "@/components/island/giscus";
 import { Metadata } from "next";
@@ -19,8 +18,6 @@ export const metadata: Metadata = {
 export default async function Page() {
     return (
         <main>
-            <GlobalNavBar></GlobalNavBar>
-            <div className="h-20"></div>
             <ContentWrapper className="flex flex-col gap-5">
                 <div className="flex flex-col md:flex-row gap-2">
                     <div className="flex flex-col gap-2 w-full md:w-72">

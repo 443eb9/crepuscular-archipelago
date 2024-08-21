@@ -1,6 +1,5 @@
 import ArticleContainer from "@/components/island/article-container";
 import ContentWrapper from "@/components/common/content-wrapper";
-import GlobalNavBar from "@/components/common/nav/global-nav-bar";
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { fetchIslandMeta } from "@/data/api";
@@ -19,7 +18,6 @@ export default function Page({ searchParams }: {
 
     return (
         <main>
-            <GlobalNavBar></GlobalNavBar>
             <div className="h-20"></div>
             <ContentWrapper className="flex-col gap-5">
                 <Suspense>
