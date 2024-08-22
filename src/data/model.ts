@@ -72,3 +72,14 @@ export type ProjectData = {
     owner: string,
     name: string,
 }
+
+export type Bookmarks = {
+    category: string,
+    content: BookmarkData[],
+}
+
+export type BookmarkData = {
+    title: string,
+    link: string,
+    comment: string,
+}

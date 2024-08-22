@@ -18,7 +18,7 @@ export default function Tag({ tag, showAmount, className }: { tag: TagData, show
                 `border-light-contrast dark:border-dark-contrast
                 hover:bg-light-contrast hover:dark:bg-dark-contrast
                 hover:text-dark-contrast hover:dark:text-light-contrast
-                flex gap-1 border-2 p-1 font-sh-serif text-xs font-bold cursor-pointer ${className}`,
+                flex gap-1 border-2 p-1 font-sh-serif text-xs text-nowrap font-bold cursor-pointer h-7 items-center ${className}`,
                 {
                     "bg-light-contrast dark:bg-dark-contrast text-dark-contrast dark:text-light-contrast": isEnabled,
                 }
