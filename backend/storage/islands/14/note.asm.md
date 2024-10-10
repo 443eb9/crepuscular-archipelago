@@ -1,5 +1,7 @@
 # 汇编学习笔记 Note.asm
 
+此笔记仅适用于8086处理器，x86的...以后再补吧（逃
+
 ## Debug 命令
 
 | 命令             | 全名       | 用途                |
@@ -89,33 +91,45 @@
 
 ### 跳转
 
-| 指令          | 用途                                     | 备注                                          |
-| ------------- | ---------------------------------------- | --------------------------------------------- |
-| `jmp <dst>`   | 跳转至 `dst`                             | 本质上是在修改 `CS` 和 `IP` ，或者只修改 `IP` |
-| `je <addr>`   | 若 `lhs == rhs` 则跳转至 `addr`          | `if ZF == 0 { jump }`                         |
-| `jne <addr>`  | 若 `lhs != rhs` 则跳转至 `addr`          | `if ZF == 1 { jump }`                         |
-| `jb <addr>`   | 若 `lhs < rhs` 则跳转至 `addr`           | `if CF == 0 { jump }`                         |
-| `jnb <addr>`  | 若 `lhs >= rhs` 则跳转至 `addr`          | `if CF == 1 { jump }`                         |
-| `ja <addr>`   | 若 `lhs > rhs` 则跳转至 `addr`           | `if CF == 0 && ZF == 0 { jump }`              |
-| `jna <addr>`  | 若 `lhs >= rhs` 则跳转至 `addr`          | `if CF == 1 \|\| ZF == 1 { jump }`            |
-| `loop <addr>` | `CX -= 1` ，若 `CX != 0` 则跳转至 `addr` | 注意，条件是 `!=` 而不是 `>`                  |
+| 指令                  | 用途                                          | 备注                                          |
+| --------------------- | --------------------------------------------- | --------------------------------------------- |
+| `jmp <addr>`          | 跳转至 `addr`                                 | 本质上是在修改 `CS` 和 `IP` ，或者只修改 `IP` |
+| `je <addr>`           | 若 `lhs == rhs` 则跳转至 `addr`               | `if ZF == 0 { jump }`                         |
+| `jne <addr>`          | 若 `lhs != rhs` 则跳转至 `addr`               | `if ZF == 1 { jump }`                         |
+| `jb <addr>`           | 若 `lhs < rhs` 则跳转至 `addr`                | `if CF == 0 { jump }`                         |
+| `jnb <addr>`          | 若 `lhs >= rhs` 则跳转至 `addr`               | `if CF == 1 { jump }`                         |
+| `ja <addr>`           | 若 `lhs > rhs` 则跳转至 `addr`                | `if CF == 0 && ZF == 0 { jump }`              |
+| `jna <addr>`          | 若 `lhs >= rhs` 则跳转至 `addr`               | `if CF == 1 \|\| ZF == 1 { jump }`            |
+| `loop <addr>`         | `CX -= 1` ，若 `CX != 0` 则跳转至 `addr`      | 注意，条件是 `!=` 而不是 `>`                  |
+| `call <addr>`         | 跳转至 `addr` 直到 `ret` 返回                 | 本质上是在修改 `IP`                           |
+| `call far ptr <addr>` | 跳转至 `addr` 直到 `retf` 返回                | 本质上是在修改 `CS` 和 `IP`                   |
+| `ret`                 | 返回至 `call <addr>` 中， `addr` 的下一个指令 | 本质上是在修改 `IP`                           |
+| `retf`                | 返回至 `call <addr>` 中， `addr` 的下一个指令 | 本质上是在修改 `CS` 和 `IP`                   |
+
+CPU在执行 `call` 指令时，会先将 `IP` 压入栈内，然后在 `ret` 的时候弹栈，就可以获取到 `call` 指令的下一条指令（ `call far ptr` 同理，但是还需要 `CS` ）
 
 ### 特殊
 
-| 指令           | 用途                                                                              | 备注                               |
-| -------------- | --------------------------------------------------------------------------------- | ---------------------------------- |
-| `xchg <a>,<b>` | `swap(a, b)`                                                                      | `swap()` in Rust `std::mem`        |
-| `nop`          | 空指令                                                                            |                                    |
-| `int <x>`      | 产生中断 `x`                                                                      |                                    |
-| `push <src>`   | 将 `SS:SP` 作为栈顶，依次推入 `XH` `XL` ，如果 `src` 是***整个***寄存器的话       | `SP` 同时会回退，比如 `E` 变到 `F` |
-| `pop <dst>`    | 将 `SS:SP` 作为栈顶，依次退出并存至 `XL` `XH` ，如果 `src` 是***整个***寄存器的话 | `SP` 同时会回退，比如 `E` 变到 `F` |
+| 指令           | 用途                                                                              | 备注                        |
+| -------------- | --------------------------------------------------------------------------------- | --------------------------- |
+| `xchg <a>,<b>` | `swap(a, b)`                                                                      | `swap()` in Rust `std::mem` |
+| `nop`          | 空指令                                                                            |                             |
+| `int <x>`      | 产生中断 `x`                                                                      |                             |
+| `push <src>`   | 将 `SS:SP` 作为栈顶，依次推入 `XH` `XL` ，如果 `src` 是***整个***寄存器的话       | `SP` 同时会回退             |
+| `pop <dst>`    | 将 `SS:SP` 作为栈顶，依次退出并存至 `XL` `XH` ，如果 `src` 是***整个***寄存器的话 | `SP` 同时会回退             |
 
-## 伪指令
+## `.asm` 程序源代码
+
+在 `MASM` 中，需要先编译 `masm <src.asm>` ，链接 `link <src.obj>` ，才可以运行 `src.exe`
+
+### 伪指令
 
 给汇编编译器看的指令，不能被直接执行。
 
+### 循环
+
 ```assembly
-assume cs:codesg       ; 将 CS 寄存器别名为 codesg
+assume cs:codesg       ; 将 CS 寄存器别名为 codesg，这里的别名是可以被赋值给寄存器的
 codesg segment         ; 定义代码起点
     mov ax,2
     mov bx,3
@@ -123,9 +137,120 @@ codesg segment         ; 定义代码起点
     f:                 ; 定义函数
         sub ax,cx
         loop f         ; 跳转至函数入口，此处 f 取代函数入口的具体地址
+    int 21H
 codesg ends            ; 定义代码终点
 end                    ; 定义程序终点
 ```
+
+### 函数
+
+```assembly
+assume cs:codesg
+codesg segment
+    mov ax,2
+    mov bx,3
+    add ax,bx
+    call f             ; 调用 f 函数
+    int 21H
+    f:                 ; 定义函数
+        sub ax,cx
+        ret            ; 返回函数
+codesg ends            ; 定义代码终点
+end                    ; 定义程序终点
+```
+
+### 数据使用
+
+```assembly
+assume cs:codesg,ds:data,ss:stack
+data segment
+    db 'hello'         ; 在数据段中使用数据，可以像这样使用ASCII存储字符
+data ends
+
+stack segment
+    dw 10 dup(0)       ; 在栈段使用数据，需要先开一段内存，表示开出10个0
+stack ends
+
+codesg segment
+    dw 0abcH,8086      ; 在代码段中使用数据，16进制不可以字母打头，可以加0来规避
+start:                 ; 必须标记代码起点
+    mov ax,2
+    int 21H
+codesg ends
+end start              ; 以及终点
+```
+
+### `offset` 操作符
+
+```assembly
+assume cs:codesg
+codesg segment
+    mov ax,2
+    mov bx,offset s    ; 将s的偏移地址赋值给BX
+    mov cs:[di],dx     ; 将DX处的指令赋给CS:DI，注意，cs:[di]不是真正的寻址方式
+    int 21H
+    s:
+        mov ax,1
+        loop s
+codesg ends
+end
+```
+
+### `jmp` 的更多用法
+
+这里的用法仅限于源文件内
+
+```assembly
+assume cs:codesg
+codesg segment
+    mov ax,2
+    jmp short s        ; 近转移
+    int 21H
+    s:
+        mov ax,1
+        loop s
+codesg ends
+end
+```
+
+`jmp short/jmp near ptr` 可转移至1字节内距离的指令 `-128~127` ，因为其机器码记录的是距离 ，`jmp far/jmp far ptr` 没有限制，因为其机器码记录的是具体地址。
+
+```assembly
+assume cs:codesg
+codesg segment
+    mov ax,0123H
+    mov ds:[0],ax
+    jmp word ptr ds:[0]
+codesg ends
+end
+```
+
+`word ptr <addr>` 表示从 `addr` 开始的一个字作为偏移地址。
+
+`dword ptr <addr>` 表示从 `addr` 开始的一个双字作为具体地址。
+
+### 数组
+
+```assembly
+assume cs:codesg,ds:data
+data segment
+    arr db 1,2,3,4
+data ends
+
+codesg segment
+    arr dw 1,2,3,4
+    start:
+        mov ax,arr[0]   ; 数组的访问，不写索引就是第0个元素
+        mov ax,data     ; 这三行是获取在其他段内的数据
+        mov ds,ax
+        mov al,arr[2]
+        mov arr[2],ds   ; 反过来修改也可以
+        int 21H
+codesg ends
+end start
+```
+
+本质上此处的 `0` 不是下标，而是在数组原地址进行偏移的字节量。
 
 ## 地址
 
