@@ -2,6 +2,7 @@ import ShaderPreview from "@/components/bookmarks/shader-preview";
 import Shelf from "@/components/bookmarks/shelf";
 import ContentWrapper from "@/components/common/content-wrapper";
 import NetworkErrorFallback from "@/components/common/network-error-fallback";
+import { BookmarksMock } from "@/data/dummy-data";
 import { Bookmarks } from "@/data/model";
 import { ErrorResponse, get } from "@/data/requests";
 import { Metadata } from "next";
@@ -29,7 +30,7 @@ export default async function Page() {
                 {
                     data == undefined
                         ? <NetworkErrorFallback error={bookmarks as ErrorResponse}></NetworkErrorFallback>
-                        : <div className="">
+                        : <div className="flex flex-col gap-5">
                             <div className="flex flex-col gap-5">
                                 {
                                     data.map((data, index) => <Shelf key={index} bookmarks={data}></Shelf>)
