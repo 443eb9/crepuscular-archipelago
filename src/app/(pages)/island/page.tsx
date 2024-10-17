@@ -17,14 +17,11 @@ export default function Page({ searchParams }: {
     const id = Number.parseInt(searchParams?.id ?? "-1");
 
     return (
-        <main>
-            <div className="h-20"></div>
-            <ContentWrapper className="flex-col gap-5">
-                <Suspense>
-                    <ArticleContainer id={id} params={new URLSearchParams(searchParams)}></ArticleContainer>
-                </Suspense>
-            </ContentWrapper>
-        </main>
+        <ContentWrapper className="flex-col gap-5">
+            <Suspense>
+                <ArticleContainer id={id} params={new URLSearchParams(searchParams)}></ArticleContainer>
+            </Suspense>
+        </ContentWrapper>
     );
 }
 
