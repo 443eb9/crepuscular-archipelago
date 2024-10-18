@@ -888,7 +888,17 @@ fn sample_cascaded_shadow_map(light: u32, position_ws: vec3f, position_vs: vec4f
 }
 ```
 
-这个 `poisson_disk` 是一种叫做 Poisson Disk Sampling 的采样方法的实现，或者说是从 CPU 预先计算好，送来 GPU 直接使用的采样点。
+这个 `poisson_disk` 是一种叫做 Poisson Disk Sampling 的采样方法的实现，或者说是从 CPU 预先计算好，送来 GPU 直接使用的采样点。我这里使用了 `fast_poisson` 这个库直接生成了一个 Poisson Disk 然后传给 GPU 。
+
+```rust
+fast_poisson::Poisson2D::new()
+    .into_iter()
+    .for_each(|mut x| {
+        x[0] = (x[0] * 2. - 1.) * Self::SHADOW_SAMPLE_RADIUS;
+        x[1] = (x[1] * 2. - 1.) * Self::SHADOW_SAMPLE_RADIUS;
+        raw_poisson_disk.extend_from_slice(bytemuck::bytes_of(&x));
+    });
+```
 
 Poisson Disk Sampling 可以让不同采样点之间分布尽量均匀，之后可能会单独出一篇文章来讲这个东西。
 

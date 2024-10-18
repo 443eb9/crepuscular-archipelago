@@ -10,6 +10,7 @@ import ResetFilters from "./reset-filters";
 import NetworkErrorFallback from "../common/network-error-fallback";
 import ZhEnLabel from "../common/zh-en-label";
 import { ErrorResponse } from "@/data/requests";
+import Link from "next/link";
 
 export default async function BlogInfo() {
     const tags = await fetchAllTags();
@@ -39,6 +40,10 @@ export default async function BlogInfo() {
                 <ZhEnLabel zh="高级过滤" en="Advanced Filtering" className="font-bold text-large"></ZhEnLabel>
                 <AdvancedFilters></AdvancedFilters>
                 <ResetFilters></ResetFilters>
+                <EndpointDottedSegment thickness={1} dotSize={5} style="dashed" className="my-2"></EndpointDottedSegment>
+                <div className="italic font-bender font-bold">
+                    RSS Feed: <Link href={"https://443eb9.dev/rss"} className="underline">https://443eb9.dev/rss</Link>
+                </div>
             </div>
         </OutlinedBox>
     );

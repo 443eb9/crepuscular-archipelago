@@ -4,7 +4,7 @@ import Footer from "@/components/common/footer";
 import GlobalNavBar from "@/components/common/nav/global-nav-bar";
 import ThemeSwither from "@/components/common/nav/theme-switcher";
 
-export const revalidate = 3600;
+export const revalidate = 600;
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
