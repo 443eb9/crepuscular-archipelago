@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 
             if (!isWip || wip != 0)
                 feed.item({
-                    title: wip + title,
+                    title: isWip + title,
                     description: island.desc,
                     url: island.ty == IslandType.Article ? `https://443eb9.dev/island?id=${island.id}` : "https://443eb9.dev/updates",
                     date: island.date,
