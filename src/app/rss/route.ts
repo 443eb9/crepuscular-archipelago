@@ -3,7 +3,13 @@ import { IslandType } from "@/data/model";
 import { ErrorResponse } from "@/data/requests";
 import RSS from "rss";
 
-export async function GET() {
+export async function GET(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const len = parseInt(searchParams.get("len") ?? "10");
+    const wip = parseInt(searchParams.get("wip") ?? "1");
+    const tags = parseInt(searchParams.get("tags") ?? "0");
+    const advf = parseInt(searchParams.get("advf") ?? "0");
+
     const feed = new RSS({
         title: "晨暮群岛 Crepuscular Archipelago",
         description: "不为人知的岛屿群，欢迎来玩~ ♪(´▽｀)",
@@ -13,18 +19,20 @@ export async function GET() {
         webMaster: "443eb9@gmail.com",
     });
 
-    const blogs = await fetchIslandsMeta(0, 10, 0, 0);
+    const blogs = await fetchIslandsMeta(0, len, tags, advf);
     if (!(blogs instanceof ErrorResponse)) {
         blogs.data.reverse().forEach(island => {
             const title = island.subtitle.length == 0 ? island.title : `${island.title} - ${island.subtitle}`;
-            const wip = island.wip ? "[WIP] " : "";
-            feed.item({
-                title: wip + title,
-                description: island.desc,
-                url: island.ty == IslandType.Article ? `https://443eb9.dev/island?id=${island.id}` : "https://443eb9.dev/updates",
-                date: island.date,
-                categories: [IslandType[island.ty]]
-            });
+            const isWip = island.wip ? "[WIP] " : "";
+
+            if (!isWip || wip != 0)
+                feed.item({
+                    title: wip + title,
+                    description: island.desc,
+                    url: island.ty == IslandType.Article ? `https://443eb9.dev/island?id=${island.id}` : "https://443eb9.dev/updates",
+                    date: island.date,
+                    categories: [IslandType[island.ty]]
+                });
         });
     }
 
