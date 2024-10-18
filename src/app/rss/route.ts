@@ -15,11 +15,13 @@ export async function GET() {
 
     const blogs = await fetchIslandsMeta(0, 10, 0, 0);
     if (!(blogs instanceof ErrorResponse)) {
-        blogs.data.forEach(island => {
+        blogs.data.reverse().forEach(island => {
+            const title = island.subtitle.length == 0 ? island.title : `${island.title} - ${island.subtitle}`;
+            const wip = island.wip ? "[WIP] " : "";
             feed.item({
-                title: island.subtitle.length == 0 ? island.title : `${island.title} - ${island.subtitle}`,
+                title: wip + title,
                 description: island.desc,
-                url: island.ty == IslandType.Article ? `https://443eb9.dev/island?id=${island.id}` : "",
+                url: island.ty == IslandType.Article ? `https://443eb9.dev/island?id=${island.id}` : "https://443eb9.dev/updates",
                 date: island.date,
                 categories: [IslandType[island.ty]]
             });
