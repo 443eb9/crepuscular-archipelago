@@ -83,3 +83,16 @@ export type BookmarkData = {
     link: string,
     comment: string,
 }
+
+export type SteamGame = {
+    appid: number,
+    name: string,
+    playtime_2weeks: number,
+    playtime_forever: number,
+    img_icon_url: string,
+}
+
+export type SteamInfo = {
+    totalCount: number,
+    games: SteamGame[],
+}

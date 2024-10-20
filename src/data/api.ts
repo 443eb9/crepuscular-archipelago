@@ -1,6 +1,6 @@
 import { combineApi } from "./backend";
-import { get } from "./requests";
-import { Island, IslandCount, IslandMeta, ProjectData, TagData } from "./model";
+import { ErrorResponse, get } from "./requests";
+import { Island, IslandCount, IslandMeta, ProjectData, SteamInfo, TagData } from "./model";
 import { Response } from "./requests";
 
 export async function fetchAllTags(): Promise<Response<TagData[]>> {
@@ -25,4 +25,14 @@ export async function fetchIsland(id: number): Promise<Response<Island>> {
 
 export async function fetchProjectList(): Promise<Response<ProjectData[]>> {
     return get(combineApi("/get/projects"));
+}
+
+export async function fetchSteamInfo(): Promise<Response<{ response: SteamInfo }>> {
+    const key = process.env.STEAM_KEY;
+    const userId = process.env.STEAM_USER_ID;
+    if (key && userId) {
+        return get(`https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${key}&steamid=${userId}&format=json`);
+    } else {
+        return new ErrorResponse(undefined);
+    }
 }

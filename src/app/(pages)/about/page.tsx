@@ -3,6 +3,7 @@ import LinkExchange from "@/components/about/link-exchange";
 import MeInfo from "@/components/about/me-info";
 import Projects from "@/components/about/projects";
 import SelfIntro from "@/components/about/self-intro";
+import SteamInfo from "@/components/about/steam-info";
 import ContentWrapper from "@/components/common/content-wrapper";
 import EndpointDottedSegment from "@/components/common/decos/endpoint-dotted-segment";
 import OutlinedBox from "@/components/common/outlined-box";
@@ -42,6 +43,12 @@ export default async function Page() {
                 <AboutSection title="一些项目" enTitle="Projects">
                     <Suspense>
                         <Projects></Projects>
+                    </Suspense>
+                </AboutSection>
+                <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
+                <AboutSection title="Steam最近游玩" enTitle="Steam Recently Played">
+                    <Suspense>
+                        <SteamInfo></SteamInfo>
                     </Suspense>
                 </AboutSection>
                 <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
