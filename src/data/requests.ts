@@ -1,9 +1,9 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 
 export class ErrorResponse {
-    error: undefined | AxiosResponse<any, any> | string
+    error: undefined | AxiosResponse<any, any>
 
-    constructor(error: undefined | AxiosResponse<any, any> | string) {
+    constructor(error: undefined | AxiosResponse<any, any>) {
         this.error = error
     }
 }

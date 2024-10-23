@@ -33,7 +33,7 @@ export async function fetchSteamRecentlyPlayedGames(): Promise<Response<{ respon
     if (key && userId) {
         return get(`https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${key}&steamid=${userId}&format=json`);
     } else {
-        return new ErrorResponse("Missing steam configuration on server side.");
+        return new ErrorResponse(undefined);
     }
 }
 
@@ -43,6 +43,6 @@ export async function fetchSteamPlayerSummaries(): Promise<Response<{response: S
     if (key && userId) {
         return get(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${key}&steamids=${userId}`);
     } else {
-        return new ErrorResponse("Missing steam configuration on server side.");
+        return new ErrorResponse(undefined);
     }
 }
