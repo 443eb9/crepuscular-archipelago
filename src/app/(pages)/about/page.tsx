@@ -46,7 +46,7 @@ export default async function Page() {
                     </Suspense>
                 </AboutSection>
                 <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
-                <AboutSection title="Steam最近游玩" enTitle="Steam Recently Played">
+                <AboutSection title="Steam状态" enTitle="Steam Status">
                     <Suspense>
                         <SteamInfo></SteamInfo>
                     </Suspense>

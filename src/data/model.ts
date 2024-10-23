@@ -92,7 +92,14 @@ export type SteamGame = {
     img_icon_url: string,
 }
 
-export type SteamInfo = {
+export type SteamRecentlyPlayedGames = {
     totalCount: number,
     games: SteamGame[],
+}
+
+export type SteamPlayerSummaries = {
+    players: [{
+        lastlogoff: number,
+        personastate: number,
+    }]
 }

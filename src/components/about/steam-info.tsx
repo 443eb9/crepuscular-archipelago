@@ -1,39 +1,75 @@
-import { fetchSteamInfo } from "@/data/api";
+import { fetchSteamPlayerSummaries, fetchSteamRecentlyPlayedGames } from "@/data/api";
 import { ErrorResponse } from "@/data/requests";
 import NetworkErrorFallback from "../common/network-error-fallback";
 import EmphasizedBox from "../common/decos/emphasized-box";
 import Link from "next/link";
 
 export default async function SteamInfo() {
-    const info = await fetchSteamInfo();
+    const recentlyPlayed = await fetchSteamRecentlyPlayedGames();
+    const summary = await fetchSteamPlayerSummaries();
+    let state, color, lastLogoff;
+    if (!(summary instanceof ErrorResponse)) {
+        const player = summary.data.response.players[0];
+        lastLogoff = new Date(player.lastlogoff * 1000);
+        switch (player.personastate) {
+            case 0:
+                state = "Offline";
+                color = "grey";
+                break;
+            case 1:
+                state = "Online";
+                color = "greenyellow";
+                break;
+            case 2:
+                state = "Busy";
+                color = "red";
+                break;
+            case 3:
+                state = "Away";
+                color = "yellow";
+                break;
+        }
+    }
 
     return (
         <div className="mt-4">
             {
-                info instanceof ErrorResponse
-                    ? <NetworkErrorFallback error={info}></NetworkErrorFallback>
-                    : <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        {
-                            info.data.response.games.map((game, i) =>
-                                <div key={i} className="font-bender">
-                                    <Link href={`https://store.steampowered.com/app/${game.appid}`} target="_blank">
-                                        <EmphasizedBox
-                                            className="flex justify-between items-center gap-2 p-2"
-                                            thickness={3}
-                                            length={10}
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                <img src={`http://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`} alt="" />
-                                                <h1 className="font-bold text-xl">{game.name}</h1>
-                                            </div>
-                                            <div className="">
-                                                <h2>{game.playtime_forever / 60} Hours</h2>
-                                            </div>
-                                        </EmphasizedBox>
-                                    </Link>
-                                </div>
-                            )
-                        }
+                recentlyPlayed instanceof ErrorResponse
+                    ? <NetworkErrorFallback error={recentlyPlayed}></NetworkErrorFallback>
+                    : <div className="flex flex-col gap-2 font-bender">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            {
+                                recentlyPlayed.data.response.games.map((game, i) =>
+                                    <div key={i}>
+                                        <Link href={`https://store.steampowered.com/app/${game.appid}`} target="_blank">
+                                            <EmphasizedBox
+                                                className="flex justify-between items-center gap-2 p-2"
+                                                thickness={3}
+                                                length={10}
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <img src={`http://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`} alt="" />
+                                                    <h1 className="font-bold text-xl">{game.name}</h1>
+                                                </div>
+                                                <div className="">
+                                                    <h2>{Math.round(game.playtime_forever / 60 * 10) / 10} Hours</h2>
+                                                </div>
+                                            </EmphasizedBox>
+                                        </Link>
+                                    </div>
+                                )
+                            }
+                        </div>
+                        <div className="flex flex-col text-lg font-bold italic">
+                            <div className="flex gap-2">
+                                <h1>Current State :</h1>
+                                <div style={{ color: color }}>{state}</div>
+                            </div>
+                            <div className="flex gap-2">
+                                <h1>Last Logoff :</h1>
+                                <div className="">{lastLogoff?.toLocaleString()}</div>
+                            </div>
+                        </div>
                     </div>
             }
         </div>

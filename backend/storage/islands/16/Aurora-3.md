@@ -708,13 +708,13 @@ for (id, light) in &original.directional_lights {
     let mut cascade_maps = [TextureViewId::default(); Self::CASCADE_COUNT];
 
     for (i_cascade, cascade_view) in cascade_views.enumerate() {
-        cascade_directional_desc.base_array_layer = directional_index;
+        directional_desc.base_array_layer = directional_index;
         let texture_view_id = TextureViewId(Uuid::new_v4());
         cascade_maps[i_cascade] = texture_view_id;
 
         assets.texture_views.insert(
             texture_view_id,
-            directional_shadow_maps.create_view(&cascade_directional_desc),
+            directional_shadow_maps.create_view(&directional_desc),
         );
 
         // bf_cascade_views.push(&cascade_view);
@@ -745,7 +745,7 @@ pub fn calculate_cascade_view(
     GpuCamera {
         view: cascade_view,
         proj: cascade_proj,
-        position_ws: center,
+        position_ws: Default::default(),
 -        exposure: 0.,
 +        // SPECIAL USE CASE!!
 +        exposure: match camera_proj_slice {
@@ -819,6 +819,70 @@ fn debug_cascade_color(light: u32, position_vs: vec4f) -> vec3f {
 ![](https://oss.443eb9.dev/islandsmedia/16/cascade-with-debug-color.png)
 
 红色部分为第一层 Cascade ，绿色部分为第二层。我这里只分了两层，你也可以通过修改上文代码中的常量 `Self::CASCADE_COUNT` 来增加更多层数。（前提是你的代码没有写错（逃
+
+### 基于法线的Shadow Bias Normal Offset Bias
+
+之前我们使用的 Shadow Bias 是一个写死在采样前的常量，这就会在 Shadow Map 过大时，导致漏光，过小时，导致 Shadow Acne 无法被消除。
+
+针对这一问题，Holbert 提出了 `Normal Offset Bias` ，通过在世界空间，沿法线方向，以法线方向和灯光方向夹角的 sin 值为比例，位移顶点。
+
+```diff
+pub fn calculate_cascade_view(
+    camera_transform: Transform,
+    camera_proj_slice: CameraProjection,
+    light_dir: Vec3,
+) -> GpuCamera {
+    ...
+
+    GpuCamera {
+        view: cascade_view,
+        proj: cascade_proj,
+-       position_ws: Default::default(),
++       position_ws: match camera_proj_slice {
++           CameraProjection::Perspective(_) => center,
++           CameraProjection::Orthographic(_) => light_dir,
+        },
+        // SPECIAL USE CASE!!
+        exposure: match camera_proj_slice {
+            CameraProjection::Perspective(proj) => proj.near,
+            CameraProjection::Orthographic(proj) => proj.near,
+        },
+    }
+}
+```
+
+```rust
+@vertex
+fn vertex(in: VertexInput) -> @builtin(position) vec4f {
+    var light_dir = vec3f(0.);
+    if (camera.proj[3][3] == 1.) {
+        light_dir = camera.position; // Orthographic
+    } else {
+        light_dir = normalize(camera.position - in.position); // Perspective
+    }
+    let offset = math::sin_between(light_dir, in.normal);
+    return camera.proj * camera.view * vec4f(in.position - in.normal * offset, 1.);
+}
+```
+
+他还提出，根据 Shadow Map 所覆盖的深度范围，适当缩放 `offset` ，但是我比较懒就没做（
+
+不过，只要在采样前，继续给 `frag_depth` 加微量的偏移，好像也可以更好地消灭 acne 。（个人经验判断
+
+![](16/normal-offset-bias.png)
+
+> 使用 Normal Offset Bias + 0.001 constant shadow bias ，看不太出 artifact ，虽然有些地方漏光了，但是经过滤波之后应该就看不出来了。
+
+### Sample Distribution Shadow Maps
+
+还有一个很重要的问题，由于 CSM 只会考虑可以被看到的物体，对于看不到的物体，是不考虑的。这就可能导致一个问题
+
+![](16/inappropriate-cull0.png)
+![](16/inappropriate-cull1.png)
+
+**不可见的物体投射的阴影，很可能是可见的。**
+
+这就需要引入另一项技术：Sample Distribution Shadow Maps 。~~或者把近平面乘个 100 ，看起来差不多的。~~
 
 ### 滤波 Filtering
 
