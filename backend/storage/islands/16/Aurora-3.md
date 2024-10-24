@@ -8,6 +8,9 @@
 - [Bevy Engine](https://bevyengine.org/)
 - [LearnOpenGL - CSM](https://learnopengl.com/Guest-Articles/2021/CSM)
 - [Tutorial 49: Cascaded Shadow Mapping](https://ogldev.org/www/tutorial49/tutorial49.html)
+- [高质量实时渲染：实时软阴影](https://yangwc.com/2021/04/14/PCSS/)
+- [Chapter 10. Parallel-Split Shadow Maps on Programmable GPUs](https://developer.nvidia.com/gpugems/gpugems3/part-ii-light-and-shadows/chapter-10-parallel-split-shadow-maps-programmable-gpus)
+- [Sample Distribution Shadow Maps](http://visual-computing.intel-research.net/art/publications/sdsm/) [(Web Archive)](https://web.archive.org/web/20140619082230/http://visual-computing.intel-research.net/art/publications/sdsm/)
 
 实际上阴影的原理非常简单，但是实现起来还是有不少细节需要注意。
 
@@ -21,7 +24,7 @@
 
 > *一张深度缓冲材质，为了便于查看，每个深度值都已被四次方处理。*
 
-## 阴影材质 Shadow Map
+## 阴影贴图 Shadow Map
 
 阴影，本质上就是深度浅的东西遮住了深度深的东西，那么我们要做的事就变得非常简单了，通过比较当前片元的深度，和之前最近的片元的深度，如果当前片元更深，那么就说明被遮挡。
 
@@ -460,7 +463,7 @@ fn sample_point_shadow_map(light: u32, relative_pos: vec3f) -> f32 {
 
 这样就大功告成啦！
 
-## 结束？ Ending?
+## 结束了？ Ending?
 
 没啥好说的，放两张图就完了，好看，无需多盐（
 
@@ -468,13 +471,11 @@ fn sample_point_shadow_map(light: u32, relative_pos: vec3f) -> f32 {
 
 ![](https://oss.443eb9.dev/islandsmedia/16/point-and-spot.png)
 
-## 进一步优化 Further Optimization
-
 以为这就结束了？诶~当然没有，正片开始！
 
 *由于这之前的内容和这之后的内容编写时，中间经历过一次重构，因此会有些许差别，但是不影响理解。~~总不能有人照抄代码吧不会吧不会吧？~~*
 
-### 级联阴影贴图 Cascaded Shadow Map
+## 级联阴影贴图 Cascaded Shadow Map / Parallel-Split Shadow Maps
 
 还记得我们刚才在方向光处挖的坑吗？我们直接使用方向光自己的位置，会造成很严重的问题：当物体离方向光太远了，导致方向光的视锥体无法覆盖这个物体，那么阴影就消失了。
 
@@ -483,6 +484,8 @@ fn sample_point_shadow_map(light: u32, relative_pos: vec3f) -> f32 {
 对于我们看到的物体，他们都是在 Main View 的视锥体内的，也就是说，只要这些在视锥体内的物体能够在 PBR 时采样到正确的深度就可以了。
 
 那么，是不是可以假象，方向光对应的 Light View 处在 Main View 视锥体的正中央，方向依旧是方向光本身的朝向，而 Projection Matrix 的边界，就是能完全包裹住整个 Main View 的最小的 AABB 呢？
+
+### 计算视锥体包围盒 Calculate Frustum AABB
 
 我们先算出 Main View 的视锥体的每一个顶点在世界空间中的位置：
 
@@ -649,7 +652,10 @@ for (id, light) in &original.directional_lights {
 
 可以看到，此时我们不管如何移动摄像头，都可以正常看到阴影。
 
+
 ![](https://oss.443eb9.dev/islandsmedia/16/cascade-intro.png)
+
+### 切片视锥体 Frustum Partitioning
 
 但是可以看到阴影的质量非常差，此时就是 Cascade 这个词真正出场了。
 
@@ -695,11 +701,70 @@ pub fn frustum_slice(proj: CameraProjection, count: u32) -> Vec<CameraProjection
 }
 ```
 
-但是这其实会导致一个问题，当近平面太近的时候，前几层会很浅很浅，不过这个可以通过一些 `clamp` 之类的手段解决，这里就不讨论了。
+但是这其实会导致一个问题，当近平面太近的时候，前几层会很浅很浅。
+
+在 *GPU Gems 3* 中，提到了一种方法，就是将对数级的距离和均匀分布的距离做插值：
+
+$$
+C_i = \lambda C^{log}_i + (1 - \lambda) C^{uni}_i
+$$
+
+```rust
+pub fn frustum_slice(proj: CameraProjection, count: u32, lambda: f32) -> Vec<CameraProjection> {
+    match proj {
+        CameraProjection::Perspective(proj) => {
+            let r = (proj.far / proj.near).powf(1. / count as f32);
+            let d = proj.far - proj.near;
+            let mut near = proj.near;
+
+            (0..count)
+                .map(|x| {
+                    let x = x as f32;
+                    let d_log = proj.near * r.powf(x);
+                    let d_uni = proj.near + d / count as f32 * (x + 1.);
+                    let d_slice = lambda * d_log + (1. - lambda) * d_uni;
+                    near += d_slice;
+
+                    CameraProjection::Perspective(PerspectiveProjection {
+                        near: near - d_slice,
+                        far: near,
+                        ..proj
+                    })
+                })
+                .collect()
+        }
+        CameraProjection::Orthographic(proj) => {
+            let r = (proj.far / proj.near).powf(1. / count as f32);
+            let d = proj.far - proj.near;
+            let mut near = proj.near;
+
+            (0..count)
+                .map(|x| {
+                    let x = x as f32;
+                    let d_log = proj.near * r.powf(x);
+                    let d_uni = proj.near + d / count as f32 * (x + 1.);
+                    let d_slice = lambda * d_log + (1. - lambda) * d_uni;
+                    near += d_slice;
+
+                    CameraProjection::Orthographic(OrthographicProjection {
+                        near: near - d_slice,
+                        far: near,
+                        ..proj
+                    })
+                })
+                .collect()
+        }
+    }
+}
+```
+
+就很好地解决刚刚的问题啦。
 
 这样，我们就可以对每一份都生成一个 Light View
 
 ```rust
+let sliced_frustums = frustum_slice(original.camera.projection, Self::CASCADE_COUNT as u32, 0.5);
+
 for (id, light) in &original.directional_lights {
     let cascade_views = sliced_frustums.clone().into_iter().map(|proj| {
         Self::calculate_cascade_view(original.camera.transform, proj, light.direction)
@@ -726,6 +791,8 @@ for (id, light) in &original.directional_lights {
     self.directional_views.insert(*id, cascade_maps);
 }
 ```
+
+### 采样阴影贴图 Sampling Shadow Map
 
 那又出来一个新的问题：我怎么知道当前正在渲染的这个片元，到底是在 Main View 的哪个个切片里呢？我要使用哪一个 Light View 呢？
 
@@ -820,9 +887,59 @@ fn debug_cascade_color(light: u32, position_vs: vec4f) -> vec3f {
 
 红色部分为第一层 Cascade ，绿色部分为第二层。我这里只分了两层，你也可以通过修改上文代码中的常量 `Self::CASCADE_COUNT` 来增加更多层数。（前提是你的代码没有写错（逃
 
-### 基于法线的Shadow Bias Normal Offset Bias
+### 剔除问题 Inappropriate Culling Issue
+
+但是，在你在场景中闲逛，欣赏阴影之时，突然发现，在一些刁钻的角度，阴影会消失：
+
+![](https://oss.443eb9.dev/islandsmedia/16/inappropriate-cull0.png)
+![](https://oss.443eb9.dev/islandsmedia/16/inappropriate-cull1.png)
+
+问题的原因很简单，对于在 Main View 中不可见的物体，其投射的阴影却很可能是可见的。
+
+对于 `x` 和 `y` 方向上的空间，可以乘一个略大的数字解决
+
+```diff
+pub fn calculate_cascade_view(
+    camera_transform: Transform,
+    camera_proj_slice: CameraProjection,
+    light_dir: Vec3,
+) -> GpuCamera {
+    ...
+-   let half_aabb_size = (cascade_proj_aabb.max - cascade_proj_aabb.min) * 0.5;
++   let half_aabb_size = (cascade_proj_aabb.max - cascade_proj_aabb.min) * 0.6;
+    ...
+}
+```
+
+对于 `z` 方向的，可以使用图形 API 的功能，在 WGPU 中，可以通过设置 `RenderPipelineDescriptor` 中，`primitive` field 的 `unclipped_depth` 为 `true` ，这样，就不会有深度裁剪了。
+
+```rust
+RenderPipelineDescriptor {
+    label: Some("shadow_mapping_pipeline"),
+    ...
+    primitive: PrimitiveState {
+        unclipped_depth: true,
+        ..Default::default()
+    },
+}
+```
+
+不过这需要一个 `wgpu::Features::DEPTH_CLIP_CONTROL` ，记得在 `request_device` 的时候加上。
+
+```rust
+DeviceDescriptor {
+    label: None,
+    required_features: Features::DEPTH_CLIP_CONTROL,
+    required_limits: Default::default(),
+    memory_hints: MemoryHints::Performance,
+}
+```
+
+## 消灭 Acne Eliminate Acne
 
 之前我们使用的 Shadow Bias 是一个写死在采样前的常量，这就会在 Shadow Map 过大时，导致漏光，过小时，导致 Shadow Acne 无法被消除。
+
+### 基于法线的Shadow Bias Normal Offset Bias
 
 针对这一问题，Holbert 提出了 `Normal Offset Bias` ，通过在世界空间，沿法线方向，以法线方向和灯光方向夹角的 sin 值为比例，位移顶点。
 
@@ -854,80 +971,78 @@ pub fn calculate_cascade_view(
 ```rust
 @vertex
 fn vertex(in: VertexInput) -> @builtin(position) vec4f {
-    var light_dir = vec3f(0.);
+    var offset = 0.;
     if (camera.proj[3][3] == 1.) {
-        light_dir = camera.position; // Orthographic
+        offset = math::sin_between(camera.position, in.normal) * (204.8 / f32(config.dir_map_resolution));
     } else {
-        light_dir = normalize(camera.position - in.position); // Perspective
+        offset = math::sin_between(camera.position - in.position, in.normal) * (12.8 / f32(config.point_map_resolution));
     }
-    let offset = math::sin_between(light_dir, in.normal);
-    return camera.proj * camera.view * vec4f(in.position - in.normal * offset, 1.);
+    return camera.proj * camera.view * vec4f(in.position - offset * in.normal, 1.);
 }
 ```
 
-他还提出，根据 Shadow Map 所覆盖的深度范围，适当缩放 `offset` ，但是我比较懒就没做（
+他还提出，根据 Shadow Map 所覆盖的深度范围，适当缩放 `offset` 。
 
-不过，只要在采样前，继续给 `frag_depth` 加微量的偏移，好像也可以更好地消灭 acne 。（个人经验判断
+个人经验，在采样前，继续给 `frag_depth` 加微量的偏移，更好地消灭 acne 。
 
-![](16/normal-offset-bias.png)
+![](https://oss.443eb9.dev/islandsmedia/16/normal-offset-bias.png)
 
 > 使用 Normal Offset Bias + 0.001 constant shadow bias ，看不太出 artifact ，虽然有些地方漏光了，但是经过滤波之后应该就看不出来了。
 
-### Sample Distribution Shadow Maps
+### Second-Depth Shadow Mapping
 
-还有一个很重要的问题，由于 CSM 只会考虑可以被看到的物体，对于看不到的物体，是不考虑的。这就可能导致一个问题
+听上去很高级对吧，实际上只要把模型的正面剔除，就可以*几乎*完全消灭 Acne 了。
 
-![](16/inappropriate-cull0.png)
-![](16/inappropriate-cull1.png)
+```diff
+RenderPipelineDescriptor {
+    label: Some("shadow_mapping_pipeline"),
+    ...
+    primitive: PrimitiveState {
++       cull_mode: Some(Face::Front),
+        unclipped_depth: true,
+        ..Default::default()
+    },
+}
+```
 
-**不可见的物体投射的阴影，很可能是可见的。**
+除了其他一些情况，例如 RTR 中提到的，在边缘和很薄的物体上依然会出现问题。
 
-这就需要引入另一项技术：Sample Distribution Shadow Maps 。~~或者把近平面乘个 100 ，看起来差不多的。~~
+因此 Sousa 提出，对于方向光，只需渲染模型的正面，对于室内的，点光源，则只渲染背面比较好。
 
-### 滤波 Filtering
+## 滤波 Filtering
 
 诶，好还没结束呢（（
 
-上文一直在实现硬阴影，接下来我们希望这个阴影可以更自然更好看
+上文一直在实现硬阴影，接下来我们希望这个阴影可以更自然更好看。
 
-#### PCF Percentage Closer Filtering
+### PCF Percentage Closer Filtering
 
 最简单最无脑的方法，在我们目标片元周围采一些样然后取平均值。我们在片元的 `position_vs` ，也就是 Light View 的 View 空间下，保持 `z` 不变，通过修改 `x,y` 分量来在周围采样。
 
 ```rust
-fn pcf_filtering(position_vs: vec4f, cascade: u32) -> f32 {
+// `math::view_to_uv_and_depth` returns `[uv.x, uv.y, clip.z / clip.w]`
+fn pcf_filtering(position_vs: vec4f, cascade: u32, radius: f32) -> f32 {
     var shadow = 0.;
-    for (var iteration = 0u; iteration < #SHADOW_SAMPLE_COUNT; iteration += 1u) {
-        let offseted = position_vs + vec4f(poisson_disk[iteration], 0., 0.);
-        let position_cs = cascade_views[cascade].proj * offseted;
-        let ndc = position_cs.xy / position_cs.w;
-        var uv = (ndc + 1.) / 2.;
-        uv.y = 1. - uv.y;
+    for (var iteration = 0u; iteration < config.samples; iteration += 1u) {
+        let view = position_vs + vec4f(poisson_disk[iteration] * radius, 0., 0.);
+        var offseted = math::view_to_uv_and_depth(view, cascade_views[cascade].proj);
 
-        if (uv.x > 0. && uv.x < 1. && uv.y > 0. && uv.y < 1.) {
-            let frag_depth = saturate(position_cs.z) - 0.005;
-            shadow += textureSampleCompare(directional_shadow_map, shadow_map_sampler, uv, cascade, frag_depth);
+        if (offseted.x > 0. && offseted.x < 1. && offseted.y > 0. && offseted.y < 1.) {
+            let frag_depth = saturate(offseted.z);
+            shadow += textureSampleCompare(directional_shadow_map, shadow_map_sampler, offseted.xy, cascade, frag_depth);
         } else {
             shadow += 1.;
         }
     }
-    return shadow / f32(#SHADOW_SAMPLE_COUNT);
+    return shadow / f32(config.samples);
 }
 
-fn no_filtering(position_cs: vec4f, uv: vec2f, cascade: u32) -> f32 {
-    let frag_depth = saturate(position_cs.z) - 0.002;
+fn no_filtering(uv: vec2f, depth: f32, cascade: u32) -> f32 {
+    let frag_depth = saturate(depth) - 0.001;
     return textureSampleCompare(directional_shadow_map, shadow_map_sampler, uv, cascade, frag_depth);
 }
 
-fn sample_directional_shadow_map(position_vs: vec4f, position_cs: vec4f, uv: vec2f, cascade: u32) -> f32 {
-#ifdef PCF
-    return pcf_filtering(position_vs, cascade);
-#else
-    return no_filtering(position_cs, uv, cascade);
-#endif
-}
-
-fn sample_cascaded_shadow_map(light: u32, position_ws: vec3f, position_vs: vec4f) -> f32 {
+fn sample_cascaded_shadow_map(light: u32, position_ws: vec3f, position_vs: vec4f, light_width: f32) -> f32 {
     for (var cascade = #SHADOW_CASCADES - 1u; cascade >= 0u; cascade -= 1u) {
         let index = light * #SHADOW_CASCADES + cascade;
         // SPECIAL USE CASE FOR exposure FIELD!!
@@ -935,13 +1050,14 @@ fn sample_cascaded_shadow_map(light: u32, position_ws: vec3f, position_vs: vec4f
         // If this point is inside this frustum slice.
         if abs(position_vs.z) > abs(cascade_views[index].exposure) {
             let position_vs = cascade_views[index].view * vec4f(position_ws, 1.);
-            let position_cs = cascade_views[cascade].proj * position_vs;
-            let ndc = position_cs.xy / position_cs.w;
-            var uv = (ndc + 1.) / 2.;
-            uv.y = 1. - uv.y;
+            let uv_and_depth = math::view_to_uv_and_depth(position_vs, cascade_views[index].proj);
 
-            if (uv.x > 0. && uv.x < 1. && uv.y > 0. && uv.y < 1.) {
-                return sample_directional_shadow_map(position_vs, position_cs, uv, cascade);
+            if (uv_and_depth.x > 0. && uv_and_depth.x < 1. && uv_and_depth.y > 0. && uv_and_depth.y < 1.) {
+                #ifdef PCF
+                    return pcf_filtering(position_vs, cascade, config.pcf_radius);
+                #else
+                    return no_filtering(uv_and_depth.xy, uv_and_depth.z, cascade);
+                #endif
             } else {
                 return 1.;
             }
@@ -958,8 +1074,8 @@ fn sample_cascaded_shadow_map(light: u32, position_ws: vec3f, position_vs: vec4f
 fast_poisson::Poisson2D::new()
     .into_iter()
     .for_each(|mut x| {
-        x[0] = (x[0] * 2. - 1.) * Self::SHADOW_SAMPLE_RADIUS;
-        x[1] = (x[1] * 2. - 1.) * Self::SHADOW_SAMPLE_RADIUS;
+        x[0] = x[0] * 2. - 1.;
+        x[1] = x[1] * 2. - 1.;
         raw_poisson_disk.extend_from_slice(bytemuck::bytes_of(&x));
     });
 ```
@@ -970,12 +1086,63 @@ Poisson Disk Sampling 可以让不同采样点之间分布尽量均匀，之后�
 
 ![](https://oss.443eb9.dev/islandsmedia/16/pcf.png)
 
-可以看到阴影变软了很多。
+可以看到阴影变软了很多，而且在不同的 cascade 之间，因为阴影贴图分辨率问题导致的 artifact 也几乎看不出来了。
 
-> 为什么第一层的地板看上去颜色深一点
+### PCSS Percentage-Closer Soft Shadows
 
-因为 Shadow Acne 又回来了，如果凑近了看，可以发现是很细小的 Acne 在干扰图像品质。在滤波这一小节，我们暂时不管，这个问题，以及，也许你已经发现了，在摄像机角度较为刁钻的时候，部分阴影会消失，这个问题，我们都放到最后讲。
+然鹅，PCF 有一个很明显的问题，那就是，阴影的边缘模糊程度是相同的，但是根据我们的常识，当遮挡物距离阴影的接收者越远，阴影理论上会更模糊。
 
-#### PCSS Percentage-Closer Soft Shadows
+2005 年 Fernando 的 PCSS 算法的提出，模拟了这种效果。
 
-正在施工
+$$
+w_{sample} = w_{light} \frac{d_r - d_o}{d_r}
+$$
+
+其中，$d_r$ 表示接收者，也就是我们渲染的片元，到灯光的距离，$d_o$ 表示遮挡者到灯光的距离，也就是 Shadow Map 中的值。
+
+在实现中，我们需要通过多次采样，估计 $d_o$ 。
+
+```rust
+fn pcss_filtering(position_vs: vec4f, cascade: u32, radius: f32, light_width: f32) -> f32 {
+    let frag_depth = math::view_to_uv_and_depth(position_vs, cascade_views[cascade].proj).z;
+    var avg_blocker_depth = 0.;
+    var cnt = 0;
+    for (var iteration = 0u; iteration < config.samples; iteration += 1u) {
+        let view = position_vs + vec4f(poisson_disk[iteration] * radius, 0., 0.);
+        var offseted = math::view_to_uv_and_depth(view, cascade_views[cascade].proj);
+
+        if (offseted.x > 0. && offseted.x < 1. && offseted.y > 0. && offseted.y < 1.) {
+            let shadow_depth = textureSample(directional_shadow_map, shadow_texture_sampler, offseted.xy, cascade);
+            if (frag_depth > shadow_depth) {
+                avg_blocker_depth += shadow_depth;
+                cnt += 1;
+            }
+        }
+    }
+    avg_blocker_depth /= f32(max(cnt, 1));
+
+    let penumbra = max(frag_depth - avg_blocker_depth, 0.) / frag_depth * light_width;
+
+    return pcf_filtering(position_vs, cascade, penumbra);
+}
+```
+
+![](https://oss.443eb9.dev/islandsmedia/16/pcss.png)
+
+可以看到，这个斜着放的盒子下面的阴影是由硬到软的。
+
+### 更进一步 Further More
+
+上述方法，都是在采样的时候进行各种算法，过滤，然而还可以直接对 Shadow Map 本身先进行滤波。例如 Donnelly & Lauritzen 的 Variance Shadow Map (VSM) 和 Salvi & Annen ，同时提出的 Exponential Variance Shadow Map (EVSM) ，还有 Christoph Peters & Reinhard Klein 提出的 Moment Shadow Mapping (MSM) 。~~（但是我实在是懒得去实现了~~
+
+还有，PSSM 也有问题，他计算的 Light View 的视锥体没有紧紧地包围所有物体，这使得在交界处可能会出现比较明显的 artifact ，所以他还有改良版 Sample Distribution Shadow Maps (SDSM) 。
+
+同时，半透明物体的阴影也是一大问题，我们可以在之后，学习到半透明物体渲染的时候再进行。
+
+另外，还有非基于图像的方法，例如基于 SDF 的阴影。
+
+## 结束了？ Ending?
+
+是的，这次是真的结束了，不过这个文章依然还有一些进步空间。希望我后期会去优化（
+
+![](https://oss.443eb9.dev/islandsmedia/16/final.png)
