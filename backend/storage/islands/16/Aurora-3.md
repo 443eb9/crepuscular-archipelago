@@ -792,6 +792,14 @@ for (id, light) in &original.directional_lights {
 }
 ```
 
+![](https://oss.443eb9.dev/islandsmedia/16/csm-depth-0.png)
+
+> Cascade 0 light space depth.
+
+![](https://oss.443eb9.dev/islandsmedia/16/csm-depth-1.png)
+
+> Cascade 1 light space depth.
+
 ### 采样阴影贴图 Sampling Shadow Map
 
 那又出来一个新的问题：我怎么知道当前正在渲染的这个片元，到底是在 Main View 的哪个个切片里呢？我要使用哪一个 Light View 呢？
