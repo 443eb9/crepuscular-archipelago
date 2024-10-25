@@ -1029,14 +1029,14 @@ RenderPipelineDescriptor {
 
 ```rust
 // `math::view_to_uv_and_depth` returns `[uv.x, uv.y, clip.z / clip.w]`
-fn pcf_filtering(position_vs: vec4f, cascade: u32, radius: f32) -> f32 {
+fn dir_pcf_filtering(position_vs: vec4f, cascade: u32, radius: f32) -> f32 {
     var shadow = 0.;
     for (var iteration = 0u; iteration < config.samples; iteration += 1u) {
-        let view = position_vs + vec4f(poisson_disk[iteration] * radius, 0., 0.);
+        let view = position_vs + vec4f(poisson_disk[iteration].xy * radius, 0., 0.);
         var offseted = math::view_to_uv_and_depth(view, cascade_views[cascade].proj);
 
         if (offseted.x > 0. && offseted.x < 1. && offseted.y > 0. && offseted.y < 1.) {
-            let frag_depth = saturate(offseted.z);
+            let frag_depth = saturate(offseted.z) - CONSTANT_BIAS;
             shadow += textureSampleCompare(directional_shadow_map, shadow_map_sampler, offseted.xy, cascade, frag_depth);
         } else {
             shadow += 1.;
@@ -1045,8 +1045,8 @@ fn pcf_filtering(position_vs: vec4f, cascade: u32, radius: f32) -> f32 {
     return shadow / f32(config.samples);
 }
 
-fn no_filtering(uv: vec2f, depth: f32, cascade: u32) -> f32 {
-    let frag_depth = saturate(depth) - 0.001;
+fn dir_no_filtering(uv: vec2f, depth: f32, cascade: u32) -> f32 {
+    let frag_depth = saturate(depth) - CONSTANT_BIAS;
     return textureSampleCompare(directional_shadow_map, shadow_map_sampler, uv, cascade, frag_depth);
 }
 
@@ -1062,9 +1062,9 @@ fn sample_cascaded_shadow_map(light: u32, position_ws: vec3f, position_vs: vec4f
 
             if (uv_and_depth.x > 0. && uv_and_depth.x < 1. && uv_and_depth.y > 0. && uv_and_depth.y < 1.) {
                 #ifdef PCF
-                    return pcf_filtering(position_vs, cascade, config.pcf_radius);
+                    return dir_pcf_filtering(position_vs, cascade, config.dir_pcf_radius);
                 #else
-                    return no_filtering(uv_and_depth.xy, uv_and_depth.z, cascade);
+                    return dir_no_filtering(uv_and_depth.xy, uv_and_depth.z, cascade);
                 #endif
             } else {
                 return 1.;
@@ -1111,17 +1111,17 @@ $$
 在实现中，我们需要通过多次采样，估计 $d_o$ 。
 
 ```rust
-fn pcss_filtering(position_vs: vec4f, cascade: u32, radius: f32, light_width: f32) -> f32 {
+fn dir_pcss_filtering(position_vs: vec4f, cascade: u32, radius: f32, light_width: f32) -> f32 {
     let frag_depth = math::view_to_uv_and_depth(position_vs, cascade_views[cascade].proj).z;
     var avg_blocker_depth = 0.;
     var cnt = 0;
     for (var iteration = 0u; iteration < config.samples; iteration += 1u) {
-        let view = position_vs + vec4f(poisson_disk[iteration] * radius, 0., 0.);
+        let view = position_vs + vec4f(poisson_disk[iteration].xy * radius, 0., 0.);
         var offseted = math::view_to_uv_and_depth(view, cascade_views[cascade].proj);
 
         if (offseted.x > 0. && offseted.x < 1. && offseted.y > 0. && offseted.y < 1.) {
             let shadow_depth = textureSample(directional_shadow_map, shadow_texture_sampler, offseted.xy, cascade);
-            if (frag_depth > shadow_depth) {
+            if (frag_depth - CONSTANT_BIAS > shadow_depth) {
                 avg_blocker_depth += shadow_depth;
                 cnt += 1;
             }
@@ -1131,13 +1131,88 @@ fn pcss_filtering(position_vs: vec4f, cascade: u32, radius: f32, light_width: f3
 
     let penumbra = max(frag_depth - avg_blocker_depth, 0.) / frag_depth * light_width;
 
-    return pcf_filtering(position_vs, cascade, penumbra);
+    return dir_pcf_filtering(position_vs, cascade, penumbra);
 }
 ```
 
 ![](https://oss.443eb9.dev/islandsmedia/16/pcss.png)
 
 可以看到，这个斜着放的盒子下面的阴影是由硬到软的。
+
+### 点光源 Omnidirectional Lights
+
+点光源的软阴影与方向光的实现方式是一样的，但是由于他使用的是 Cube Map ，位移需要在三维空间中进行。
+
+```rust
+fast_poisson::Poisson3D::new()
+    .into_iter()
+    .take(Self::CONFIG.samples as usize)
+    .for_each(|x| {
+        let p = Vec3::from_array(x) * 2. - 1.;
+        raw_poisson_disk.extend_from_slice(bytemuck::bytes_of(&p.extend(0.)));
+    });
+```
+
+由于软阴影的原因本质上就是光源是有大小的，因此，光源的位移，可以看作对采样点的位移。
+
+> 那为什么不直接位移光源呢？
+
+因为要重新生成 Shadow Map 。
+
+```rust
+fn point_pcf_filtering(relative_pos: vec3f, frag_depth: f32, light: u32, radius: f32) -> f32 {
+    var shadow = 0.;
+    for (var iteration = 0u; iteration < config.samples; iteration += 1u) {
+        let offseted = relative_pos + poisson_disk[config.samples + iteration].xyz * radius;
+        shadow += textureSampleCompare(point_shadow_map, shadow_map_sampler, offseted, light, frag_depth - CONSTANT_BIAS);
+    }
+    return shadow / f32(config.samples);
+}
+
+fn point_pcss_filtering(relative_pos: vec3f, frag_depth: f32, light: u32, radius: f32, light_width: f32) -> f32 {
+    var avg_blocker_depth = 0.;
+    var cnt = 0;
+    for (var iteration = 0u; iteration < config.samples; iteration += 1u) {
+        let offseted = relative_pos + poisson_disk[config.samples + iteration].xyz * radius;
+
+        let shadow_depth = textureSample(point_shadow_map, shadow_texture_sampler, offseted, light);
+        if (frag_depth - CONSTANT_BIAS > shadow_depth) {
+            avg_blocker_depth += shadow_depth;
+            cnt += 1;
+        }
+    }
+    avg_blocker_depth /= f32(max(cnt, 1));
+
+    let penumbra = max(frag_depth - avg_blocker_depth, 0.) / frag_depth * light_width;
+
+    return point_pcf_filtering(relative_pos, frag_depth, light, penumbra);
+}
+
+fn point_no_filtering(relative_pos: vec3f, frag_depth: f32, light: u32) -> f32 {
+    return textureSampleCompare(point_shadow_map, shadow_map_sampler, relative_pos, light, frag_depth - CONSTANT_BIAS);
+}
+
+fn sample_point_shadow_map(light: u32, relative_pos: vec3f, light_width: f32) -> f32 {
+    // Find the axis with largest absolute value.
+    let abs_pos = abs(relative_pos);
+    let frag_depth = -max(abs_pos.x, max(abs_pos.y, abs_pos.z));
+
+    // Do a simple projection.
+    let proj = point_light_views[light].proj;
+    let v = vec2f(frag_depth * proj[2][2] + proj[3][2], -frag_depth);
+    let projected_depth = v.x / v.y;
+
+#ifdef PCF
+    return point_pcf_filtering(relative_pos, projected_depth, light, config.point_pcf_radius);
+#else ifdef PCSS
+    return point_pcss_filtering(relative_pos, projected_depth, light, config.point_pcss_radius, light_width);
+#else // PCF
+    return point_no_filtering(relative_pos, projected_depth, light);
+#endif // PCF
+}
+```
+
+![](https://oss.443eb9.dev/islandsmedia/16/omni-soft-shadow.png)
 
 ### 更进一步 Further More
 
