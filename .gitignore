@@ -1,6 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 backend/storage/islands/wip
+src/data/dummy-data.ts
 /.idea
 package-lock.json
 
