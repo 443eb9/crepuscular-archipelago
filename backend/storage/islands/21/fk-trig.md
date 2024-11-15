@@ -8,36 +8,97 @@
 
 ### 三角函数
 
-$$ (\sin x)\prime=\cos x $$
-$$ (\cos x)\prime=-\sin x $$
-$$ (\tan x)\prime=\frac{1}{\cos^2 x}=\sec^2 x $$
-$$ (\cot x)\prime=-\frac{1}{\sin^2 x}=-\csc^2 x $$
-$$ (\sec x)\prime=\sec x\tan x $$
-$$ (\csc x)\prime=-\csc x\cot x $$
+$$
+(\sin x)\prime=\cos x
+$$
+
+$$
+(\cos x)\prime=-\sin x
+$$
+
+$$
+(\tan x)\prime=\frac{1}{\cos^2 x}=\sec^2 x
+$$
+
+$$
+(\cot x)\prime=-\frac{1}{\sin^2 x}=-\csc^2 x
+$$
+
+$$
+(\sec x)\prime=\sec x\tan x
+$$
+
+$$
+(\csc x)\prime=-\csc x\cot x
+$$
 
 ### 反三角函数
 
-$$ (\arcsin x)\prime=\frac{1}{\sqrt{1-x^2}} (\lvert x\rvert \lt 1) $$
-$$ (\arccos x)\prime=-\frac{1}{\sqrt{1-x^2}} (\lvert x\rvert \lt 1) $$
-$$ (\arctan x)\prime=\frac{1}{1+x^2} $$
-$$ (\operatorname{arccot} x)\prime=-\frac{1}{1+x^2} $$
-$$ (\operatorname{arcsec} x)\prime=\frac{1}{\lvert x \rvert\sqrt{x^2-1}} (\lvert x\rvert \gt 1) $$
-$$ (\operatorname{arccsc} x)\prime=-\frac{1}{\lvert x\rvert\sqrt{x^2-1}} (\lvert x\rvert \gt 1) $$
+$$
+(\arcsin x)\prime=\frac{1}{\sqrt{1-x^2}} (\lvert x\rvert \lt 1)
+$$
+
+$$
+(\arccos x)\prime=-\frac{1}{\sqrt{1-x^2}} (\lvert x\rvert \lt 1)
+$$
+
+$$
+(\arctan x)\prime=\frac{1}{1+x^2}
+$$
+
+$$
+(\operatorname{arccot} x)\prime=-\frac{1}{1+x^2}
+$$
+
+$$
+(\operatorname{arcsec} x)\prime=\frac{1}{\lvert x \rvert\sqrt{x^2-1}} (\lvert x\rvert \gt 1)
+$$
+
+$$
+(\operatorname{arccsc} x)\prime=-\frac{1}{\lvert x\rvert\sqrt{x^2-1}} (\lvert x\rvert \gt 1)
+$$
 
 ## 积化和差
 
-$$ \sin a\sin b=\frac{1}{2}(\cos (a-b)-\cos (a+b)) $$
-$$ \cos a\cos b=\frac{1}{2}(\cos (a-b)+\cos (a+b)) $$
-$$ \sin a\cos b=\frac{1}{2}(\sin (a+b)+\sin (a-b)) $$
-$$ \cos a\sin b=\frac{1}{2}(\sin (a+b)-\sin (a-b)) $$
+$$
+\sin a\sin b=\frac{1}{2}(\cos (a-b)-\cos (a+b))
+$$
 
-$$ \sin a+\sin b=2\sin\frac{a+b}{2}\cos\frac{a-b}{2} $$
-$$ \sin a-\sin b=2\cos\frac{a+b}{2}\sin\frac{a-b}{2} $$
-$$ \cos a+\cos b=2\cos\frac{a+b}{2}\cos\frac{a-b}{2} $$
-$$ \cos a-\cos b=-2\sin\frac{a+b}{2}\sin\frac{a-b}{2} $$
+$$
+\cos a\cos b=\frac{1}{2}(\cos (a-b)+\cos (a+b))
+$$
 
-$$ \tan a\tan b=\frac{\cos (a-b)-\cos (a+b)}{\cos (a-b)+\cos (a+b)} $$
-$$ \tan a\cot b=\frac{\sin (a+b)+\sin (a-b)}{\sin (a+b)-\sin (a-b)} $$
+$$
+\sin a\cos b=\frac{1}{2}(\sin (a+b)+\sin (a-b))
+$$
+
+$$
+\cos a\sin b=\frac{1}{2}(\sin (a+b)-\sin (a-b))
+$$
+
+$$
+\sin a+\sin b=2\sin\frac{a+b}{2}\cos\frac{a-b}{2}
+$$
+
+$$
+\sin a-\sin b=2\cos\frac{a+b}{2}\sin\frac{a-b}{2}
+$$
+
+$$
+\cos a+\cos b=2\cos\frac{a+b}{2}\cos\frac{a-b}{2}
+$$
+
+$$
+\cos a-\cos b=-2\sin\frac{a+b}{2}\sin\frac{a-b}{2}
+$$
+
+$$
+\tan a\tan b=\frac{\cos (a-b)-\cos (a+b)}{\cos (a-b)+\cos (a+b)}
+$$
+
+$$
+\tan a\cot b=\frac{\sin (a+b)+\sin (a-b)}{\sin (a+b)-\sin (a-b)}
+$$
 
 ## 和差公式
 
