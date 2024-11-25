@@ -23,14 +23,14 @@ export async function GET(request: Request) {
     if (!(blogs instanceof ErrorResponse)) {
         blogs.data.reverse().forEach(island => {
             const title = island.subtitle.length == 0 ? island.title : `${island.title} - ${island.subtitle}`;
-            const isWip = island.wip ? "[WIP] " : "";
+            const isWip = island.date == undefined ? "[WIP] " : "";
 
             if (!isWip || wip != 0)
                 feed.item({
                     title: isWip + title,
                     description: island.desc,
                     url: island.ty == IslandType.Article ? `https://443eb9.dev/island?id=${island.id}` : "https://443eb9.dev/updates",
-                    date: island.date,
+                    date: island.date == undefined ? "" : island.date,
                     categories: [IslandType[island.ty]]
                 });
         });

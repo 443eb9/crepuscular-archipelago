@@ -221,6 +221,44 @@ $$
 {\displaystyle \cos x=1-{\frac {x^{2}}{2!}}+{\frac {x^{4}}{4!}}-{\frac {x^{6}}{6!}}+\cdots =\sum _{n=0}^{\infty }{\frac {(-1)^{n}x^{2n}}{(2n)!}}.}
 $$
 
+## 积分公式
+
+$$
+\int\tan xdx=-\ln\lvert\cos x\rvert+C
+$$
+
+$$
+\int\cot xdx=-\ln\lvert\sin x\rvert+C
+$$
+
+$$
+\int\sec xdx=-\ln\lvert\sec x+\tan x\rvert+C
+$$
+
+$$
+\int\csc xdx=-\ln\lvert\csc x-\cot x\rvert+C
+$$
+
+$$
+\int\frac{dx}{a^2+x^2}=\frac{1}{a}\arctan\frac{x}{a}+C
+$$
+
+$$
+\int\frac{dx}{x^2-a^2}=\frac{1}{2a}\ln\left|\frac{x-a}{x+a}\right|+c
+$$
+
+$$
+\int\frac{dx}{\sqrt{a^2-x^2}}=\arcsin\frac{x}{a}+C
+$$
+
+$$
+\int\frac{dx}{\sqrt{x^2+a^2}}=\ln(x+\sqrt{x^2+a^2})+C
+$$
+
+$$
+\int\frac{dx}{\sqrt{x^2-a^2}}=\ln(x+\sqrt{x^2-a^2})+C
+$$
+
 ## 沃利斯乘积
 
 $$

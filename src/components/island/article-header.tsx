@@ -7,6 +7,7 @@ import DiagLines from "../common/decos/diag-lines";
 import { TbClockQuestion } from "react-icons/tb";
 import SpTag from "../common/sp-tag";
 import HoverInvertBox from "../common/anim/hover-invert-box";
+import { formatDate } from "@/data/util";
 
 export default function ArticleHeader({ meta, params }: { meta: IslandMeta, params: URLSearchParams }) {
     params.delete("id");
@@ -31,11 +32,11 @@ export default function ArticleHeader({ meta, params }: { meta: IslandMeta, para
                 </div>
                 <div className="flex gap-1">
                     {meta.tags.map((tag) => <Tag tag={tag} key={tag.id}></Tag>)}
-                    {meta.wip && <SpTag content="WIP"></SpTag>}
+                    {meta.date == undefined && <SpTag content="WIP"></SpTag>}
                     {!meta.is_original && <SpTag content="非原创"></SpTag>}
                 </div>
                 {
-                    meta.wip &&
+                    meta.date == undefined &&
                     <div className="text-light-contrast bg-warn">
                         注意：这是一篇尚未完成的文章，其中可能存在不恰当的表达甚至错误！
                     </div>
@@ -48,14 +49,14 @@ export default function ArticleHeader({ meta, params }: { meta: IslandMeta, para
                 }
                 <div className="flex items-center gap-2">
                     {
-                        meta.wip
+                        meta.date == undefined
                             ? <div className="flex items-center gap-1">
                                 <TbClockQuestion className="text-lg"></TbClockQuestion>
                                 <div className="font-bender">Future</div>
                             </div>
                             : <div className="flex items-center gap-1">
                                 <FaClock></FaClock>
-                                <div className="font-bender">{new Date(meta.date).toLocaleDateString()}</div>
+                                <div className="font-bender">{formatDate(new Date(meta.date))}</div>
                             </div>
                     }
                 </div>

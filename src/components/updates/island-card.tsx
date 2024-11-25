@@ -29,7 +29,7 @@ export default function IslandCard({ island, content, params }: { island: Island
         <div className="relative">
             <OutlinedBox className={clsx(
                 "flex flex-col justify-between p-4 shadow-md gap-2 min-h-[200px]",
-                { "border-dashed": island.wip }
+                { "border-dashed": island.date == undefined }
             )}>
                 <div>
                     <CardHeader island={island}></CardHeader>
@@ -57,7 +57,7 @@ export default function IslandCard({ island, content, params }: { island: Island
                 </div>
                 <CardFooter island={island}></CardFooter>
             </OutlinedBox>
-            <div className={clsx("", { "hidden": island.wip })}>
+            <div className={clsx("", { "hidden": island.date == undefined })}>
                 <div className="absolute w-2 h-24 bg-light-contrast dark:bg-dark-contrast -bottom-4 -right-4"></div>
                 <div className="absolute w-8 h-2 bg-light-contrast dark:bg-dark-contrast -bottom-4 right-36"></div>
                 <div className="absolute w-36 h-2 bg-light-contrast dark:bg-dark-contrast -bottom-4 -right-4"></div>

@@ -21,11 +21,10 @@ export type IslandMeta = {
     title: string,
     subtitle: string,
     desc: string,
-    date: Date,
+    date: Date | undefined,
     ty: IslandType,
     tags: TagData[],
     banner: boolean,
-    wip: boolean,
     is_original: boolean,
 }
 

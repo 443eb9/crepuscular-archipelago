@@ -4,6 +4,7 @@ import SpTag from "../common/sp-tag";
 import { TbClockQuestion } from "react-icons/tb";
 import { FaClock } from "react-icons/fa6";
 import License from "./license";
+import { formatDate } from "@/data/util";
 
 export default function CardFooter({ island }: { island: IslandMeta }) {
     return (
@@ -16,7 +17,7 @@ export default function CardFooter({ island }: { island: IslandMeta }) {
                                 <Tag tag={tag} key={tag.id}></Tag>
                             ))
                         }
-                        {island.wip && <SpTag content="WIP"></SpTag>}
+                        {island.date == undefined && <SpTag content="WIP"></SpTag>}
                         {!island.is_original && <SpTag content="非原创"></SpTag>}
                         <div className="hidden md:block">
                             {
@@ -26,7 +27,7 @@ export default function CardFooter({ island }: { island: IslandMeta }) {
                     </div>
                 </div>
                 {
-                    island.wip
+                    island.date == undefined
                         ? <div className="flex items-center gap-1">
                             <TbClockQuestion className="text-lg"></TbClockQuestion>
                             <div className="font-bender">Future</div>
@@ -37,7 +38,7 @@ export default function CardFooter({ island }: { island: IslandMeta }) {
                                 className="font-bender"
                                 suppressHydrationWarning
                             >
-                                {new Date(island.date).toLocaleDateString()}
+                                {formatDate(new Date(island.date))}
                             </div>
                         </div>
                 }

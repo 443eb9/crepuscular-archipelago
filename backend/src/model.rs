@@ -27,7 +27,6 @@ pub struct IslandMeta {
     pub date: Option<NaiveDateTime>,
     pub ty: IslandType,
     pub banner: bool,
-    pub wip: bool,
     pub is_original: bool,
 }
 
@@ -41,7 +40,6 @@ pub struct IslandMetaTagged {
     pub ty: IslandType,
     pub tags: Vec<TagData>,
     pub banner: bool,
-    pub wip: bool,
     pub is_original: bool,
 }
 
@@ -56,7 +54,6 @@ impl IslandMetaTagged {
             ty: meta.ty,
             tags,
             banner: meta.banner,
-            wip: meta.wip,
             is_original: meta.is_original,
         }
     }
