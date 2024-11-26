@@ -232,11 +232,11 @@ $$
 $$
 
 $$
-\int\sec xdx=-\ln\lvert\sec x+\tan x\rvert+C
+\int\sec xdx=\ln\lvert\sec x+\tan x\rvert+C
 $$
 
 $$
-\int\csc xdx=-\ln\lvert\csc x-\cot x\rvert+C
+\int\csc xdx=\ln\lvert\csc x-\cot x\rvert+C
 $$
 
 $$
