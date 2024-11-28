@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 use serde_repr::Serialize_repr;
 use sqlx::{prelude::Type, FromRow, Row};
@@ -9,6 +9,17 @@ pub enum IslandType {
     Article,
     Achievement,
     Note,
+}
+
+impl IslandType {
+    pub fn from_str(s: &str) -> Option<Self> {
+        match s {
+            "Article" => Some(Self::Article),
+            "Achievement" => Some(Self::Achievement),
+            "Note" => Some(Self::Note),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Debug, Serialize, FromRow)]
@@ -22,9 +33,9 @@ pub struct TagData {
 pub struct IslandMeta {
     pub id: u32,
     pub title: String,
-    pub subtitle: String,
-    pub desc: String,
-    pub date: Option<NaiveDateTime>,
+    pub subtitle: Option<String>,
+    pub desc: Option<String>,
+    pub date: Option<DateTime<FixedOffset>>,
     pub ty: IslandType,
     pub banner: bool,
     pub is_original: bool,
@@ -32,13 +43,30 @@ pub struct IslandMeta {
     pub is_deleted: bool,
 }
 
+impl Default for IslandMeta {
+    fn default() -> Self {
+        Self {
+            id: 0,
+            title: Default::default(),
+            subtitle: None,
+            desc: None,
+            date: None,
+            ty: IslandType::Achievement,
+            banner: false,
+            is_original: true,
+            is_encrypted: false,
+            is_deleted: false,
+        }
+    }
+}
+
 #[derive(Debug, Serialize)]
 pub struct IslandMetaTagged {
     pub id: u32,
     pub title: String,
-    pub subtitle: String,
-    pub desc: String,
-    pub date: Option<NaiveDateTime>,
+    pub subtitle: Option<String>,
+    pub desc: Option<String>,
+    pub date: Option<DateTime<FixedOffset>>,
     pub ty: IslandType,
     pub tags: Vec<TagData>,
     pub banner: bool,

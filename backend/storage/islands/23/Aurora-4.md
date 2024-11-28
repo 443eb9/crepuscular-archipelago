@@ -1,3 +1,12 @@
+---
+title: 从零开始的渲染引擎-Aurora Chapter 4
+subtitle: 基础后处理 Basic Post-processing
+desc: 基础后处理效果，包括 镜头光晕 Lens Flare，泛光 Bloom，景深 Depth of Field，运动模糊 Motion Blur。还有小部分关于 HDR 和伽马校正的前置内容。
+ty: Article
+date: 2024-11-27T21:21:08.000+08:00
+tags: 图形学,Shader
+---
+
 # 从零开始的渲染引擎-Aurora Chapter 4 基础后处理 Basic Post-processing
 
 > The world was not wheeling anymore. It was just very clear and bright and inclined to blur at the edges. -- Ernest Hemingway

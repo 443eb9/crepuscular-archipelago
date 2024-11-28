@@ -1,3 +1,13 @@
+---
+title: 从零开始的渲染引擎-Aurora Chapter 1
+subtitle: 使用WGPU的具体实现 Implementation Using WGPU
+desc: 第一章，介绍使用WGPU进行的具体实现。主要是Shader编写，以及其他有关光照的细节，比如光强度的单位，光的衰减，曝光等等。
+ty: Article
+date: 2024-06-11T15:03:10.000+08:00
+banner: true
+tags: 图形学,Shader
+---
+
 # 从零开始的渲染引擎-Aurora Chapter 1 使用WGPU的具体实现 Implementation In WGPU
 
 > *You can't do better design with a computer, but you can speed up your work enormously.* --Wim Crouwel

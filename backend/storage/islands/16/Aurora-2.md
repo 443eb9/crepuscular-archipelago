@@ -1,3 +1,12 @@
+---
+title: 从零开始的渲染引擎-Aurora Chapter 2
+subtitle: 阴影映射 Shadow Mapping
+desc: 第二章，是时候出现影子了！主要是阴影的原理，实现细节，和一些优化的方法，例如CSM，和滤波的方法，例如PCF等。
+ty: Article
+date: 2024-10-24T21:40:56.000+08:00
+tags: 图形学,Shader
+---
+
 # 从零开始的渲染引擎-Aurora Chapter 2 阴影映射 Shadow Mapping
 
 > *All the variety, all the charm, all the beauty of life is made up of light and shadow.* --Tolstoy
