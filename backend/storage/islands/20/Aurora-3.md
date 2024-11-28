@@ -4,6 +4,7 @@ subtitle: 屏幕空间环境光遮蔽 Screen Space Ambient Occlusion
 desc: 环境光遮蔽，HBAO算法的实现
 ty: Article
 date: 2024-11-14T21:11:12.000+08:00
+banner: true
 tags: 图形学,Shader
 ---
 

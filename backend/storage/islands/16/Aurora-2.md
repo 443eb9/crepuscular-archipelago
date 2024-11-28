@@ -4,6 +4,7 @@ subtitle: 阴影映射 Shadow Mapping
 desc: 第二章，是时候出现影子了！主要是阴影的原理，实现细节，和一些优化的方法，例如CSM，和滤波的方法，例如PCF等。
 ty: Article
 date: 2024-10-24T21:40:56.000+08:00
+banner: true
 tags: 图形学,Shader
 ---
 
