@@ -17,6 +17,8 @@ pub fn load_projects_list() -> Vec<Project> {
 }
 
 pub async fn init_cache() -> SqlitePool {
+    let _ = std::fs::create_dir_all(get_island_cache_root());
+
     let conn_opt = SqliteConnectOptions::new()
         .filename(get_island_cache_root().join("archipelago.sqlite3"))
         .create_if_missing(true);
