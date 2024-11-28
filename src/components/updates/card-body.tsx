@@ -2,15 +2,16 @@ import { IslandMeta, IslandType } from "@/data/model";
 import { ReactNode } from "react";
 import DiagLines from "../common/decos/diag-lines";
 import Link from "next/link";
+import { searchParamToString } from "@/data/search-param-util";
 
-export default function CardBody({ island: island, content, params }: { island: IslandMeta, content?: ReactNode, params: URLSearchParams }) {
+export default function CardBody({ island, content, params }: { island: IslandMeta, content?: ReactNode, params: URLSearchParams }) {
     const body = (
         <div>
             {
                 island.ty != IslandType.Achievement
                 && <DiagLines className="absolute right-5 size-10" scale="300%"></DiagLines>
             }
-            <div className="flex flex-col" style={{maxWidth: "calc(100% - 50px)"}}>
+            <div className="flex flex-col" style={{ maxWidth: "calc(100% - 50px)" }}>
                 <h1 className="font-sh-serif font-bold text-xl mb-1">{island.title}</h1>
                 <h2 className="font-sh-serif font-bold italic text-md mb-1">{island.subtitle}</h2>
             </div>
@@ -26,7 +27,7 @@ export default function CardBody({ island: island, content, params }: { island: 
 
     if (island.ty == IslandType.Article) {
         return (
-            <Link href={`/island?id=${island.id}&${params.toString()}`}>
+            <Link href={`/island?id=${island.id}&${searchParamToString(params)}`}>
                 {body}
             </Link>
         );

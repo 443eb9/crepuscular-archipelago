@@ -101,7 +101,7 @@ pub async fn query_island_count_filtered(
 pub async fn query_island_meta(pool: &IslandDB, id: u32) -> Result<IslandMetaTagged, Error> {
     let (meta, tags) = join!(
         sqlx::query_as(
-            "SELECT id, title, subtitle, desc, ty, date, banner, is_original FROM islands
+            "SELECT id, title, subtitle, desc, ty, date, banner, is_original, is_encrypted, is_deleted FROM islands
             WHERE id = ?"
         )
         .bind(id)
@@ -130,7 +130,7 @@ pub async fn query_islands_meta(
 
     let metas = sqlx::query_as(
         "
-            SELECT id, title, subtitle, desc, ty, date, banner, is_original FROM islands
+            SELECT id, title, subtitle, desc, ty, date, banner, is_original, is_encrypted, is_deleted FROM islands
             JOIN island_tags ON id = island_id
             WHERE id BETWEEN ? AND ?
             GROUP BY id
@@ -212,6 +212,8 @@ pub async fn query_islands_meta_filtered(
                         date,
                         banner,
                         is_original,
+                        is_encrypted,
+                        is_deleted,
                         ROW_NUMBER() OVER (ORDER BY id) AS rn
                     FROM islands
                     WHERE NOT EXISTS (
@@ -231,7 +233,9 @@ pub async fn query_islands_meta_filtered(
                     ty,
                     date,
                     banner,
-                    is_original
+                    is_original,
+                    is_encrypted,
+                    is_deleted
                 FROM FilteredIslands
                 WHERE rn BETWEEN ? AND ?
                 ",
@@ -250,6 +254,8 @@ pub async fn query_islands_meta_filtered(
                         date,
                         banner,
                         is_original,
+                        is_encrypted,
+                        is_deleted,
                         ROW_NUMBER() OVER (ORDER BY id) AS rn
                     FROM islands
                     JOIN island_tags ON id = island_id
@@ -265,7 +271,9 @@ pub async fn query_islands_meta_filtered(
                     ty,
                     date,
                     banner,
-                    is_original
+                    is_original,
+                    is_encrypted,
+                    is_deleted
                 FROM FilteredIslands
                 WHERE rn BETWEEN ? AND ?
                 GROUP BY id

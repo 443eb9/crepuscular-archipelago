@@ -28,6 +28,8 @@ pub struct IslandMeta {
     pub ty: IslandType,
     pub banner: bool,
     pub is_original: bool,
+    pub is_encrypted: bool,
+    pub is_deleted: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -41,6 +43,8 @@ pub struct IslandMetaTagged {
     pub tags: Vec<TagData>,
     pub banner: bool,
     pub is_original: bool,
+    pub is_encrypted: bool,
+    pub is_deleted: bool,
 }
 
 impl IslandMetaTagged {
@@ -55,6 +59,8 @@ impl IslandMetaTagged {
             tags,
             banner: meta.banner,
             is_original: meta.is_original,
+            is_encrypted: meta.is_encrypted,
+            is_deleted: meta.is_deleted,
         }
     }
 }

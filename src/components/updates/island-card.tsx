@@ -28,34 +28,41 @@ export default function IslandCard({ island, content, params }: { island: Island
     return (
         <div className="relative">
             <OutlinedBox className={clsx(
-                "flex flex-col justify-between p-4 shadow-md gap-2 min-h-[200px]",
-                { "border-dashed": island.date == undefined }
+                "flex flex-col justify-between p-4 shadow-md gap-2",
+                { "border-dashed": island.date == undefined },
+                { "min-h-[200px]": !island.is_deleted }
             )}>
-                <div>
-                    <CardHeader island={island}></CardHeader>
-                    <div className={
-                        clsx("",
-                            { "max-h-[250px] overflow-clip": !isExpanded }
-                        )
-                    } ref={container}>
-                        <CardBody island={island} params={params} content={content}></CardBody>
-                    </div>
-                    <OutlinedButton
-                        className={
-                            clsx("mt-2 w-full h-10 border-2 border-light-contrast dark:border-dark-contrast",
-                                { "hidden": !isExpandable }
+                {
+                    island.is_deleted && <div className="font-bender font-bold text-xl">Access Denied</div>
+                }
+                {
+                    !island.is_deleted &&
+                    <div>
+                        <CardHeader island={island}></CardHeader>
+                        <div className={
+                            clsx("",
+                                { "max-h-[250px] overflow-clip": !isExpanded }
                             )
-                        }
-                        onClick={() => setExpanded(!isExpanded)}
-                    >
-                        {
-                            isExpanded
-                                ? <ZhEnLabel zh="折叠" en="Fold"></ZhEnLabel>
-                                : <ZhEnLabel zh="展开" en="Expand"></ZhEnLabel>
-                        }
-                    </OutlinedButton>
-                </div>
-                <CardFooter island={island}></CardFooter>
+                        } ref={container}>
+                            <CardBody island={island} params={params} content={content}></CardBody>
+                        </div>
+                        <OutlinedButton
+                            className={
+                                clsx("mt-2 w-full h-10 border-2 border-light-contrast dark:border-dark-contrast",
+                                    { "hidden": !isExpandable }
+                                )
+                            }
+                            onClick={() => setExpanded(!isExpanded)}
+                        >
+                            {
+                                isExpanded
+                                    ? <ZhEnLabel zh="折叠" en="Fold"></ZhEnLabel>
+                                    : <ZhEnLabel zh="展开" en="Expand"></ZhEnLabel>
+                            }
+                        </OutlinedButton>
+                    </div>
+                }
+                {!island.is_deleted && <CardFooter island={island}></CardFooter>}
             </OutlinedBox>
             <div className={clsx("", { "hidden": island.date == undefined })}>
                 <div className="absolute w-2 h-24 bg-light-contrast dark:bg-dark-contrast -bottom-4 -right-4"></div>

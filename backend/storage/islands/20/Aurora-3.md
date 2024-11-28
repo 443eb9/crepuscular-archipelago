@@ -1,4 +1,4 @@
-# 从零开始的渲染引擎-Aurora Chapter 4 屏幕空间环境光遮蔽 Screen Space Ambient Occlusion
+# 从零开始的渲染引擎-Aurora Chapter 3 屏幕空间环境光遮蔽 Screen Space Ambient Occlusion
 
 参考
 - *Real-time Rendering 4th Edition*

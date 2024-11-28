@@ -25,3 +25,13 @@ export function searchParamReset(param: Array<string>, ro: ReadonlyURLSearchPara
     param.forEach((v, _) => params.delete(v));
     return params;
 }
+
+export function searchParamToString(params: URLSearchParams) {
+    const arr = Array.from(params);
+    if (arr.length == 0) {
+        return "";
+    } else {
+        const s = arr.map(([k, v], _) => `${k}=${v}&`).reduce((acc, cur) => acc + cur);
+        return s.substring(0, s.length - 1);
+    }
+}

@@ -26,6 +26,8 @@ export type IslandMeta = {
     tags: TagData[],
     banner: boolean,
     is_original: boolean,
+    is_encrypted: boolean,
+    is_deleted: boolean,
 }
 
 export type TagData = {

@@ -1,4 +1,4 @@
-# 从零开始的渲染引擎-Aurora Chapter 5 基础后处理 Basic Post-processing
+# 从零开始的渲染引擎-Aurora Chapter 4 基础后处理 Basic Post-processing
 
 > The world was not wheeling anymore. It was just very clear and bright and inclined to blur at the edges. -- Ernest Hemingway
 

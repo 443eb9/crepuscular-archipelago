@@ -1,4 +1,4 @@
-# 从零开始的渲染引擎-Aurora Chapter 3 阴影映射 Shadow Mapping
+# 从零开始的渲染引擎-Aurora Chapter 2 阴影映射 Shadow Mapping
 
 > *All the variety, all the charm, all the beauty of life is made up of light and shadow.* --Tolstoy
 

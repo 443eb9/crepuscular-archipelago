@@ -9,11 +9,12 @@ import { ErrorResponse } from "@/data/requests";
 
 export default async function ArticleContainer({ id, params }: { id: number, params: URLSearchParams }) {
     const meta = await fetchIslandMeta(id);
-    const article = await fetchIsland(id);
 
-    if (!(meta instanceof ErrorResponse) && meta.data.ty != IslandType.Article) {
+    if (meta instanceof ErrorResponse || meta.data.ty != IslandType.Article || meta.data.is_deleted) {
         notFound();
     }
+
+    const article = await fetchIsland(id);
 
     return (
         <div className="flex flex-col gap-10 w-full">
