@@ -4,8 +4,7 @@ use sqlx::{sqlite::SqliteQueryResult, Error, SqlitePool};
 use crate::{
     filter::{AdvancedFilter, TagsFilter},
     model::{
-        IslandCount, IslandFilename, IslandMeta, IslandMetaTagged, MemorizeForm, MemorizeFormMeta,
-        TagData,
+        Island, IslandCount, IslandMeta, IslandMetaTagged, MemorizeForm, MemorizeFormMeta, TagData,
     },
 };
 
@@ -23,6 +22,13 @@ pub async fn query_all_tags(pool: &IslandDB) -> Result<Vec<TagData>, Error> {
     Ok(sqlx::query_as("SELECT id, name, amount FROM tags")
         .fetch_all(&pool.db)
         .await?)
+}
+
+pub async fn query_island_content(pool: &IslandDB, id: u32) -> Result<Island, Error> {
+    sqlx::query_as("SELECT content FROM islands WHERE id = ?")
+        .bind(id)
+        .fetch_one(&pool.db)
+        .await
 }
 
 pub async fn query_island_count(pool: &IslandDB) -> Result<IslandCount, Error> {
@@ -316,13 +322,6 @@ async fn query_island_tags(pool: &IslandDB, id: u32) -> Result<Vec<TagData>, Err
     .bind(id)
     .fetch_all(&pool.db)
     .await?)
-}
-
-pub async fn query_island_filename(pool: &IslandDB, id: u32) -> Result<IslandFilename, Error> {
-    Ok(sqlx::query_as("SELECT filename FROM islands WHERE id = ?")
-        .bind(id)
-        .fetch_one(&pool.db)
-        .await?)
 }
 
 pub async fn insert_memorize_form(

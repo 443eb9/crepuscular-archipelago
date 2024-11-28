@@ -94,9 +94,6 @@ impl IslandMetaTagged {
 }
 
 #[derive(Debug, Serialize, FromRow)]
-pub struct IslandFilename(pub String);
-
-#[derive(Debug, Serialize)]
 pub struct Island {
     pub content: String,
 }

@@ -1,22 +1,12 @@
-use std::{collections::HashMap, io::Result};
+use std::collections::HashMap;
 
 use chrono::DateTime;
-use sqlx::{query, SqlitePool};
+use sqlx::{query, sqlite::SqliteConnectOptions, SqlitePool};
 
 use crate::{
-    env::get_island_storage_root,
-    model::{Island, IslandFilename, IslandMeta, IslandMetaTagged, IslandType, Project, TagData},
+    env::{get_island_cache_root, get_island_storage_root},
+    model::{IslandMeta, IslandMetaTagged, IslandType, Project, TagData},
 };
-
-pub fn load_island(id: u32, filename: &IslandFilename) -> Result<Island> {
-    std::fs::read_to_string(
-        get_island_storage_root()
-            .join("islands")
-            .join(id.to_string())
-            .join(&filename.0),
-    )
-    .map(|content| Island { content })
-}
 
 pub fn load_projects_list() -> Vec<Project> {
     serde_json::from_str(
@@ -26,11 +16,13 @@ pub fn load_projects_list() -> Vec<Project> {
     .unwrap()
 }
 
-pub async fn generate_db(
-    db: &SqlitePool,
-    islands: Vec<(IslandMetaTagged, String)>,
-    tags: Vec<TagData>,
-) {
+pub async fn init_cache() -> SqlitePool {
+    let conn_opt = SqliteConnectOptions::new()
+        .filename(get_island_cache_root().join("archipelago.sqlite3"))
+        .create_if_missing(true);
+    let db = SqlitePool::connect_with(conn_opt).await.unwrap();
+
+    let (islands, tags) = load_and_cache_all_islands();
     const INIT_TABLES: &[&'static str] = &[
         "DROP TABLE island_tags",
         "DROP TABLE islands",
@@ -44,12 +36,12 @@ pub async fn generate_db(
             subtitle     TEXT,
             desc         text,
             ty           integer               not null,
-            filename     text    default "",
             date         text,
             banner       boolean default false not null,
             is_original  Boolean,
             is_encrypted Boolean default false,
-            is_deleted   integer default false
+            is_deleted   integer default false,
+            content      text    default ""
         );"#,
         r#"create table tags
         (
@@ -73,7 +65,7 @@ pub async fn generate_db(
     ];
 
     for cmd in INIT_TABLES {
-        match query(cmd).execute(db).await {
+        match query(cmd).execute(&db).await {
             Ok(_) => {}
             Err(err) => log::error!("{}", err),
         };
@@ -83,24 +75,24 @@ pub async fn generate_db(
         query("INSERT INTO tags (name, amount) VALUES (?, ?)")
             .bind(tag.name)
             .bind(tag.amount)
-            .execute(db)
+            .execute(&db)
             .await
             .unwrap();
     }
 
-    for (island, filename) in islands {
-        query("INSERT INTO islands (title, subtitle, desc, ty, filename, date, banner, is_original, is_encrypted, is_deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+    for (island, content) in islands {
+        query("INSERT INTO islands (title, subtitle, desc, ty, date, banner, is_original, is_encrypted, is_deleted, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
             .bind(island.title)
             .bind(island.subtitle)
             .bind(island.desc)
             .bind(island.ty)
-            .bind(filename)
             .bind(island.date)
             .bind(island.banner)
             .bind(island.is_original)
             .bind(island.is_encrypted)
             .bind(island.is_deleted)
-            .execute(db)
+            .bind(content)
+            .execute(&db)
             .await
             .unwrap();
 
@@ -108,14 +100,16 @@ pub async fn generate_db(
             query("INSERT INTO island_tags (island_id, tag_id) VALUES (?, ?)")
                 .bind(island.id)
                 .bind(tag.id)
-                .execute(db)
+                .execute(&db)
                 .await
                 .unwrap();
         }
     }
+
+    db
 }
 
-pub fn load_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData>) {
+fn load_and_cache_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData>) {
     let dir = std::fs::read_dir(get_island_storage_root().join("islands")).unwrap();
     let mut all_tags = HashMap::<String, u32>::default();
     let mut islands = Vec::new();
@@ -134,7 +128,7 @@ pub fn load_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData>) {
             .unwrap();
 
         let assets = std::fs::read_dir(entry.path()).unwrap();
-        let content_and_filename = assets
+        let content = assets
             .into_iter()
             .filter_map(|entry| {
                 entry.ok().and_then(|entry| {
@@ -142,42 +136,34 @@ pub fn load_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData>) {
                         .path()
                         .extension()
                         .is_some_and(|ext| ext == "md")
-                        .then(|| {
-                            (
-                                std::fs::read_to_string(entry.path()).ok(),
-                                entry
-                                    .path()
-                                    .file_name()
-                                    .unwrap()
-                                    .to_str()
-                                    .unwrap()
-                                    .to_string(),
-                            )
-                        })
+                        .then(|| std::fs::read_to_string(entry.path()).ok())
+                        .flatten()
                 })
             })
-            .filter_map(|(files, filenames)| files.map(|f| (f, filenames)))
             .collect::<Vec<_>>();
-        assert_eq!(content_and_filename.len(), 1);
+        assert_eq!(content.len(), 1);
 
-        let (content, filename) = &content_and_filename[0];
-        let markdown = content.lines().collect::<Vec<_>>();
-        let mut indices = Vec::with_capacity(2);
-        for (index, line) in markdown.iter().enumerate() {
+        let content = &content[0];
+        let lines = content.lines().collect::<Vec<_>>();
+
+        let mut front_matter_boundary = Vec::with_capacity(2);
+        for (index, line) in lines.iter().enumerate() {
             if *line == "---" {
-                indices.push(index);
+                front_matter_boundary.push(index);
             }
-            if indices.len() == 2 {
+            if front_matter_boundary.len() == 2 {
                 break;
             }
         }
 
-        let (island, tags) = front_matter_parse(&markdown[indices[0] + 1..indices[1]]);
-        islands.push((
-            IslandMeta { id, ..island },
-            tags.clone(),
-            filename.to_string(),
-        ));
+        let (island, tags) =
+            front_matter_parse(&lines[front_matter_boundary[0] + 1..front_matter_boundary[1]]);
+        let body = lines[front_matter_boundary[1] + 1..]
+            .iter()
+            .map(|s| s.chars().chain(['\n']))
+            .flatten()
+            .collect::<String>();
+        islands.push((IslandMeta { id, ..island }, tags.clone(), body));
 
         for tag in &tags {
             all_tags
@@ -200,7 +186,7 @@ pub fn load_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData>) {
     (
         islands
             .into_iter()
-            .map(|(island, tags, filename)| {
+            .map(|(island, tags, content)| {
                 (
                     IslandMetaTagged::new(
                         island,
@@ -215,7 +201,7 @@ pub fn load_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData>) {
                             })
                             .collect(),
                     ),
-                    filename,
+                    content,
                 )
             })
             .collect(),

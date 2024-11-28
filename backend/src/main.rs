@@ -1,6 +1,6 @@
 use actix_cors::Cors;
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
-use sqlx::{sqlite::SqliteConnectOptions, SqlitePool};
+use sqlx::SqlitePool;
 
 use crate::sql::{IslandDB, MemorizeDB};
 
@@ -17,17 +17,11 @@ async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     dotenvy::dotenv().ok();
 
-    let storage_root = std::env::var("ISLAND_STORAGE_ROOT").unwrap();
-
-    let (islands, tags) = fs::load_all_islands();
-    let conn_opt = SqliteConnectOptions::new()
-        .filename(format!("{}/archipelago.sqlite3", storage_root))
-        .create_if_missing(true);
     let islands_db = IslandDB {
-        db: SqlitePool::connect_with(conn_opt).await.unwrap(),
+        db: fs::init_cache().await,
     };
-    fs::generate_db(&islands_db.db, islands, tags).await;
 
+    let storage_root = std::env::var("ISLAND_STORAGE_ROOT").unwrap();
     let memorize_db = MemorizeDB {
         db: SqlitePool::connect(&format!("sqlite://{}/memorize.sqlite3", storage_root))
             .await

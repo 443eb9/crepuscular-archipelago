@@ -1,4 +1,4 @@
-use std::{convert::Infallible, fmt::Debug, sync::Mutex};
+use std::{convert::Infallible, sync::Mutex};
 
 use actix_web::{
     get,
@@ -13,10 +13,9 @@ use actix_web::{
 use async_stream::stream;
 use chrono::{SecondsFormat, Timelike, Utc};
 use once_cell::sync::Lazy;
-use serde::Serialize;
 
 use crate::{
-    fs::{load_island, load_projects_list},
+    fs::load_projects_list,
     memorize::{self, MemorizeCoolDown},
     model::{MemorizeForm, MemorizeFormMeta},
     sql::*,
@@ -30,15 +29,6 @@ macro_rules! sql_query_request {
         match $query($($param,)+).await {
             Ok(ok) => HttpResponse::Ok().json(ok),
             Err(err) => HttpResponse::BadRequest().json(err.to_string()),
-        }
-    };
-}
-
-macro_rules! sql_query_attempt {
-    ($query: ident, $($param: expr),+) => {
-        match $query($($param,)+).await {
-            Ok(ok) => ok,
-            Err(err) => return HttpResponse::BadRequest().json(err.to_string()),
         }
     };
 }
@@ -83,9 +73,7 @@ pub async fn get_islands_meta(
 
 #[get("/api/get/island/{id}")]
 pub async fn get_island(pool: Data<IslandDB>, id: Path<u32>) -> impl Responder {
-    let filename = sql_query_attempt!(query_island_filename, &pool, *id);
-
-    result_to_response(load_island(*id, &filename))
+    sql_query_request!(query_island_content, &pool, *id)
 }
 
 #[get("/api/get/projects")]
@@ -179,13 +167,6 @@ pub async fn download_memorize_csv(pool: Data<MemorizeDB>) -> impl Responder {
         .streaming(stream!(
             yield Ok::<_, Infallible>(actix_web::web::Bytes::from(csv.into_bytes()))
         ))
-}
-
-fn result_to_response<T: Serialize, E: Debug>(result: Result<T, E>) -> HttpResponse {
-    match result {
-        Ok(ok) => HttpResponse::Ok().json(ok),
-        Err(err) => HttpResponse::BadRequest().json(format!("{:?}", err)),
-    }
 }
 
 #[get("/api/get/errorTest")]
