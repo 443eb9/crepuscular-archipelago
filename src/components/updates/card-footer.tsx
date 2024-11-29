@@ -4,7 +4,6 @@ import SpTag from "../common/sp-tag";
 import { TbClockQuestion } from "react-icons/tb";
 import { FaClock } from "react-icons/fa6";
 import License from "./license";
-import { formatDate } from "@/data/util";
 
 export default function CardFooter({ island }: { island: IslandMeta }) {
     return (
@@ -38,7 +37,7 @@ export default function CardFooter({ island }: { island: IslandMeta }) {
                                 className="font-bender"
                                 suppressHydrationWarning
                             >
-                                {formatDate(new Date(island.date))}
+                                {(new Date(island.date)).toLocaleDateString()}
                             </div>
                         </div>
                 }

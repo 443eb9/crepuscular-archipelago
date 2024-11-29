@@ -240,5 +240,6 @@ fn front_matter_parse(lines: &[&str]) -> (IslandMeta, Vec<String>) {
             _ => unreachable!(),
         }
     }
+
     (meta, tags)
 }

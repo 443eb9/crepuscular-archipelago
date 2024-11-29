@@ -19,7 +19,7 @@ export function requestToResult<T>(req: AxiosResponse): RequestResult<T> {
 export type IslandMeta = {
     id: number,
     title: string,
-    subtitle: string,
+    subtitle: string | undefined,
     desc: string,
     date: Date | undefined,
     ty: IslandType,
