@@ -7,7 +7,6 @@ import DiagLines from "../common/decos/diag-lines";
 import { TbClockQuestion } from "react-icons/tb";
 import SpTag from "../common/sp-tag";
 import HoverInvertBox from "../common/anim/hover-invert-box";
-import { formatDate } from "@/data/util";
 
 export default function ArticleHeader({ meta, params }: { meta: IslandMeta, params: URLSearchParams }) {
     params.delete("id");
@@ -56,7 +55,7 @@ export default function ArticleHeader({ meta, params }: { meta: IslandMeta, para
                             </div>
                             : <div className="flex items-center gap-1">
                                 <FaClock></FaClock>
-                                <div className="font-bender">{formatDate(new Date(meta.date))}</div>
+                                <div className="font-bender">{(new Date(meta.date)).toLocaleDateString()}</div>
                             </div>
                     }
                 </div>

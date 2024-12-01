@@ -95,12 +95,30 @@ impl IslandMetaTagged {
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct Island {
+    pub id: u32,
     pub content: String,
 }
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct IslandCount {
     pub count: u32,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct IslandSearchQuery {
+    pub keywords: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct IslandSearchResults {
+    pub results: Vec<IslandSearchResult>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct IslandSearchResult {
+    pub score: f32,
+    pub id: u32,
+    pub preview: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

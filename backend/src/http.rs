@@ -17,7 +17,8 @@ use once_cell::sync::Lazy;
 use crate::{
     fs::load_projects_list,
     memorize::{self, MemorizeCoolDown},
-    model::{MemorizeForm, MemorizeFormMeta},
+    model::{IslandSearchQuery, MemorizeForm, MemorizeFormMeta},
+    search::FullTextSearchEngine,
     sql::*,
 };
 
@@ -74,6 +75,14 @@ pub async fn get_islands_meta(
 #[get("/api/get/island/{id}")]
 pub async fn get_island(pool: Data<IslandDB>, id: Path<u32>) -> impl Responder {
     sql_query_request!(query_island_content, &pool, *id)
+}
+
+#[post("/api/post/search")]
+pub async fn search_islands(
+    engine: Data<FullTextSearchEngine>,
+    query: Json<IslandSearchQuery>,
+) -> impl Responder {
+    HttpResponse::Ok().json(engine.search(&query))
 }
 
 #[get("/api/get/projects")]

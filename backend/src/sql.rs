@@ -25,7 +25,7 @@ pub async fn query_all_tags(pool: &IslandDB) -> Result<Vec<TagData>, Error> {
 }
 
 pub async fn query_island_content(pool: &IslandDB, id: u32) -> Result<Island, Error> {
-    sqlx::query_as("SELECT content FROM islands WHERE id = ?")
+    sqlx::query_as("SELECT id, content FROM islands WHERE id = ?")
         .bind(id)
         .fetch_one(&pool.db)
         .await
