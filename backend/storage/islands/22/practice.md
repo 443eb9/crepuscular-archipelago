@@ -17,3 +17,7 @@ is_encrypted: true
 ![](https://oss.443eb9.dev/islandsmedia/22/20241216.png)
 
 > 2024/12/17 中途也有画但是主要是作业，这次研究了一下人体，特别是胸腔和盆骨，不知道有没有进步，无所谓的反正都会变成黑历史（
+
+![](https://oss.443eb9.dev/islandsmedia/22/20241218.png)
+
+> 2024/12/18 画画，爽，黑历史++
