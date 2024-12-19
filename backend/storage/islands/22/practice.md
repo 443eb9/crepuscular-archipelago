@@ -21,3 +21,7 @@ is_encrypted: true
 ![](https://oss.443eb9.dev/islandsmedia/22/20241218.png)
 
 > 2024/12/18 画画，爽，黑历史++
+
+![](https://oss.443eb9.dev/islandsmedia/22/20241219.png)
+
+> 2024/12/19 狠狠练习狼的画法，虽有不小进步但是最终效果看着还是有待提高（
