@@ -21,6 +21,11 @@ tags: 图形学,Shader
 
 好啦，进入正题
 
+参考
+- *Real-time Rendering 4th Edition*
+- [实时大气散射渲染实战 - 知乎](https://zhuanlan.zhihu.com/p/595576594)
+- [体渲染探秘（三）天空大气渲染 - 知乎](https://zhuanlan.zhihu.com/p/419165090)
+
 ## 光散射理论 Light Scattering Theory
 
 Participating media 指光在传播时参与的介质，包括散射，和吸收时的。
