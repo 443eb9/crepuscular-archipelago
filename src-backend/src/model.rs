@@ -104,11 +104,6 @@ pub struct IslandCount {
     pub count: u32,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct IslandSearchQuery {
-    pub keywords: String,
-}
-
 #[derive(Debug, Serialize)]
 pub struct IslandSearchResults {
     pub results: Vec<IslandSearchResult>,

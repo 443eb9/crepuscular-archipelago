@@ -5,15 +5,18 @@ import { Metadata } from "next";
 import { fetchIslandMeta } from "@/data/api";
 import { ErrorResponse } from "@/data/requests";
 
-export default function Page({ searchParams }: {
-    searchParams?: {
-        id?: string,
-        page?: string,
-        len?: string,
-        tags?: string,
-        advf?: string,
+export default async function Page(
+    props: {
+        searchParams?: Promise<{
+            id?: string,
+            page?: string,
+            len?: string,
+            tags?: string,
+            advf?: string,
+        }>
     }
-}) {
+) {
+    const searchParams = await props.searchParams;
     const id = Number.parseInt(searchParams?.id ?? "-1");
 
     return (
@@ -25,11 +28,14 @@ export default function Page({ searchParams }: {
     );
 }
 
-export async function generateMetadata({ searchParams }: {
-    searchParams?: {
-        id?: string,
+export async function generateMetadata(
+    props: {
+        searchParams?: Promise<{
+            id?: string,
+        }>
     }
-}): Promise<Metadata> {
+): Promise<Metadata> {
+    const searchParams = await props.searchParams;
     const id = Number.parseInt(searchParams?.id ?? "-1");
 
     const meta = await fetchIslandMeta(id);

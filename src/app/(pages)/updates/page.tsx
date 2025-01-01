@@ -12,14 +12,17 @@ export const metadata: Metadata = {
     title: "Updates - Crepuscular Archipelago",
 }
 
-export default async function Page({ searchParams }: {
-    searchParams?: {
-        page?: string,
-        len?: string,
-        tags?: string,
-        advf?: string
+export default async function Page(
+    props: {
+        searchParams?: Promise<{
+            page?: string,
+            len?: string,
+            tags?: string,
+            advf?: string
+        }>
     }
-}) {
+) {
+    const searchParams = await props.searchParams;
     const page = parseInt(searchParams?.page ?? "0");
     const length = parseInt(searchParams?.len ?? "10");
     const tagsFilter = parseInt(searchParams?.tags ?? "0");
