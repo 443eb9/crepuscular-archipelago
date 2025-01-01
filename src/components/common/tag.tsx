@@ -1,16 +1,16 @@
-'use client';
+'use client'
 
-import { TagData } from "@/data/model";
-import { searchParamBitXor, searchParamReset } from "@/data/search-param-util";
-import clsx from "clsx";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { TagData } from "@/data/model"
+import { searchParamBitXor, searchParamReset } from "@/data/search-param-util"
+import clsx from "clsx"
+import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 
 export default function Tag({ tag, showAmount, className }: { tag: TagData, showAmount?: boolean, className?: string }) {
-    const paramsRO = useSearchParams();
+    const paramsRO = useSearchParams()
 
-    const filter = Number.parseInt(paramsRO.get("tags") ?? "0");
-    const isEnabled = (filter & (1 << tag.id)) != 0;
+    const filter = Number.parseInt(paramsRO.get("tags") ?? "0")
+    const isEnabled = (filter & (1 << tag.id)) != 0
 
     return (
         <Link href={`/updates?${searchParamReset(["page"], searchParamBitXor(tag.id, "tags", paramsRO)).toString()}`}>
@@ -27,5 +27,5 @@ export default function Tag({ tag, showAmount, className }: { tag: TagData, show
                 {showAmount ? <div className="font-bender">{tag.amount}</div> : null}
             </div>
         </Link>
-    );
+    )
 }

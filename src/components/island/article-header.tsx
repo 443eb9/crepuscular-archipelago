@@ -1,15 +1,15 @@
-import { FaClock } from "react-icons/fa6";
-import OutlinedBox from "../common/outlined-box";
-import { IslandMeta } from "@/data/model";
-import Tag from "../common/tag";
-import Link from "next/link";
-import DiagLines from "../common/decos/diag-lines";
-import { TbClockQuestion } from "react-icons/tb";
-import SpTag from "../common/sp-tag";
-import HoverInvertBox from "../common/anim/hover-invert-box";
+import { FaClock } from "react-icons/fa6"
+import OutlinedBox from "../common/outlined-box"
+import { IslandMeta } from "@/data/model"
+import Tag from "../common/tag"
+import Link from "next/link"
+import DiagLines from "../common/decos/diag-lines"
+import { TbClockQuestion } from "react-icons/tb"
+import SpTag from "../common/sp-tag"
+import HoverInvertBox from "../common/anim/hover-invert-box"
 
 export default function ArticleHeader({ meta, params }: { meta: IslandMeta, params: URLSearchParams }) {
-    params.delete("id");
+    params.delete("id")
 
     return (
         <OutlinedBox className="flex justify-between p-5">
@@ -19,7 +19,7 @@ export default function ArticleHeader({ meta, params }: { meta: IslandMeta, para
                         href={`/updates?${params.toString()}`}
                         className="font-argon font-bold bg-dark-contrast dark:bg-light-contrast p-1"
                     >
-                        &lt; $ cd .._
+                        &lt $ cd .._
                     </Link>
                 </HoverInvertBox>
                 <h1 className="w-24 font-bender text-lg font-bold px-2
@@ -71,5 +71,5 @@ export default function ArticleHeader({ meta, params }: { meta: IslandMeta, para
                 <div className="bg-light-contrast dark:bg-dark-contrast w-2" style={{ height: "calc(100% - 75px)" }}></div>
             </div>
         </OutlinedBox>
-    );
+    )
 }

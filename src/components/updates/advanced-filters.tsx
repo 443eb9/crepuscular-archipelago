@@ -1,14 +1,14 @@
 'use client'
 
-import Link from "next/link";
-import RadioButtonGroup from "../common/interact/radio-button-group";
-import ToggleExclude from "./toggle-exclude";
-import { searchParamBitGet, searchParamBitSet, searchParamReset } from "@/data/search-param-util";
-import { useSearchParams } from "next/navigation";
-import ZhEnLabel from "../common/zh-en-label";
+import Link from "next/link"
+import RadioButtonGroup from "../common/interact/radio-button-group"
+import ToggleExclude from "./toggle-exclude"
+import { searchParamBitGet, searchParamBitSet, searchParamReset } from "@/data/search-param-util"
+import { useSearchParams } from "next/navigation"
+import ZhEnLabel from "../common/zh-en-label"
 
 export default function AdvancedFilters() {
-    const searchParams = useSearchParams();
+    const searchParams = useSearchParams()
 
     return (
         <div>
@@ -31,5 +31,5 @@ export default function AdvancedFilters() {
             >
             </RadioButtonGroup>
         </div>
-    );
+    )
 }

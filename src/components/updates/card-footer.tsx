@@ -1,9 +1,9 @@
-import { IslandMeta, IslandType } from "@/data/model";
-import Tag from "../common/tag";
-import SpTag from "../common/sp-tag";
-import { TbClockQuestion } from "react-icons/tb";
-import { FaClock } from "react-icons/fa6";
-import License from "./license";
+import { IslandMeta, IslandType } from "@/data/model"
+import Tag from "../common/tag"
+import SpTag from "../common/sp-tag"
+import { TbClockQuestion } from "react-icons/tb"
+import { FaClock } from "react-icons/fa6"
+import License from "./license"
 
 export default function CardFooter({ island }: { island: IslandMeta }) {
     return (
@@ -48,5 +48,5 @@ export default function CardFooter({ island }: { island: IslandMeta }) {
                 }
             </div>
         </div>
-    );
+    )
 }

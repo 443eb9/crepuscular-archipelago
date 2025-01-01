@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode } from "react";
+import { CSSProperties, ReactNode } from "react"
 
 export default function EmphasizedBox(
     {
@@ -22,5 +22,5 @@ export default function EmphasizedBox(
             <div className="absolute bg-light-contrast dark:bg-dark-contrast" style={{ width: thickness, height: length + thickness, left: -thickness, bottom: -thickness }}></div>
             <div className="absolute bg-light-contrast dark:bg-dark-contrast" style={{ width: length + thickness, height: thickness, left: -thickness, bottom: -thickness }}></div>
         </div>
-    );
+    )
 }

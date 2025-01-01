@@ -1,18 +1,17 @@
-import EmphasizedBox from "../common/decos/emphasized-box";
-import { ErrorResponse, get, Response } from "@/data/requests";
-import NetworkErrorFallback from "../common/network-error-fallback";
-import { LinkExchangeData } from "@/data/model";
-import NextImage from "../common/next-image";
+import EmphasizedBox from "../common/decos/emphasized-box"
+import NetworkErrorable from "../common/network-error-fallback"
+import { LinkExchangeData } from "@/data/model"
+import NextImage from "../common/next-image"
+import { fetchLinkExchange } from "@/data/api"
 
 export default async function LinkExchange() {
-    const links: Response<LinkExchangeData[]> = await get("https://raw.githubusercontent.com/443eb9/aetheric-cargo/main/partitions/friends.json");
+    const links = await fetchLinkExchange()
 
     return (
         <div className="w-full mt-4 grid-cols-1 grid md:grid-cols-2 gap-5">
-            {
-                links instanceof ErrorResponse
-                    ? <NetworkErrorFallback error={links}></NetworkErrorFallback>
-                    : links.data.map((data, i) => {
+            <NetworkErrorable resp={links}>
+                {data =>
+                    data.map((data, i) => {
                         return (
                             <div key={`link ${i}`} className="relative border-b-2 border-dark-contrast">
                                 <div className="flex justify-between items-center">
@@ -37,9 +36,10 @@ export default async function LinkExchange() {
                                     <NextImage className="scale-150 blur-3xl" src={data.avatar} alt="" unoptimized></NextImage>
                                 </div>
                             </div>
-                        );
+                        )
                     })
-            }
+                }
+            </NetworkErrorable>
         </div>
-    );
+    )
 }

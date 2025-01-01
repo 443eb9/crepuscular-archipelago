@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
-import DiagLines from "../common/decos/diag-lines";
-import ZhEnLabel from "../common/zh-en-label";
+import { ReactNode } from "react"
+import DiagLines from "../common/decos/diag-lines"
+import ZhEnLabel from "../common/zh-en-label"
 
 export default function AboutSection({ title, enTitle, children }: { title: string, enTitle: string, children: ReactNode }) {
     return (
@@ -21,5 +21,5 @@ export default function AboutSection({ title, enTitle, children }: { title: stri
             </div>
             {children}
         </div>
-    );
+    )
 }

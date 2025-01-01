@@ -1,29 +1,29 @@
 'use client'
 
-import { IslandMeta } from "@/data/model";
-import OutlinedBox from "../common/outlined-box";
-import clsx from "clsx";
-import { ReactNode, useEffect, useRef, useState } from "react";
-import CardHeader from "./card-header";
-import CardBody from "./card-body";
-import CardFooter from "./card-footer";
-import OutlinedButton from "../common/interact/outlined-button";
-import ZhEnLabel from "../common/zh-en-label";
+import { IslandMeta } from "@/data/model"
+import OutlinedBox from "../common/outlined-box"
+import clsx from "clsx"
+import { ReactNode, useEffect, useRef, useState } from "react"
+import CardHeader from "./card-header"
+import CardBody from "./card-body"
+import CardFooter from "./card-footer"
+import OutlinedButton from "../common/interact/outlined-button"
+import ZhEnLabel from "../common/zh-en-label"
 
 export default function IslandCard({ island, content, params }: { island: IslandMeta, content?: ReactNode, params: URLSearchParams }) {
-    const container = useRef(null);
-    const [isExpandable, setExpandable] = useState(false);
-    const [isExpanded, setExpanded] = useState(false);
+    const container = useRef(null)
+    const [isExpandable, setExpandable] = useState(false)
+    const [isExpanded, setExpanded] = useState(false)
 
     useEffect(() => {
         if (container.current == null) {
-            return;
+            return
         }
-        const div: HTMLDivElement = container.current;
+        const div: HTMLDivElement = container.current
         if (div.offsetHeight > 249) {
-            setExpandable(true);
+            setExpandable(true)
         }
-    }, []);
+    }, [])
 
     return (
         <div className="relative">
@@ -73,5 +73,5 @@ export default function IslandCard({ island, content, params }: { island: Island
                 </div>
             }
         </div>
-    );
+    )
 }

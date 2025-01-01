@@ -1,18 +1,18 @@
-'use client';
+'use client'
 
 import '@/app/global.css'
-import { useTheme } from "next-themes";
-import { IoMoonSharp, IoSunnySharp } from "react-icons/io5";
-import { useEffect, useState } from "react";
+import { useTheme } from "next-themes"
+import { IoMoonSharp, IoSunnySharp } from "react-icons/io5"
+import { useEffect, useState } from "react"
 
 export default function ThemeSwither({ className }: { className?: string }) {
-    const [mounted, setMounted] = useState(false);
-    const { setTheme, resolvedTheme } = useTheme();
+    const [mounted, setMounted] = useState(false)
+    const { setTheme, resolvedTheme } = useTheme()
 
-    useEffect(() => setMounted(true), []);
+    useEffect(() => setMounted(true), [])
 
     if (!mounted) {
-        return null;
+        return null
     }
 
     if (resolvedTheme == 'light') {
@@ -20,7 +20,7 @@ export default function ThemeSwither({ className }: { className?: string }) {
             <button className={className} onClick={() => { setTheme('dark') }} >
                 <IoSunnySharp className="text-4xl"></IoSunnySharp>
             </button>
-        );
+        )
     }
 
     if (resolvedTheme == 'dark') {
@@ -28,6 +28,6 @@ export default function ThemeSwither({ className }: { className?: string }) {
             <button className={className} onClick={() => { setTheme('light') }} >
                 <IoMoonSharp className="text-4xl"></IoMoonSharp>
             </button>
-        );
+        )
     }
 }

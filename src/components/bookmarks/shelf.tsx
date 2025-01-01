@@ -1,7 +1,7 @@
-import { Bookmarks } from "@/data/model";
-import DiagLines from "../common/decos/diag-lines";
-import EndpointDottedSegment from "../common/decos/endpoint-dotted-segment";
-import Link from "next/link";
+import { Bookmarks } from "@/data/model"
+import DiagLines from "../common/decos/diag-lines"
+import EndpointDottedSegment from "../common/decos/endpoint-dotted-segment"
+import Link from "next/link"
 
 export default function Shelf({ bookmarks }: { bookmarks: Bookmarks }) {
     return (
@@ -29,5 +29,5 @@ export default function Shelf({ bookmarks }: { bookmarks: Bookmarks }) {
             </div>
             <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
         </div>
-    );
+    )
 }

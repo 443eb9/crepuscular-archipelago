@@ -1,4 +1,4 @@
-import OutlinedBox from "./outlined-box";
+import OutlinedBox from "./outlined-box"
 
 export default function Toast({ title, toast }: { title: string, toast: string }) {
     return (
@@ -6,5 +6,5 @@ export default function Toast({ title, toast }: { title: string, toast: string }
             <div className="font-bold font-bender text-xl">{title}</div>
             <div className="">{toast}</div>
         </OutlinedBox>
-    );
+    )
 }

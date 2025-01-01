@@ -8,5 +8,5 @@ export default function BlogTitleEn() {
                 Islands that owned by 443eb9#C.
             </p>
         </div>
-    );
+    )
 }

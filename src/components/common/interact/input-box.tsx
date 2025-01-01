@@ -12,5 +12,5 @@ export default function InputBox({ className, placeholder, name }: { className?:
                 placeholder={placeholder}
             />
         </div>
-    );
+    )
 }

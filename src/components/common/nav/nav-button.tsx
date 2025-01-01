@@ -1,6 +1,6 @@
-import { Url } from "next/dist/shared/lib/router/router";
-import Link from "next/link";
-import OutlinedButton from "../interact/outlined-button";
+import { Url } from "next/dist/shared/lib/router/router"
+import Link from "next/link"
+import OutlinedButton from "../interact/outlined-button"
 
 export default function NavButton({ title, href, className }: { title: String, href: Url, className?: string }) {
     return (
@@ -11,5 +11,5 @@ export default function NavButton({ title, href, className }: { title: String, h
                 </OutlinedButton>
             </Link>
         </div>
-    );
+    )
 }

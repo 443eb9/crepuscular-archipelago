@@ -1,8 +1,8 @@
 import '@/app/global.css'
-import ThemeSwither from './theme-switcher';
-import NavButtons from './nav-buttons';
-import Link from 'next/link';
-import DropdownNav from './dropdown-nav';
+import ThemeSwither from './theme-switcher'
+import NavButtons from './nav-buttons'
+import Link from 'next/link'
+import DropdownNav from './dropdown-nav'
 
 export default function GlobalNavBar() {
     return (
@@ -16,5 +16,5 @@ export default function GlobalNavBar() {
                 <NavButtons className="w-20 h-10" containerClassName="gap-2"></NavButtons>
             </div>
         </div>
-    );
+    )
 }

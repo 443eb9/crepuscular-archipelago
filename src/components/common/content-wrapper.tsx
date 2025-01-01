@@ -5,5 +5,5 @@ export default function ContentWrapper({ children, className }: { children?: Rea
                 {children}
             </div>
         </div>
-    );
+    )
 }

@@ -1,6 +1,6 @@
-import OutlinedBox from "../common/outlined-box";
-import Markdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
+import OutlinedBox from "../common/outlined-box"
+import Markdown from "react-markdown"
+import rehypeRaw from "rehype-raw"
 
 export default async function SelfIntro() {
     return (
@@ -26,5 +26,5 @@ I aspire to become a full-stack open-source game developer in the future. Beside
 `}
             </Markdown>
         </OutlinedBox>
-    );
+    )
 }

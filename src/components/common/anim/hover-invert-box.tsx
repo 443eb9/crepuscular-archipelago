@@ -1,14 +1,14 @@
 'use client'
 
-import { ReactNode } from "react";
-import { MotionDiv } from "../framer-motion-reexport/motion-div";
-import { useAnimation } from "framer-motion";
+import { ReactNode } from "react"
+import { MotionDiv } from "../framer-motion-reexport/motion-div"
+import { useAnimation } from "framer-motion"
 
 export default function HoverInvertBox({ children, from }: { children: ReactNode, from: "top" | "left" }
 ) {
-    const control = useAnimation();
-    const initialWidth = from == "left" ? 0 : 100;
-    const initialHeight = from == "top" ? 0 : 100;
+    const control = useAnimation()
+    const initialWidth = from == "left" ? 0 : 100
+    const initialHeight = from == "top" ? 0 : 100
 
     return (
         <div className="relative w-full h-full">
@@ -37,7 +37,7 @@ export default function HoverInvertBox({ children, from }: { children: ReactNode
                 {children}
             </div>
         </div>
-    );
+    )
 }
 
 function asPercent(x: number) {

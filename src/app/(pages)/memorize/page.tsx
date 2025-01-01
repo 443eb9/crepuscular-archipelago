@@ -1,9 +1,9 @@
 import '@/app/global.css'
-import ContentWrapper from "@/components/common/content-wrapper";
-import ThemeSwither from '@/components/common/nav/theme-switcher';
-import OutlinedBox from "@/components/common/outlined-box";
-import MemorizeForm from "@/components/memorize/memorize-form";
-import { Metadata } from 'next';
+import ContentWrapper from "@/components/common/content-wrapper"
+import ThemeSwither from '@/components/common/nav/theme-switcher'
+import OutlinedBox from "@/components/common/outlined-box"
+import MemorizeForm from "@/components/memorize/memorize-form"
+import { Metadata } from 'next'
 
 export const metadata: Metadata = {
     title: "Memorize - Crepuscular Archipelago",
@@ -30,5 +30,5 @@ export default function Page() {
                 </OutlinedBox>
             </ContentWrapper>
         </main>
-    );
+    )
 }

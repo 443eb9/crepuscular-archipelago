@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from "react";
-import { IoMenuSharp } from "react-icons/io5";
-import NavButtons from "./nav-buttons";
-import EmphasizedBox from "../decos/emphasized-box";
+import { useState } from "react"
+import { IoMenuSharp } from "react-icons/io5"
+import NavButtons from "./nav-buttons"
+import EmphasizedBox from "../decos/emphasized-box"
 
 export default function DropdownNav({ className }: { className?: string }) {
-    const [isExpanded, setExpanded] = useState(false);
+    const [isExpanded, setExpanded] = useState(false)
 
     return (
         <div className={`relative ${className}`}>
@@ -27,5 +27,5 @@ export default function DropdownNav({ className }: { className?: string }) {
                 </NavButtons>
             </EmphasizedBox>
         </div>
-    );
+    )
 }

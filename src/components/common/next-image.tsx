@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "next/image"
 
 export default function NextImage({ className, unoptimized, src, alt }: { className?: string, unoptimized?: boolean, src: string, alt: string }) {
     return (
@@ -18,5 +18,5 @@ export default function NextImage({ className, unoptimized, src, alt }: { classN
             unoptimized
         >
         </Image>
-    );
+    )
 }

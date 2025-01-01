@@ -1,13 +1,13 @@
-'use client';
+'use client'
 
-import React, { FormEvent } from "react";
-import InputBox from "../common/interact/input-box";
-import OutlinedBox from "../common/outlined-box";
-import OutlinedButton from "../common/interact/outlined-button";
-import { submitMemorize } from "@/data/memorize";
-import toast from "react-hot-toast";
-import Toast from "../common/toast";
-import { combineRemoteApi } from "@/data/backend";
+import React, { FormEvent } from "react"
+import InputBox from "../common/interact/input-box"
+import OutlinedBox from "../common/outlined-box"
+import OutlinedButton from "../common/interact/outlined-button"
+import { submitMemorize } from "@/data/memorize"
+import toast from "react-hot-toast"
+import Toast from "../common/toast"
+import { combineRemoteApi } from "@/data/backend"
 
 export default function MemorizeForm() {
     return (
@@ -62,7 +62,7 @@ export default function MemorizeForm() {
                 </OutlinedButton>
             </div>
         </div>
-    );
+    )
 }
 
 function FormUnit({ title, optional, name }: { title: string, optional?: boolean, name?: string }) {
@@ -73,7 +73,7 @@ function FormUnit({ title, optional, name }: { title: string, optional?: boolean
                 <InputBox placeholder={optional ? "Optional" : ""} name={name}></InputBox>
             </div>
         </div>
-    );
+    )
 }
 
 function FormRow({ className, children }: { className?: string, children?: React.ReactNode }) {
@@ -81,7 +81,7 @@ function FormRow({ className, children }: { className?: string, children?: React
         <div className={`flex flex-row gap-2 justify-around ${className}`}>
             {children}
         </div>
-    );
+    )
 }
 
 function FormSection({ className, title, children, whisper }: { className?: string, title: string, whisper?: string, children?: React.ReactNode }) {
@@ -95,23 +95,23 @@ function FormSection({ className, title, children, whisper }: { className?: stri
                 {children}
             </div>
         </div>
-    );
+    )
 }
 
 async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+    event.preventDefault()
 
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(event.currentTarget)
     submitMemorize(formData)
         .catch((reason) => {
-            const data = reason["response"]["data"];
+            const data = reason["response"]["data"]
             toast.custom(<Toast title="Error" toast={data == undefined ? reason.toString() : data}></Toast>)
         })
         .then((value) => {
             if (value == null) {
-                return;
+                return
             }
 
             toast.custom(<Toast title="Success!" toast={value.data}></Toast>)
-        });
+        })
 }

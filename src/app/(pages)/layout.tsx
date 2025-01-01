@@ -1,10 +1,10 @@
-import ContentWrapper from "@/components/common/content-wrapper";
-import EmphasizedBox from "@/components/common/decos/emphasized-box";
-import Footer from "@/components/common/footer";
-import GlobalNavBar from "@/components/common/nav/global-nav-bar";
-import ThemeSwither from "@/components/common/nav/theme-switcher";
+import ContentWrapper from "@/components/common/content-wrapper"
+import EmphasizedBox from "@/components/common/decos/emphasized-box"
+import Footer from "@/components/common/footer"
+import GlobalNavBar from "@/components/common/nav/global-nav-bar"
+import ThemeSwither from "@/components/common/nav/theme-switcher"
 
-export const revalidate = 600;
+export const revalidate = 600
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
@@ -24,5 +24,5 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <ThemeSwither></ThemeSwither>
             </EmphasizedBox>
         </div>
-    );
+    )
 }

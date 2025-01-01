@@ -1,9 +1,9 @@
 import '@/app/global.css'
-import BlogTitleCn from '@/components/index/blog-title-cn';
-import BlogTitleEn from '@/components/index/blog-title-en';
-import NavButtons from '@/components/common/nav/nav-buttons';
-import { Metadata } from 'next';
-import axios, { AxiosError } from 'axios';
+import BlogTitleCn from '@/components/index/blog-title-cn'
+import BlogTitleEn from '@/components/index/blog-title-en'
+import NavButtons from '@/components/common/nav/nav-buttons'
+import { Metadata } from 'next'
+import axios, { AxiosError } from 'axios'
 
 export const metadata: Metadata = {
     title: "443eb9#C - Crepuscular Archipelago",
@@ -27,5 +27,5 @@ export default async function Page() {
                 ></NavButtons>
             </div>
         </main>
-    );
+    )
 }

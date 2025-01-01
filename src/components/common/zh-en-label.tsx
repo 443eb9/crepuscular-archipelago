@@ -10,5 +10,5 @@ export default function ZhEnLabel(
             <div className={`font-sh-sans ${zhClassName}`}>{zh}</div>
             <div className={`font-bender ${enClassName}`}>{en}</div>
         </div>
-    );
+    )
 }

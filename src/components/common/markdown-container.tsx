@@ -18,11 +18,11 @@ export default function MarkdownContainer({ body }: { body: string }) {
                 img(props) {
                     return (
                         <NextImage src={props.src ?? ""} alt={props.alt ?? ""}></NextImage>
-                    );
+                    )
                 },
                 code(props) {
-                    const { children, className, node, ...rest } = props;
-                    const match = /language-(\w+)/.exec(className || '');
+                    const { children, className, node, ...rest } = props
+                    const match = /language-(\w+)/.exec(className || '')
                     return (
                         match ? (
                             <SyntaxHighlighter
@@ -37,7 +37,7 @@ export default function MarkdownContainer({ body }: { body: string }) {
                                 {children}
                             </code>
                         )
-                    );
+                    )
                 },
             }}>
             {body}

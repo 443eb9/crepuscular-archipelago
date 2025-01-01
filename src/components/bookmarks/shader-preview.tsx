@@ -1,13 +1,13 @@
 'use client'
 
-import { BookmarkData } from "@/data/model";
-import Link from "next/link";
-import OutlinedButton from "../common/interact/outlined-button";
-import { useState } from "react";
-import clsx from "clsx";
+import { BookmarkData } from "@/data/model"
+import Link from "next/link"
+import OutlinedButton from "../common/interact/outlined-button"
+import { useState } from "react"
+import clsx from "clsx"
 
 export default function ShaderPreview({ bookmarks }: { bookmarks: BookmarkData[] }) {
-    const [isEnabled, setEnabled] = useState(false);
+    const [isEnabled, setEnabled] = useState(false)
 
     return (
         <div>
@@ -39,5 +39,5 @@ export default function ShaderPreview({ bookmarks }: { bookmarks: BookmarkData[]
                 }
             </div>
         </div >
-    );
+    )
 }

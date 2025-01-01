@@ -7,5 +7,5 @@ export default function BlogTitleCn() {
                 443eb9#C 的岛屿群
             </p>
         </div>
-    );
+    )
 }

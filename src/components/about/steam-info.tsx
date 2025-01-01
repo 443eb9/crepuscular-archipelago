@@ -1,45 +1,45 @@
-import { fetchSteamPlayerSummaries, fetchSteamRecentlyPlayedGames } from "@/data/api";
-import { ErrorResponse } from "@/data/requests";
-import NetworkErrorFallback from "../common/network-error-fallback";
-import EmphasizedBox from "../common/decos/emphasized-box";
-import Link from "next/link";
+import { fetchSteamPlayerSummaries, fetchSteamRecentlyPlayedGames } from "@/data/api"
+import NetworkErrorable from "../common/network-error-fallback"
+import EmphasizedBox from "../common/decos/emphasized-box"
+import Link from "next/link"
 
 export default async function SteamInfo() {
-    const recentlyPlayed = await fetchSteamRecentlyPlayedGames();
-    const summary = await fetchSteamPlayerSummaries();
-    let state, color, lastLogoff;
-    if (!(summary instanceof ErrorResponse)) {
-        const player = summary.data.response.players[0];
-        lastLogoff = new Date(player.lastlogoff * 1000);
+    const recentlyPlayed = await fetchSteamRecentlyPlayedGames()
+    const summary = await fetchSteamPlayerSummaries()
+    let state: string, color: string, lastLogoff: Date
+    if (summary.ok) {
+        const player = summary.data.response.players[0]
+        lastLogoff = new Date(player.lastlogoff * 1000)
         switch (player.personastate) {
             case 0:
-                state = "Offline";
-                color = "grey";
-                break;
+                state = "Offline"
+                color = "grey"
+                break
             case 1:
-                state = "Online";
-                color = "greenyellow";
-                break;
+                state = "Online"
+                color = "greenyellow"
+                break
             case 2:
-                state = "Busy";
-                color = "red";
-                break;
+                state = "Busy"
+                color = "red"
+                break
             case 3:
-                state = "Away";
-                color = "yellow";
-                break;
+                state = "Away"
+                color = "yellow"
+                break
+            default:
+                return <></>
         }
     }
 
     return (
         <div className="mt-4">
-            {
-                recentlyPlayed instanceof ErrorResponse
-                    ? <NetworkErrorFallback error={recentlyPlayed}></NetworkErrorFallback>
-                    : <div className="flex flex-col gap-2 font-bender">
+            <NetworkErrorable resp={recentlyPlayed}>
+                {data =>
+                    <div className="flex flex-col gap-2 font-bender">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {
-                                recentlyPlayed.data.response.games.map((game, i) =>
+                                data.response.games.map((game, i) =>
                                     <div key={i}>
                                         <Link href={`https://store.steampowered.com/app/${game.appid}`} target="_blank">
                                             <EmphasizedBox
@@ -71,7 +71,8 @@ export default async function SteamInfo() {
                             </div>
                         </div>
                     </div>
-            }
+                }
+            </NetworkErrorable>
         </div>
-    );
+    )
 }

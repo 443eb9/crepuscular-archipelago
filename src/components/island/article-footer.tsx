@@ -1,9 +1,9 @@
-import Link from "next/link";
-import GiscusSection from "./giscus";
-import HoverInvertBox from "../common/anim/hover-invert-box";
+import Link from "next/link"
+import GiscusSection from "./giscus"
+import HoverInvertBox from "../common/anim/hover-invert-box"
 
 export default function ArticleFooter({ giscus, params }: { giscus: boolean, params: URLSearchParams }) {
-    params.delete("id");
+    params.delete("id")
 
     return (
         <div>
@@ -13,7 +13,7 @@ export default function ArticleFooter({ giscus, params }: { giscus: boolean, par
                     border-2 border-light-contrast dark:border-dark-contrast"
                 >
                     <HoverInvertBox from="left">
-                        <div className="bg-dark-contrast dark:bg-light-contrast p-5">&lt; $ cd .._</div>
+                        <div className="bg-dark-contrast dark:bg-light-contrast p-5">&lt $ cd .._</div>
                     </HoverInvertBox>
                 </div>
                 {
@@ -23,5 +23,5 @@ export default function ArticleFooter({ giscus, params }: { giscus: boolean, par
                 }
             </Link>
         </div>
-    );
+    )
 }

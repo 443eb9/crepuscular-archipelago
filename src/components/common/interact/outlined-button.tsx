@@ -1,4 +1,4 @@
-import { MouseEventHandler } from "react";
+import { MouseEventHandler } from "react"
 
 export default function OutlinedButton(
     {
@@ -25,5 +25,5 @@ export default function OutlinedButton(
         >
             {children}
         </button>
-    );
+    )
 }

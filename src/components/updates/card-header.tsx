@@ -1,19 +1,19 @@
-import { IslandMeta, IslandType } from "@/data/model";
-import OutlinedBox from "../common/outlined-box";
-import { OSS } from "@/data/backend";
-import { RiMedal2Line } from "react-icons/ri";
-import NextImage from "../common/next-image";
+import { IslandMeta, IslandType } from "@/data/model"
+import OutlinedBox from "../common/outlined-box"
+import { OSS } from "@/data/backend"
+import { RiMedal2Line } from "react-icons/ri"
+import NextImage from "../common/next-image"
 
 export default function CardHeader({ island }: { island: IslandMeta }) {
-    let header;
+    let header
     switch (island.ty) {
         case IslandType.Achievement:
-            header = <AchievementCardHeader></AchievementCardHeader>;
-            break;
+            header = <AchievementCardHeader></AchievementCardHeader>
+            break
         case IslandType.Article:
-            header = <ArticleCardHeader island={island}></ArticleCardHeader>;
-            break;
-    };
+            header = <ArticleCardHeader island={island}></ArticleCardHeader>
+            break
+    }
 
     return (
         <div>
@@ -22,7 +22,7 @@ export default function CardHeader({ island }: { island: IslandMeta }) {
             >{`# ${island.id}`}</h2>
             {header}
         </div>
-    );
+    )
 }
 
 function ArticleCardHeader({ island }: { island: IslandMeta }) {
@@ -42,7 +42,7 @@ function ArticleCardHeader({ island }: { island: IslandMeta }) {
                 </div>
             }
         </div>
-    );
+    )
 }
 
 function AchievementCardHeader() {
@@ -61,5 +61,5 @@ function AchievementCardHeader() {
                 <div className="bg-light-contrast dark:bg-dark-contrast w-2 h-3 ml-2"></div>
             </div>
         </div>
-    );
+    )
 }

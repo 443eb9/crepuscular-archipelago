@@ -1,24 +1,24 @@
-'use client';
+'use client'
 
-import Link from "next/link";
-import OutlinedButton from "../common/interact/outlined-button";
-import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
-import OutlinedBox from "../common/outlined-box";
-import clsx from "clsx";
+import Link from "next/link"
+import OutlinedButton from "../common/interact/outlined-button"
+import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation"
+import OutlinedBox from "../common/outlined-box"
+import clsx from "clsx"
 
 export default function PageSwitcher({ islandCount, currentPage, currentLength }: { islandCount: number, currentPage: number, currentLength: number }) {
-    const searchParams = useSearchParams();
+    const searchParams = useSearchParams()
     
     if (islandCount == 0) {
         return (
             <div className="text-2xl font-bender w-full">
                 No islands meeting the criteria were found. :(
             </div>
-        );
+        )
     }
 
-    const totalPage = Math.ceil(islandCount / currentLength);
-    const pages = Array.from(Array(totalPage).keys());
+    const totalPage = Math.ceil(islandCount / currentLength)
+    const pages = Array.from(Array(totalPage).keys())
 
     return (
         <OutlinedBox className="flex content-between w-full p-3 gap-3 border-x-0 border-dashed">
@@ -36,7 +36,7 @@ export default function PageSwitcher({ islandCount, currentPage, currentLength }
                 )
             }
         </OutlinedBox>
-    );
+    )
 }
 
 function SwitcherButton({ target, params, className }: { target: number, params: ReadonlyURLSearchParams, className?: string }) {
@@ -46,11 +46,11 @@ function SwitcherButton({ target, params, className }: { target: number, params:
                 {target}
             </OutlinedButton>
         </Link>
-    );
+    )
 }
 
 function changeSearchParam(target: number, ro: ReadonlyURLSearchParams) {
-    const params = new URLSearchParams(ro);
-    params.set("page", target.toString());
-    return params;
+    const params = new URLSearchParams(ro)
+    params.set("page", target.toString())
+    return params
 }

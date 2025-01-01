@@ -1,16 +1,16 @@
-import AboutSection from "@/components/about/about-section";
-import LinkExchange from "@/components/about/link-exchange";
-import MeInfo from "@/components/about/me-info";
-import Projects from "@/components/about/projects";
-import SelfIntro from "@/components/about/self-intro";
-import SteamInfo from "@/components/about/steam-info";
-import ContentWrapper from "@/components/common/content-wrapper";
-import EndpointDottedSegment from "@/components/common/decos/endpoint-dotted-segment";
-import OutlinedBox from "@/components/common/outlined-box";
-import GiscusSection from "@/components/island/giscus";
-import { Metadata } from "next";
-import Link from "next/link";
-import { Suspense } from "react";
+import AboutSection from "@/components/about/about-section"
+import LinkExchange from "@/components/about/link-exchange"
+import MeInfo from "@/components/about/me-info"
+import Projects from "@/components/about/projects"
+import SelfIntro from "@/components/about/self-intro"
+import SteamInfo from "@/components/about/steam-info"
+import ContentWrapper from "@/components/common/content-wrapper"
+import EndpointDottedSegment from "@/components/common/decos/endpoint-dotted-segment"
+import OutlinedBox from "@/components/common/outlined-box"
+import GiscusSection from "@/components/island/giscus"
+import { Metadata } from "next"
+import Link from "next/link"
+import { Suspense } from "react"
 
 export const metadata: Metadata = {
     title: "About - Crepuscular Archipelago",
@@ -57,5 +57,5 @@ export default async function Page() {
                 </AboutSection>
             </ContentWrapper>
         </main>
-    );
+    )
 }

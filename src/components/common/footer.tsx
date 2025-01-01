@@ -1,4 +1,4 @@
-import UnderlinedLink from "./underlined-link";
+import UnderlinedLink from "./underlined-link"
 
 export default function Footer() {
     return (
@@ -11,5 +11,5 @@ export default function Footer() {
             </p>
             <p>Source code can be found on <UnderlinedLink href="https://github.com/443eb9/crepuscular-archipelago">Github</UnderlinedLink></p>
         </div>
-    );
+    )
 }

@@ -1,9 +1,9 @@
-import { FiGithub } from "react-icons/fi";
-import OutlinedButton from "../common/interact/outlined-button";
-import { IoMailOutline } from "react-icons/io5";
-import OutlinedBox from "../common/outlined-box";
-import Link from "next/link";
-import { Url } from "next/dist/shared/lib/router/router";
+import { FiGithub } from "react-icons/fi"
+import OutlinedButton from "../common/interact/outlined-button"
+import { IoMailOutline } from "react-icons/io5"
+import OutlinedBox from "../common/outlined-box"
+import Link from "next/link"
+import { Url } from "next/dist/shared/lib/router/router"
 
 export default function MeInfo() {
     return (
@@ -23,7 +23,7 @@ export default function MeInfo() {
                 </div>
             </div>
         </OutlinedBox>
-    );
+    )
 }
 
 function SocialMediaButton({ children, href }: { children: React.ReactNode, href: Url }) {
@@ -33,5 +33,5 @@ function SocialMediaButton({ children, href }: { children: React.ReactNode, href
                 {children}
             </OutlinedButton>
         </Link>
-    );
+    )
 }

@@ -1,5 +1,5 @@
-import clsx from "clsx";
-import { ReactNode } from "react";
+import clsx from "clsx"
+import { ReactNode } from "react"
 
 export default function Toggle({ enabled, children, className }: { enabled: boolean, children: ReactNode, className?: string }) {
     return (
@@ -14,5 +14,5 @@ export default function Toggle({ enabled, children, className }: { enabled: bool
             </div>
             {children}
         </div>
-    );
+    )
 }

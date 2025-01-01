@@ -1,8 +1,8 @@
-const BACKEND = "http://localhost:8080/api";
-const REMOTE_BACKEND = "https://443eb9.dev/api";
-export const OSS = "https://oss.443eb9.dev/islandsmedia";
+const BACKEND = "http://localhost:8080/api"
+const REMOTE_BACKEND = "https://443eb9.dev/api"
+export const OSS = "https://oss.443eb9.dev/islandsmedia"
 
-const env = process.env.NODE_ENV;
+const env = process.env.NODE_ENV
 
 export function combineApi(endpoint: string) {
     return `${BACKEND}${endpoint}`

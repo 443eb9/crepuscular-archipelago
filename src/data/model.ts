@@ -1,4 +1,4 @@
-import { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios"
 
 export enum IslandType {
     Article,
@@ -6,13 +6,13 @@ export enum IslandType {
     Note,
 }
 
-export type RequestResult<T> = T | string;
+export type RequestResult<T> = T | string
 
 export function requestToResult<T>(req: AxiosResponse): RequestResult<T> {
     if (req.status == 200) {
-        return req.data;
+        return req.data
     } else {
-        return req.statusText;
+        return req.statusText
     }
 }
 

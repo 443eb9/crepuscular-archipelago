@@ -1,19 +1,19 @@
-import { ReadonlyURLSearchParams } from "next/navigation";
+import { ReadonlyURLSearchParams } from "next/navigation"
 
 export function searchParamBitXor(bit: number, param: string, ro: ReadonlyURLSearchParams | URLSearchParams) {
-    const params = ro instanceof ReadonlyURLSearchParams ? new URLSearchParams(ro) : ro;
-    const filter = parseInt(ro.get(param) ?? "0");
-    const tags = filter ^ (1 << bit);
-    params.set(param, tags.toString());
-    return params;
+    const params = ro instanceof ReadonlyURLSearchParams ? new URLSearchParams(ro) : ro
+    const filter = parseInt(ro.get(param) ?? "0")
+    const tags = filter ^ (1 << bit)
+    params.set(param, tags.toString())
+    return params
 }
 
 export function searchParamBitSet(bit: number, value: boolean, param: string, ro: ReadonlyURLSearchParams | URLSearchParams) {
-    const params = ro instanceof ReadonlyURLSearchParams ? new URLSearchParams(ro) : ro;
-    const filter = parseInt(ro.get(param) ?? "0");
-    const tags = value ? filter | (1 << bit) : filter & (~(1 << bit));
-    params.set(param, tags.toString());
-    return params;
+    const params = ro instanceof ReadonlyURLSearchParams ? new URLSearchParams(ro) : ro
+    const filter = parseInt(ro.get(param) ?? "0")
+    const tags = value ? filter | (1 << bit) : filter & (~(1 << bit))
+    params.set(param, tags.toString())
+    return params
 }
 
 export function searchParamBitGet(bit: number, param: string, ro: ReadonlyURLSearchParams | URLSearchParams) {
@@ -21,17 +21,17 @@ export function searchParamBitGet(bit: number, param: string, ro: ReadonlyURLSea
 }
 
 export function searchParamReset(param: Array<string>, ro: ReadonlyURLSearchParams | URLSearchParams) {
-    const params = ro instanceof ReadonlyURLSearchParams ? new URLSearchParams(ro) : ro;
-    param.forEach((v, _) => params.delete(v));
-    return params;
+    const params = ro instanceof ReadonlyURLSearchParams ? new URLSearchParams(ro) : ro
+    param.forEach((v, _) => params.delete(v))
+    return params
 }
 
 export function searchParamToString(params: URLSearchParams) {
-    const arr = Array.from(params);
+    const arr = Array.from(params)
     if (arr.length == 0) {
-        return "";
+        return ""
     } else {
-        const s = arr.map(([k, v], _) => `${k}=${v}&`).reduce((acc, cur) => acc + cur);
-        return s.substring(0, s.length - 1);
+        const s = arr.map(([k, v], _) => `${k}=${v}&`).reduce((acc, cur) => acc + cur)
+        return s.substring(0, s.length - 1)
     }
 }

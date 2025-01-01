@@ -1,8 +1,8 @@
-import { IslandMeta, IslandType } from "@/data/model";
-import { ReactNode } from "react";
-import DiagLines from "../common/decos/diag-lines";
-import Link from "next/link";
-import { searchParamToString } from "@/data/search-param-util";
+import { IslandMeta, IslandType } from "@/data/model"
+import { ReactNode } from "react"
+import DiagLines from "../common/decos/diag-lines"
+import Link from "next/link"
+import { searchParamToString } from "@/data/search-param-util"
 
 export default function CardBody({ island, content, params }: { island: IslandMeta, content?: ReactNode, params: URLSearchParams }) {
     const body = (
@@ -23,15 +23,15 @@ export default function CardBody({ island, content, params }: { island: IslandMe
             <p className="font-sh-sans text-ellipsis overflow-hidden line-clamp-6" style={{ width: "calc(100% - 80px)" }}>{island.desc}</p>
             {content}
         </div>
-    );
+    )
 
     if (island.ty == IslandType.Article) {
         return (
             <Link href={`/island?id=${island.id}&${searchParamToString(params)}`}>
                 {body}
             </Link>
-        );
+        )
     } else {
-        return body;
+        return body
     }
 }

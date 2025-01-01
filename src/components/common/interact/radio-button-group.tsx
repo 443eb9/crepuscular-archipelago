@@ -1,5 +1,5 @@
-import { ReactNode } from "react";
-import RadioButton from "./radio-button";
+import { ReactNode } from "react"
+import RadioButton from "./radio-button"
 
 export default function RadioButtonGroup({ labels, enabled, className }: { labels: ReactNode[], enabled: number, className?: string }) {
     return (
@@ -12,5 +12,5 @@ export default function RadioButtonGroup({ labels, enabled, className }: { label
                 )
             }
         </div>
-    );
+    )
 }
