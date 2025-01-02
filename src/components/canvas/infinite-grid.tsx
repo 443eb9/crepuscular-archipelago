@@ -1,6 +1,7 @@
+import { islandGridContext } from "@/app/(pages)/updates/islands-grid"
 import { Transform } from "@/data/utils"
 import { Effect } from "postprocessing"
-import { forwardRef, useMemo } from "react"
+import { forwardRef, useContext, useMemo } from "react"
 import { Color, Texture, Uniform, Vector2, WebGLRenderer, WebGLRenderTarget } from "three"
 
 const fragment = `
@@ -91,6 +92,8 @@ class InfiniteGridImpl extends Effect {
 }
 
 export const InfiniteGrid = forwardRef(({ params }: { params: InfiniteGridParams }, ref) => {
+    const islandGrid = useContext(islandGridContext)
+
     const effect = useMemo(() => new InfiniteGridImpl(params), [params])
     return <primitive ref={ref} object={effect} dispose={null} />
 })

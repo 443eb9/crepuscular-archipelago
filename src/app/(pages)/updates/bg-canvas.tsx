@@ -3,18 +3,20 @@
 import { InfiniteGrid } from "@/components/canvas/infinite-grid";
 import { MouseTracker } from "@/components/canvas/mouse-tracker";
 import { islandMapUrl } from "@/data/api";
-import { Transform } from "@/data/utils";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { EffectComposer } from "@react-three/postprocessing";
-import { HTMLAttributes, useEffect, useRef, useState } from "react";
+import { HTMLAttributes, useContext, useEffect, useRef, useState } from "react";
 import { Color, TextureLoader } from "three";
+import { islandGridContext } from "./islands-grid";
 
-export default function BgCanvas({ transform, ...props }: { transform: Transform } & HTMLAttributes<HTMLDivElement>) {
+export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
     const resolverRef = useRef<HTMLDivElement>(null)
     const [params, setParams] = useState<{
         gridColor: Color,
         trackerColor: Color,
     } | undefined>()
+    const islandGrid = useContext(islandGridContext)
+    const [updateFlag, setUpdateFlag] = useState(false)
 
     useEffect(() => {
         if (resolverRef.current) {
@@ -29,6 +31,20 @@ export default function BgCanvas({ transform, ...props }: { transform: Transform
     const ColorResolver = () =>
         <div className="bg-light-contrast dark:bg-dark-contrast border-light-dark-neutral" ref={resolverRef} />
 
+    const CanvasStateTracker = () => {
+        const three = useThree()
+        useEffect(() => {
+            islandGrid.cursor = three.pointer
+            islandGrid.canvasSize = three.size
+        }, [three.pointer, three.size])
+
+        return <></>
+    }
+
+    useEffect(() => {
+        setUpdateFlag(!updateFlag)
+    }, [islandGrid.cursor, islandGrid.canvasSize])
+
     if (!params) {
         return <ColorResolver />
     }
@@ -40,6 +56,7 @@ export default function BgCanvas({ transform, ...props }: { transform: Transform
         >
             <ColorResolver />
             <Canvas>
+                <CanvasStateTracker />
                 <EffectComposer>
                     <InfiniteGrid
                         params={{
@@ -49,7 +66,7 @@ export default function BgCanvas({ transform, ...props }: { transform: Transform
                             thickness: 2,
                             dash: 3,
                             noise: new TextureLoader().load(islandMapUrl()),
-                            transform,
+                            transform: islandGrid.canvasTransform,
                         }}
                     />
                     <MouseTracker
@@ -57,7 +74,8 @@ export default function BgCanvas({ transform, ...props }: { transform: Transform
                             color: params.trackerColor,
                             thickness: 2,
                             blockSize: 40,
-                            transform,
+                            transform: islandGrid.canvasTransform,
+                            cursorPos: islandGrid.cursor,
                         }}
                     />
                 </EffectComposer>

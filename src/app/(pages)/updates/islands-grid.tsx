@@ -10,6 +10,14 @@ import { Size } from "@react-three/fiber";
 export type IslandGridContext = {
     cursor: Vector2,
     canvasSize: Size,
+    drag: DragState,
+    canvasTransform: Transform,
+}
+
+type DragState = {
+    onDrag: boolean,
+    cursor: Vector2,
+    canvas: Vector2,
 }
 
 export const islandGridContext = createContext<IslandGridContext>({
@@ -19,23 +27,20 @@ export const islandGridContext = createContext<IslandGridContext>({
         height: 0,
         top: 0,
         left: 0,
-    }
-})
-
-type StartDragState = {
-    onDrag: boolean,
-    cursor: Vector2,
-    canvas: Vector2,
-}
-
-export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
-    const dragState = useRef<StartDragState>({
+    },
+    drag: {
         onDrag: false,
         cursor: new Vector2(),
         canvas: new Vector2(),
-    })
+    },
+    canvasTransform: {
+        translation: new Vector2(),
+        scale: 1,
+    }
+})
+
+export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
     const islandGrid = useContext(islandGridContext)
-    const transform = useRef<Transform>({ translation: new Vector2(), scale: 1 })
 
     function computeCursorPos() {
         const cursorNdc = islandGrid.cursor.clone().multiplyScalar(0.5).addScalar(0.5)
@@ -45,17 +50,17 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
 
     useEffect(() => {
         const dragHandler = () => {
-            if (dragState.current.onDrag) {
+            if (islandGrid.drag.onDrag) {
                 const curCursor = computeCursorPos()
-                const oldCursor = dragState.current.cursor
-                const oldCanvas = dragState.current.canvas
-                const curCanvas = curCursor.clone().sub(oldCursor).multiplyScalar(-transform.current.scale).add(oldCanvas)
-                transform.current.translation.x = curCanvas.x
-                transform.current.translation.y = curCanvas.y
+                const oldCursor = islandGrid.drag.cursor
+                const oldCanvas = islandGrid.drag.canvas
+                const curCanvas = curCursor.clone().sub(oldCursor).multiplyScalar(-islandGrid.canvasTransform.scale).add(oldCanvas)
+                islandGrid.canvasTransform.translation.x = curCanvas.x
+                islandGrid.canvasTransform.translation.y = curCanvas.y
             }
         }
 
-        const endDragHandler = () => dragState.current.onDrag = false
+        const endDragHandler = () => islandGrid.drag.onDrag = false
 
         document.addEventListener("mousemove", dragHandler)
         document.addEventListener("mouseup", endDragHandler)
@@ -63,27 +68,26 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
             document.removeEventListener("mousemove", dragHandler)
             document.removeEventListener("mouseup", endDragHandler)
         }
-    }, [dragState])
+    }, [islandGrid.drag.onDrag])
 
     return (
         <div>
             <islandGridContext.Provider value={islandGrid}>
                 <BgCanvas
-                    transform={transform.current}
                     onMouseDown={() => {
-                        dragState.current.onDrag = true
+                        islandGrid.drag.onDrag = true
 
                         const initial = computeCursorPos()
-                        dragState.current.cursor.x = initial.x
-                        dragState.current.cursor.y = initial.y
+                        islandGrid.drag.cursor.x = initial.x
+                        islandGrid.drag.cursor.y = initial.y
 
-                        dragState.current.canvas.x = transform.current.translation.x
-                        dragState.current.canvas.y = transform.current.translation.y
+                        islandGrid.drag.canvas.x = islandGrid.canvasTransform.translation.x
+                        islandGrid.drag.canvas.y = islandGrid.canvasTransform.translation.y
                     }}
                     onWheel={ev => {
-                        const oldScale = transform.current.scale
+                        const oldScale = islandGrid.canvasTransform.scale
                         const newScale = Math.max(Math.min(oldScale + ev.deltaY * 0.0004, 2), 1)
-                        transform.current.scale = newScale
+                        islandGrid.canvasTransform.scale = newScale
 
                         // const factor = newScale / oldScale
                         // const canvas = transform.current.translation.clone()

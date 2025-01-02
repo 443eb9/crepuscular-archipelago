@@ -2,7 +2,7 @@ import { islandGridContext } from "@/app/(pages)/updates/islands-grid"
 import { Transform } from "@/data/utils"
 import { useThree } from "@react-three/fiber"
 import { Effect } from "postprocessing"
-import { forwardRef, useContext } from "react"
+import { forwardRef, useContext, useEffect } from "react"
 import { Color, Uniform, Vector2, WebGLRenderer, WebGLRenderTarget } from "three"
 
 const fragment = `
@@ -34,6 +34,7 @@ export type MouseTrackerParams = {
     thickness: number,
     blockSize: number,
     transform: Transform,
+    cursorPos: Vector2,
 }
 
 export type MouseTrackerUniforms = {
@@ -68,11 +69,6 @@ class MouseTrackerImpl extends Effect {
 }
 
 export const MouseTracker = forwardRef(({ params }: { params: MouseTrackerParams }, ref) => {
-    const three = useThree()
-    const canvasCursor = useContext(islandGridContext)
-    canvasCursor.cursor = three.pointer
-    canvasCursor.canvasSize = three.size
-
-    const effect = new MouseTrackerImpl({ ...params, cursorPos: three.pointer })
+    const effect = new MouseTrackerImpl(params)
     return <primitive ref={ref} object={effect} dispose={null} />
 })
