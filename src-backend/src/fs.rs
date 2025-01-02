@@ -23,6 +23,7 @@ pub async fn init_cache() -> SqlitePool {
         .filename(get_island_cache_root().join("archipelago.sqlite3"))
         .create_if_missing(true);
     let db = SqlitePool::connect_with(conn_opt).await.unwrap();
+    return db;
 
     let (islands, tags) = load_and_cache_all_islands();
     const INIT_TABLES: &[&'static str] = &[

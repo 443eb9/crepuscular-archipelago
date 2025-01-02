@@ -110,3 +110,12 @@ export type SteamPlayerSummaries = {
         personastate: number,
     }]
 }
+
+export type IslandMapQuery = {
+    id: number,
+    texVal: number,
+}
+
+export type IslandMapQueryResult = {
+    result: IslandMapQuery | null,
+}

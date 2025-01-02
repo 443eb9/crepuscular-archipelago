@@ -444,6 +444,7 @@ dependencies = [
  "log",
  "noise",
  "once_cell",
+ "rand",
  "serde",
  "serde_json",
  "serde_repr",

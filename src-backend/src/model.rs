@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 use serde_repr::Serialize_repr;
 use sqlx::{prelude::Type, FromRow, Row};
 
+use crate::islands::IslandMapQuery;
+
 #[derive(Debug, Serialize_repr, Type, PartialEq, Eq)]
 #[repr(u32)]
 pub enum IslandType {
@@ -171,4 +173,10 @@ pub struct MemorizeFormMeta {
 pub struct Project {
     pub owner: String,
     pub name: String,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IslandMapQueryResponse {
+    pub result: Option<IslandMapQuery>,
 }

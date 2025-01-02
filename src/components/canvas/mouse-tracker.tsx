@@ -1,6 +1,6 @@
 import { islandGridContext } from "@/app/(pages)/updates/islands-grid"
 import { Transform } from "@/data/utils"
-import { useThree } from "@react-three/fiber"
+import { Size, useThree } from "@react-three/fiber"
 import { Effect } from "postprocessing"
 import { forwardRef, useContext, useEffect } from "react"
 import { Color, Uniform, Vector2, WebGLRenderer, WebGLRenderTarget } from "three"
@@ -11,12 +11,13 @@ const fragment = `
         float thickness;
         float blockSize;
         vec2 cursorPos;
+        vec2 canvasSize;
     };
     uniform MouseTrack params;
 
     void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
-        vec2 pixel = resolution * uv;
-        vec2 cursor = resolution * (params.cursorPos * 0.5 + 0.5);
+        vec2 pixel = params.canvasSize * uv;
+        vec2 cursor = params.canvasSize * (params.cursorPos * 0.5 + 0.5);
         vec2 offset = abs(pixel - cursor);
 
         if (any(lessThan(offset, vec2(params.thickness * 0.5)))) {
@@ -35,6 +36,7 @@ export type MouseTrackerParams = {
     blockSize: number,
     transform: Transform,
     cursorPos: Vector2,
+    canvasSize: Size,
 }
 
 export type MouseTrackerUniforms = {
@@ -42,13 +44,15 @@ export type MouseTrackerUniforms = {
     thickness: number,
     blockSize: number,
     cursorPos: Vector2,
+    canvasSize: Vector2,
 }
 
 function paramsToUniforms(params: MouseTrackerParams & { cursorPos: Vector2 }): MouseTrackerUniforms {
-    const { transform, ...rest } = params
+    const { transform, canvasSize, ...rest } = params
     return {
         ...rest,
         blockSize: params.blockSize / transform.scale,
+        canvasSize: new Vector2(canvasSize.width, canvasSize.height),
     }
 }
 

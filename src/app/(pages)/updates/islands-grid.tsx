@@ -6,12 +6,16 @@ import { createContext, useContext, useEffect, useRef } from "react";
 import { Vector2 } from "three";
 import { Transform } from "@/data/utils";
 import { Size } from "@react-three/fiber";
+import { fetchIslandAt } from "@/data/api";
 
 export type IslandGridContext = {
     cursor: Vector2,
     canvasSize: Size,
     drag: DragState,
     canvasTransform: Transform,
+    focusingIslandValue: {
+        value: number,
+    },
 }
 
 type DragState = {
@@ -36,16 +40,25 @@ export const islandGridContext = createContext<IslandGridContext>({
     canvasTransform: {
         translation: new Vector2(),
         scale: 1,
-    }
+    },
+    focusingIslandValue: {
+        value: 1.0,
+    },
 })
+
+export const GridSettings = {
+    cellSize: 40,
+    lineThickness: 2,
+    dash: 3,
+    focusOutline: 10,
+}
 
 export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
     const islandGrid = useContext(islandGridContext)
 
     function cursorCanvasPos() {
-        const cursorNdc = islandGrid.cursor.clone().multiplyScalar(0.5).addScalar(0.5)
         const canvas = new Vector2(islandGrid.canvasSize.width, islandGrid.canvasSize.height)
-        return cursorNdc.multiply(canvas)
+        return islandGrid.cursor.clone().multiply(canvas)
     }
 
     useEffect(() => {
@@ -54,7 +67,7 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
                 const curCursor = cursorCanvasPos()
                 const oldCursor = islandGrid.drag.cursor
                 const oldCanvas = islandGrid.drag.canvas
-                const curCanvas = curCursor.clone().sub(oldCursor).multiplyScalar(-islandGrid.canvasTransform.scale).add(oldCanvas)
+                const curCanvas = curCursor.clone().sub(oldCursor).multiplyScalar(-islandGrid.canvasTransform.scale / 2).add(oldCanvas)
                 islandGrid.canvasTransform.translation.x = curCanvas.x
                 islandGrid.canvasTransform.translation.y = curCanvas.y
             }
@@ -86,8 +99,25 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
                     }}
                     onWheel={ev => {
                         const oldScale = islandGrid.canvasTransform.scale
-                        const newScale = Math.max(Math.min(oldScale + ev.deltaY * 0.0008, 2), 1)
+                        const newScale = Math.max(Math.min(oldScale + ev.deltaY * 0.0008, 8), 1)
                         islandGrid.canvasTransform.scale = newScale
+                    }}
+                    onClick={async ev => {
+                        // if (ev.detail != 2) { return }
+
+                        const cursor = islandGrid.cursor.clone()
+                            .multiplyScalar(0.5)
+                            .multiply(new Vector2(islandGrid.canvasSize.width, islandGrid.canvasSize.height))
+                        const px = cursor
+                            .multiplyScalar(islandGrid.canvasTransform.scale)
+                            .add(islandGrid.canvasTransform.translation.clone())
+                        console.log(px.clone().divideScalar(GridSettings.cellSize))
+                        const grid = px.divideScalar(GridSettings.cellSize).floor()
+                        // Not sure why there's one pixel offset.
+                        const query = await fetchIslandAt(grid.x, grid.y - 1)
+                        islandGrid.focusingIslandValue.value = query.ok && query.data.result
+                            ? query.data.result.texVal
+                            : 1
                     }}
                 />
             </islandGridContext.Provider>

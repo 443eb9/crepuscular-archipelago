@@ -18,7 +18,7 @@ use crate::{
     fs::load_projects_list,
     islands::IslandMap,
     memorize::{self, MemorizeCoolDown},
-    model::{MemorizeForm, MemorizeFormMeta},
+    model::{IslandMapQueryResponse, MemorizeForm, MemorizeFormMeta},
     sql::*,
 };
 
@@ -87,6 +87,24 @@ pub async fn get_island_map(island_map: Data<Mutex<IslandMap>>) -> impl Responde
     HttpResponse::Ok()
         .content_type("image/png")
         .body(island_map.lock().unwrap().get_cache().to_vec())
+}
+
+#[get("/api/get/islandMap/{x}/{y}")]
+pub async fn get_island_at(
+    params: Path<(i32, i32)>,
+    island_map: Data<Mutex<IslandMap>>,
+) -> impl Responder {
+    match island_map.lock() {
+        Ok(mut map) => {
+            if params.0 < 0 || params.1 < 0 {
+                return HttpResponse::Ok().json(IslandMapQueryResponse { result: None });
+            }
+            return HttpResponse::Ok().json(IslandMapQueryResponse {
+                result: map.get_island_at((params.0 as usize, params.1 as usize)),
+            });
+        }
+        Err(err) => HttpResponse::InternalServerError().json(err.to_string()),
+    }
 }
 
 #[post("/api/post/memorize")]

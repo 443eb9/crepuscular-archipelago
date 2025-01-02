@@ -6,8 +6,8 @@ import { islandMapUrl } from "@/data/api";
 import { Canvas, useThree } from "@react-three/fiber";
 import { EffectComposer } from "@react-three/postprocessing";
 import { HTMLAttributes, useContext, useEffect, useRef, useState } from "react";
-import { Color, TextureLoader } from "three";
-import { islandGridContext } from "./islands-grid";
+import { Color, NearestFilter, Texture, TextureLoader, Vector2 } from "three";
+import { GridSettings, islandGridContext } from "./islands-grid";
 
 export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
     const resolverRef = useRef<HTMLDivElement>(null)
@@ -16,6 +16,7 @@ export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
         trackerColor: Color,
     } | undefined>()
     const islandGrid = useContext(islandGridContext)
+    const [noise, setNoise] = useState<Texture | undefined>()
     const [updateFlag, setUpdateFlag] = useState(false)
 
     useEffect(() => {
@@ -26,6 +27,13 @@ export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
                 trackerColor: new Color(style.backgroundColor),
             })
         }
+    }, [])
+
+    useEffect(() => {
+        const noise = new TextureLoader().load(islandMapUrl())
+        noise.magFilter = NearestFilter
+        noise.minFilter = NearestFilter
+        setNoise(noise)
     }, [])
 
     const ColorResolver = () =>
@@ -44,7 +52,7 @@ export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
         return <></>
     }
 
-    if (!params) {
+    if (!params || !noise) {
         return <ColorResolver />
     }
 
@@ -61,20 +69,25 @@ export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
                         params={{
                             color: params.gridColor,
                             fillColor: params.trackerColor,
-                            cellSize: 40,
-                            thickness: 2,
-                            dash: 3,
-                            noise: new TextureLoader().load(islandMapUrl()),
+                            focusColor: params.gridColor,
+                            cellSize: GridSettings.cellSize,
+                            thickness: GridSettings.lineThickness,
+                            dash: GridSettings.dash,
+                            focusingValue: islandGrid.focusingIslandValue,
+                            noise,
                             transform: islandGrid.canvasTransform,
+                            canvasSize: islandGrid.canvasSize,
+                            focusOutline: GridSettings.focusOutline,
                         }}
                     />
                     <MouseTracker
                         params={{
                             color: params.trackerColor,
-                            thickness: 2,
-                            blockSize: 40,
+                            thickness: GridSettings.lineThickness,
+                            blockSize: GridSettings.cellSize,
                             transform: islandGrid.canvasTransform,
                             cursorPos: islandGrid.cursor,
+                            canvasSize: islandGrid.canvasSize,
                         }}
                     />
                 </EffectComposer>
