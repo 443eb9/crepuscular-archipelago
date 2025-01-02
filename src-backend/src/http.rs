@@ -16,6 +16,7 @@ use once_cell::sync::Lazy;
 
 use crate::{
     fs::load_projects_list,
+    islands::IslandMap,
     memorize::{self, MemorizeCoolDown},
     model::{MemorizeForm, MemorizeFormMeta},
     sql::*,
@@ -79,6 +80,13 @@ pub async fn get_island(pool: Data<IslandDB>, id: Path<u32>) -> impl Responder {
 #[get("/api/get/projects")]
 pub async fn get_projects_list() -> impl Responder {
     HttpResponse::Ok().json(load_projects_list())
+}
+
+#[get("/api/get/islandMap")]
+pub async fn get_island_map(island_map: Data<Mutex<IslandMap>>) -> impl Responder {
+    HttpResponse::Ok()
+        .content_type("image/png")
+        .body(island_map.lock().unwrap().get_cache().to_vec())
 }
 
 #[post("/api/post/memorize")]

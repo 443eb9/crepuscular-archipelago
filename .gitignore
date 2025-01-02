@@ -1,12 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+target
 cache
-src/data/dummy-data.ts
-/.idea
-
-# rust backend
-/target
-Cargo.lock
 
 # dependencies
 /node_modules

@@ -1,9 +1,12 @@
+use std::sync::Mutex;
+
 use actix_cors::Cors;
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 use sqlx::SqlitePool;
 
 use crate::{
     env::get_island_storage_root,
+    islands::IslandMap,
     sql::{IslandDB, MemorizeDB},
 };
 
@@ -11,6 +14,7 @@ mod env;
 mod filter;
 mod fs;
 mod http;
+mod islands;
 mod memorize;
 mod model;
 mod sql;
@@ -33,10 +37,13 @@ async fn main() -> std::io::Result<()> {
         .unwrap(),
     };
 
+    let island_map = IslandMap::new(&islands_db);
+
     HttpServer::new(move || {
         App::new()
             .app_data(Data::new(islands_db.clone()))
             .app_data(Data::new(memorize_db.clone()))
+            .app_data(Data::new(Mutex::new(island_map.clone())))
             .wrap(Logger::default())
             .wrap(Cors::permissive())
             .service(http::get_all_tags)
@@ -44,6 +51,7 @@ async fn main() -> std::io::Result<()> {
             .service(http::get_island_meta)
             .service(http::get_islands_meta)
             .service(http::get_island)
+            .service(http::get_island_map)
             .service(http::get_projects_list)
             .service(http::submit_memorize)
             .service(http::download_memorize_db)

@@ -85,6 +85,12 @@ export type BookmarkData = {
     comment: string,
 }
 
+export type IslandMap = {
+    width: number,
+    height: number,
+    data: Uint8Array,
+}
+
 export type SteamGame = {
     appid: number,
     name: string,

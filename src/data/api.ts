@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios"
-import { combineApi } from "./backend"
+import { combineApi, combineRemoteApi } from "./backend"
 import { Bookmarks, Island, IslandCount, IslandMeta, LinkExchangeData, ProjectData, SteamPlayerSummaries, SteamRecentlyPlayedGames, TagData } from "./model"
 
 export type Response<T> = {
@@ -55,6 +55,10 @@ export async function fetchIsland(id: number): Promise<Response<Island>> {
 
 export async function fetchProjectList(): Promise<Response<ProjectData[]>> {
     return wrappedApiGet("/get/projects")
+}
+
+export function islandMapUrl() {
+    return combineRemoteApi("/get/islandMap")
 }
 
 const steamKey = process.env.STEAM_KEY

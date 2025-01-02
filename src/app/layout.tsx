@@ -1,14 +1,17 @@
-import Providers from "@/components/provider"
-import { Toaster } from "react-hot-toast"
+import { ReactNode } from "react";
+import "./globals.css";
+import { ThemeProvider } from "next-themes";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return (
-    <html className="h-full" lang="en" suppressHydrationWarning>
-      <body className="h-full pb-5">
-        <div className="fixed w-full h-[20000%] -top-[10000%] -z-50 bg-neutral-100 dark:bg-[#181818]"></div>
-        <Providers>{children}</Providers>
-        <Toaster></Toaster>
-      </body>
-    </html>
-  )
+export const revalidate = 600
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+	return (
+		<html lang="en" suppressHydrationWarning>
+			<body className="w-[100vw] h-[100vh] bg-neutral-100 dark:bg-[#181818]">
+				<ThemeProvider>
+					{children}
+				</ThemeProvider>
+			</body>
+		</html>
+	);
 }
