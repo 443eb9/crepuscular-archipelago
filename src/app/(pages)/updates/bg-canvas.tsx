@@ -34,16 +34,15 @@ export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
     const CanvasStateTracker = () => {
         const three = useThree()
         useEffect(() => {
-            islandGrid.cursor = three.pointer
-            islandGrid.canvasSize = three.size
-        }, [three.pointer, three.size])
+            if (islandGrid.cursor != three.pointer || islandGrid.canvasSize != three.size) {
+                islandGrid.cursor = three.pointer
+                islandGrid.canvasSize = three.size
+                setUpdateFlag(!updateFlag)
+            }
+        }, [])
 
         return <></>
     }
-
-    useEffect(() => {
-        setUpdateFlag(!updateFlag)
-    }, [islandGrid.cursor, islandGrid.canvasSize])
 
     if (!params) {
         return <ColorResolver />

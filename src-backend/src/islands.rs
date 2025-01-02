@@ -24,7 +24,7 @@ impl IslandMap {
     }
 
     pub fn update(&mut self) {
-        let size = 512;
+        let size = 512u32;
 
         let now = Local::now();
         let map = PlaneMapBuilder::new(
@@ -37,7 +37,24 @@ impl IslandMap {
         .set_y_bounds(0.0, 1.0)
         .set_size(size as usize, size as usize)
         .build();
-        let pixels = map.into_iter().map(|x| (x * 255.0) as u8).collect();
+        let pixels = map
+            .into_iter()
+            .enumerate()
+            .map(|(index, val)| {
+                let index = index as i32;
+                let size = size as i32;
+                let half = size / 2;
+
+                let x = index % size - half;
+                let y = index / size - half;
+
+                let dist = ((x * x + y * y) as f64).sqrt();
+                let t = (dist - half as f64 * 0.8) / (half as f64 * 0.2);
+                let falloff = (1.0 - t.clamp(0.0, 1.0)).powf(2.0);
+
+                (val * falloff * 255.0) as u8
+            })
+            .collect();
         let image = ImageBuffer::<Luma<u8>, _>::from_vec(size, size, pixels).unwrap();
 
         let mut buffer = Vec::with_capacity((size * size) as usize);
