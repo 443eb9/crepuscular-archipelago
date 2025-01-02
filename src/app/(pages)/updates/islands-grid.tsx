@@ -104,6 +104,7 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
                     }}
                     onClick={async ev => {
                         // if (ev.detail != 2) { return }
+                        if (islandGrid.drag.onDrag) { return }
 
                         const cursor = islandGrid.cursor.clone()
                             .multiplyScalar(0.5)

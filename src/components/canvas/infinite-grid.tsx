@@ -8,7 +8,7 @@ const fragment = `
     struct InfiniteGrid {
         vec3 color;
         vec3 fillColor;
-        vec3 focusColor;
+        vec3 unfocusColor;
         float thickness;
         float scale;
         float cellSize;
@@ -21,40 +21,37 @@ const fragment = `
     };
     uniform InfiniteGrid params;
 
+    const int NOT_ISLAND = 0;
+    const int UNFOCUSED_ISLAND = 1;
+    const int FOCUSED_ISLAND = 2;
+
     // Returns 0 for not island, 1 for island not focusing, 2 for island focusing.
     int isIsland(vec2 coord) {
         vec2 uv = coord / vec2(textureSize(params.noise, 0));;
         uv.y = 1.0 - uv.y;
         if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
-            return 0;
+            return NOT_ISLAND;
         }
         float noise = texture2D(params.noise, uv).r;
         
         if (noise < 1.0) {
             if (abs(noise - params.focusingValue) < 0.02) {
-                return 2;
+                return FOCUSED_ISLAND;
             } else {
-                return 1;
+                return UNFOCUSED_ISLAND;
             }
         } else {
-            return 0;
+            return NOT_ISLAND;
         }
     }
 
-    // State 0 for not island, 1 for island not focusing, 2 for island focusing.
     void applyColor(int state, out vec4 color) {
-        if (state == 0) {
+        if (state == NOT_ISLAND) {
             // Skip
-        } else if (state == 1) {
+        } else if (state == FOCUSED_ISLAND || params.focusingValue == 1.0) {
             color = vec4(params.fillColor, 1.0);
-        } else if (state == 2) {
-            color = vec4(params.focusColor, 1.0);
-        }
-    }
-
-    void applyOutlineColor(int state, out vec4 color) {
-        if (state == 2) {
-            color = vec4(params.focusColor, 1.0);
+        } else if (state == UNFOCUSED_ISLAND) {
+            color = vec4(params.unfocusColor, 1.0);
         }
     }
 
@@ -79,7 +76,7 @@ const fragment = `
         int thisState = isIsland(grid);
         applyColor(thisState, outputColor);
 
-        if (thisState != 0) {
+        if (thisState != 0 || params.focusingValue == 1.0) {
             return;
         }
         
@@ -90,7 +87,7 @@ const fragment = `
 
                 vec2 sampleCoord = pixel + vec2(dx, dy) * params.focusOutline;
                 int state = isIsland(floor(sampleCoord / params.cellSize));
-                if (state == 2) {
+                if (state == FOCUSED_ISLAND) {
                     applyColor(state, outputColor);
                     return;
                 }
@@ -102,7 +99,7 @@ const fragment = `
 export type InfiniteGridParams = {
     color: Color,
     fillColor: Color;
-    focusColor: Color,
+    unfocusColor: Color,
     thickness: number,
     dash: number,
     transform: Transform,
@@ -116,6 +113,7 @@ export type InfiniteGridParams = {
 export type InfiniteGridUniforms = {
     color: Color,
     fillColor: Color;
+    unfocusColor: Color;
     thickness: number,
     scale: number,
     cellSize: number,

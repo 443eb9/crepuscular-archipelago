@@ -69,7 +69,7 @@ export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
                         params={{
                             color: params.gridColor,
                             fillColor: params.trackerColor,
-                            focusColor: params.gridColor,
+                            unfocusColor: params.gridColor,
                             cellSize: GridSettings.cellSize,
                             thickness: GridSettings.lineThickness,
                             dash: GridSettings.dash,
