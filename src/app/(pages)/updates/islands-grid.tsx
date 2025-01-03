@@ -3,7 +3,7 @@
 import { IslandMeta } from "@/data/model";
 import BgCanvas from "./bg-canvas";
 import { createContext, useContext, useEffect } from "react";
-import { Vector2 } from "three";
+import { Vector2, Vector3 } from "three";
 import { Transform } from "@/data/utils";
 import { Size } from "@react-three/fiber";
 import { fetchIslandAt, fetchIslandMapMeta } from "@/data/api";
@@ -52,6 +52,10 @@ export const GridSettings = {
     dash: 3,
     focusOutlineThickness: 10,
     focusOutlineDist: 5,
+    waveDir: new Vector3(0.02, 0.02, 0.1),
+    waveDensity: 20,
+    waveIntensity: 0.5,
+    waveScale: 20,
 }
 
 export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {

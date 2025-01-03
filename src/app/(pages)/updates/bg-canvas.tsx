@@ -83,6 +83,10 @@ export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
                             canvasSize: islandGrid.canvasSize,
                             focusOutlineThickness: GridSettings.focusOutlineThickness,
                             focusOutlineDist: GridSettings.focusOutlineDist,
+                            waveDir: GridSettings.waveDir,
+                            waveDensity: GridSettings.waveDensity,
+                            waveIntensity: GridSettings.waveIntensity,
+                            waveScale: GridSettings.waveScale,
                         }}
                     />
                     <MouseTracker

@@ -2,13 +2,19 @@ import { Transform } from "@/data/utils"
 import { Size } from "@react-three/fiber"
 import { Effect } from "postprocessing"
 import { forwardRef, useMemo } from "react"
-import { Color, Texture, Uniform, Vector2, WebGLRenderer, WebGLRenderTarget } from "three"
+import { Color, Texture, Uniform, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget } from "three"
+import resolveLygia from "../../data/lygia"
 
 const fragment = `
+    #include "lygia/generative/fbm.glsl"
+
     struct InfiniteGrid {
+        vec2 canvasSize;
+
         vec3 lineColor;
         vec3 fillColor;
         vec3 unfocusColor;
+
         float thickness;
         float scale;
         float cellSize;
@@ -16,9 +22,14 @@ const fragment = `
         float focusingValue;
         vec2 translation;
         sampler2D noise;
-        vec2 canvasSize;
+
         float focusOutlineThickness;
         float focusOutlineDist;
+
+        vec3 waveDir;
+        int waveDensity;
+        float waveIntensity;
+        float waveScale;
     };
     uniform InfiniteGrid params;
 
@@ -26,7 +37,6 @@ const fragment = `
     const int UNFOCUSED_ISLAND = 1;
     const int FOCUSED_ISLAND = 2;
 
-    // Returns 0 for not island, 1 for island not focusing, 2 for island focusing.
     int isIsland(vec2 coord) {
         vec2 uv = coord / vec2(textureSize(params.noise, 0)) + 0.5;
         uv.y = 1.0 - uv.y;
@@ -81,6 +91,19 @@ const fragment = `
         return result;
     }
 
+    vec3 waveColor(vec2 offset, vec2 grid) {
+        vec3 temporalOffset = params.waveDir * time;
+        float noise = fbm(vec3(grid / params.waveScale, 0.0) + temporalOffset);
+        float gap = params.cellSize / float(params.waveDensity) * params.scale;
+        
+        vec2 dotted = mod(offset + gap * 0.5, gap * 2.0);
+
+        if (all(lessThan(dotted, vec2(gap)))) {
+            return vec3(noise * params.waveIntensity);
+        }
+        return vec3(0.0);
+    }
+
     vec3 getPixelColor(vec2 pixel) {
         vec3 color;
 
@@ -90,25 +113,24 @@ const fragment = `
         vec2 dash = mod(offset, params.dash * 2.0 * params.scale);
         bool lined = any(lessThan(offset, vec2(params.thickness * params.scale)));
         bool dashed = all(lessThan(dash, vec2(params.dash * params.scale)));
-
-        // Grid borders
-        if (lined) {
-            if (dashed) {
-                color = params.lineColor;
-            }
-        }
         
         // Island blocks
         int thisState = isIsland(grid);
+        if (thisState == NOT_ISLAND) {
+            color = waveColor(offset, grid);
+        } else {
+            color = applyColor(thisState);
+        }
+
+        // Grid borders
+        if (lined && dashed) {
+            color = params.lineColor;
+        }
         
         // Outline
         int outlineState = outline(pixel);
-
         if (outlineState != NOT_ISLAND) {
             color = applyColor(outlineState);
-        }
-        if (thisState != NOT_ISLAND && !(lined && dashed)) {
-            color = applyColor(thisState);
         }
 
         return color;
@@ -133,6 +155,10 @@ export type InfiniteGridParams = {
     canvasSize: Size,
     focusOutlineThickness: number,
     focusOutlineDist: number,
+    waveDir: Vector3,
+    waveDensity: number,
+    waveIntensity: number,
+    waveScale: number,
 }
 
 export type InfiniteGridUniforms = {
@@ -149,6 +175,10 @@ export type InfiniteGridUniforms = {
     canvasSize: Vector2,
     focusOutlineThickness: number,
     focusOutlineDist: number,
+    waveDir: Vector3,
+    waveDensity: number,
+    waveIntensity: number,
+    waveScale: number,
 }
 
 function paramToUniforms(params: InfiniteGridParams): InfiniteGridUniforms {
@@ -167,7 +197,7 @@ class InfiniteGridImpl extends Effect {
     params: InfiniteGridParams
 
     constructor(params: InfiniteGridParams) {
-        super("InfiniteGridEffect", fragment, {
+        super("InfiniteGridEffect", resolveLygia(fragment), {
             uniforms: new Map([["params", new Uniform(paramToUniforms(params))]])
         })
 
