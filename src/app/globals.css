@@ -4,17 +4,17 @@
 
 @font-face {
     font-family: "SourceHanSerif";
-    src: url('../../public/fonts/source-han-serif/SourceHanSerifCN-Regular.woff2');
+    src: url('../../public/fonts/SourceHanSerifCN-Regular.woff2');
 }
 
 @font-face {
     font-family: "Bender";
-    src: url('../../public/fonts/bender/Jovanny\ Lemonad\ -\ Bender.otf');
+    src: url('../../public/fonts/Jovanny\ Lemonad\ -\ Bender.otf');
 }
 
 @font-face {
     font-family: "SourceHanSans";
-    src: url('../../public/fonts/source-han-sans/SourceHanSansCN-Regular.woff2');
+    src: url('../../public/fonts/SourceHanSansCN-Regular.woff2');
 }
 
 @font-face {
