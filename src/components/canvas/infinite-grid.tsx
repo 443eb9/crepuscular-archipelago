@@ -47,7 +47,7 @@ const fragment = `
         }
         float noise = texture2D(params.noise, uv).r;
         
-        if (noise > 0.0) {
+        if (noise < 1.0) {
             if (abs(noise - params.focusingValue) < 0.01) {
                 return FOCUSED_ISLAND;
             } else {
@@ -59,7 +59,7 @@ const fragment = `
     }
 
     vec3 applyColor(int state) {
-        if (state == FOCUSED_ISLAND || params.focusingValue == 0.0) {
+        if (state == FOCUSED_ISLAND || params.focusingValue == 1.0) {
             return params.fillColor;
         } else if (state == UNFOCUSED_ISLAND) {
             return params.unfocusColor * params.fillColor;
@@ -120,7 +120,7 @@ const fragment = `
         int thisState = isIsland(grid);
         if (thisState == NOT_ISLAND) {
             color = wave(offset, grid);
-            if (params.focusingValue > 0.0) {
+            if (params.focusingValue < 1.0) {
                 color *= params.unfocusColor;
             }
         } else {

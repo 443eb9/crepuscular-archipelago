@@ -185,5 +185,6 @@ pub struct IslandMapQueryResponse {
 #[serde(rename_all = "camelCase")]
 pub struct IslandMapMeta {
     pub size: u32,
-    pub island_centers: Vec<[f32; 2]>,
+    pub per_page_regions: u32,
+    pub page_cnt: u32,
 }

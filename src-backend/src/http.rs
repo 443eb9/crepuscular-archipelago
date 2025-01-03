@@ -16,7 +16,7 @@ use once_cell::sync::Lazy;
 
 use crate::{
     fs::load_projects_list,
-    islands::IslandMap,
+    islands::IslandMaps,
     memorize::{self, MemorizeCoolDown},
     model::{IslandMapQueryResponse, MemorizeForm, MemorizeFormMeta},
     sql::*,
@@ -82,33 +82,54 @@ pub async fn get_projects_list() -> impl Responder {
     HttpResponse::Ok().json(load_projects_list())
 }
 
-#[get("/api/get/islandMap")]
-pub async fn get_island_map(island_map: Data<Mutex<IslandMap>>) -> impl Responder {
-    HttpResponse::Ok()
-        .content_type("image/png")
-        .body(island_map.lock().unwrap().get_cache().to_vec())
+#[get("/api/get/islandMap/{page}")]
+pub async fn get_island_map_noise_texture(
+    params: Path<u32>,
+    island_map: Data<Mutex<IslandMaps>>,
+) -> impl Responder {
+    HttpResponse::Ok().content_type("image/png").body(
+        island_map
+            .lock()
+            .unwrap()
+            .get_cache(*params)
+            .texture
+            .to_vec(),
+    )
 }
 
 #[get("/api/get/islandMap/meta")]
-pub async fn get_island_map_meta(island_map: Data<Mutex<IslandMap>>) -> impl Responder {
+pub async fn get_island_map_meta(island_map: Data<Mutex<IslandMaps>>) -> impl Responder {
     match island_map.lock() {
-        Ok(mut map) => HttpResponse::Ok().json(map.gen_meta()),
+        Ok(map) => HttpResponse::Ok().json(map.get_map_meta()),
         Err(err) => HttpResponse::InternalServerError().json(err.to_string()),
     }
 }
 
-#[get("/api/get/islandMap/{x}/{y}")]
+#[get("/api/get/islandMap/{page}/centers")]
+pub async fn get_island_map_centers(
+    params: Path<u32>,
+    island_map: Data<Mutex<IslandMaps>>,
+) -> impl Responder {
+    match island_map.lock() {
+        Ok(map) => HttpResponse::Ok().json(map.get_cache(*params).region_centers.clone()),
+        Err(err) => HttpResponse::InternalServerError().json(err.to_string()),
+    }
+}
+
+#[get("/api/get/islandMap/{page}/{x}/{y}")]
 pub async fn get_island_at(
-    params: Path<(i32, i32)>,
-    island_map: Data<Mutex<IslandMap>>,
+    params: Path<(u32, i32, i32)>,
+    island_map: Data<Mutex<IslandMaps>>,
 ) -> impl Responder {
     match island_map.lock() {
         Ok(mut map) => {
-            if params.0 < 0 || params.1 < 0 {
+            let (page, x, y) = *params;
+
+            if x < 0 || y < 0 {
                 return HttpResponse::Ok().json(IslandMapQueryResponse { result: None });
             }
             return HttpResponse::Ok().json(IslandMapQueryResponse {
-                result: map.get_island_at((params.0 as usize, params.1 as usize)),
+                result: map.get_region_at(page, (x as usize, y as usize)),
             });
         }
         Err(err) => HttpResponse::InternalServerError().json(err.to_string()),

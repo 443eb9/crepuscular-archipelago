@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios"
 import { combineApi, combineRemoteApi } from "./backend"
-import { Bookmarks, Island, IslandCount, IslandMapMeta, IslandMapQueryResult, IslandMeta, LinkExchangeData, ProjectData, SteamPlayerSummaries, SteamRecentlyPlayedGames, TagData } from "./model"
+import { Bookmarks, Island, IslandCount, IslandMapMeta, IslandMapQueryResult, IslandMapRegionCenters, IslandMeta, LinkExchangeData, ProjectData, SteamPlayerSummaries, SteamRecentlyPlayedGames, TagData } from "./model"
 
 export type Response<T> = {
     ok: true,
@@ -24,7 +24,7 @@ async function wrappedGet<T>(url: string): Promise<Response<T>> {
         .catch((reason: AxiosError) => {
             return {
                 ok: false,
-                err: reason.message
+                err: `${url} ${reason.message}`
             }
         })
 }
@@ -61,16 +61,20 @@ export async function fetchProjectList(): Promise<Response<ProjectData[]>> {
     return wrappedApiGet("/get/projects")
 }
 
-export function islandMapUrl() {
-    return combineRemoteApi("/get/islandMap")
+export function islandMapUrl(page: number) {
+    return combineRemoteApi(`/get/islandMap/${page}`)
 }
 
-export function fetchIslandAt(x: number, y: number): Promise<Response<IslandMapQueryResult>> {
-    return wrappedRemoteApiGet(`/get/islandMap/${x}/${y}`)
+export function fetchIslandAt(page: number, x: number, y: number): Promise<Response<IslandMapQueryResult>> {
+    return wrappedRemoteApiGet(`/get/islandMap/${page}/${x}/${y}`)
 }
 
 export function fetchIslandMapMeta(): Promise<Response<IslandMapMeta>> {
-    return wrappedRemoteApiGet("/get/islandMap/meta")
+    return wrappedApiGet(`/get/islandMap/meta`)
+}
+
+export function fetchIslandMapRegionCenters(page: number): Promise<Response<IslandMapRegionCenters>> {
+    return wrappedApiGet(`/get/islandMap/${page}/centers`)
 }
 
 const steamKey = process.env.STEAM_KEY

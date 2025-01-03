@@ -9,7 +9,7 @@ import { HTMLAttributes, useContext, useEffect, useRef, useState } from "react";
 import { Color, NearestFilter, Texture, TextureLoader } from "three";
 import { GridSettings, islandGridContext } from "./islands-grid";
 
-export default function BgCanvas({ onReady, ...props }: { onReady: () => void } & HTMLAttributes<HTMLDivElement>) {
+export default function BgCanvas({ onReady, mapPage, ...props }: { onReady: () => void, mapPage: number } & HTMLAttributes<HTMLDivElement>) {
     const resolverRef = useRef<HTMLDivElement>(null)
     const [params, setParams] = useState<{
         contrastColor: Color,
@@ -30,7 +30,7 @@ export default function BgCanvas({ onReady, ...props }: { onReady: () => void } 
     }, [])
 
     useEffect(() => {
-        const noise = new TextureLoader().load(islandMapUrl())
+        const noise = new TextureLoader().load(islandMapUrl(mapPage))
         noise.magFilter = NearestFilter
         noise.minFilter = NearestFilter
         setNoise(noise)
@@ -80,7 +80,7 @@ export default function BgCanvas({ onReady, ...props }: { onReady: () => void } 
                             cellSize: GridSettings.cellSize,
                             thickness: GridSettings.lineThickness,
                             dash: GridSettings.dash,
-                            focusingValue: islandGrid.focusingIslandValue,
+                            focusingValue: islandGrid.focusingRegionValue,
                             noise,
                             transform: islandGrid.canvasTransform,
                             canvasSize: islandGrid.canvasSize,

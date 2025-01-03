@@ -112,8 +112,8 @@ export type SteamPlayerSummaries = {
 }
 
 export type IslandMapQuery = {
-    id: number,
-    texVal: number,
+    regionId: number,
+    noiseValue: number,
 }
 
 export type IslandMapQueryResult = {
@@ -122,5 +122,8 @@ export type IslandMapQueryResult = {
 
 export type IslandMapMeta = {
     size: number,
-    islandCenters: [number, number][],
+    perPageRegions: number,
+    pageCnt: number,
 }
+
+export type IslandMapRegionCenters = [number, number][]

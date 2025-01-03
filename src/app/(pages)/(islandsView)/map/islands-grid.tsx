@@ -1,6 +1,6 @@
 "use client"
 
-import { IslandMapMeta, IslandMapQueryResult, IslandMeta } from "@/data/model";
+import { IslandMapMeta, IslandMapRegionCenters, IslandMeta } from "@/data/model";
 import BgCanvas from "./bg-canvas";
 import { createContext, useContext, useEffect, useState } from "react";
 import { Vector2, Vector3 } from "three";
@@ -18,10 +18,10 @@ export type IslandGridContext = {
         canvas: Vector2,
     },
     canvasTransform: Transform,
-    focusingIslandId: {
+    focusingRegionId: {
         value: number | null,
     },
-    focusingIslandValue: {
+    focusingRegionValue: {
         value: number,
     },
 }
@@ -43,11 +43,11 @@ export const islandGridContext = createContext<IslandGridContext>({
         translation: new Vector2(),
         scale: 1,
     },
-    focusingIslandId: {
+    focusingRegionId: {
         value: null,
     },
-    focusingIslandValue: {
-        value: 0.0,
+    focusingRegionValue: {
+        value: 1.0,
     },
 })
 
@@ -63,7 +63,11 @@ export const GridSettings = {
     waveScale: 20,
 }
 
-export default function IslandsGrid({ islands, islandMap }: { islands: IslandMeta[], islandMap: IslandMapMeta }) {
+export default function IslandsGrid({
+    islands, islandMapMeta, regionCenters, page
+}: {
+    islands: IslandMeta[], islandMapMeta: IslandMapMeta, regionCenters: IslandMapRegionCenters, page: number
+}) {
     const [ready, setReady] = useState(false)
     const islandGrid = useContext(islandGridContext)
 
@@ -73,8 +77,8 @@ export default function IslandsGrid({ islands, islandMap }: { islands: IslandMet
     }
 
     useEffect(() => {
-        islandGrid.canvasTransform.translation.x = islandMap.size * 0.5 * GridSettings.cellSize
-        islandGrid.canvasTransform.translation.y = islandMap.size * 0.5 * GridSettings.cellSize
+        islandGrid.canvasTransform.translation.x = islandMapMeta.size * 0.5 * GridSettings.cellSize
+        islandGrid.canvasTransform.translation.y = islandMapMeta.size * 0.5 * GridSettings.cellSize
     }, [])
 
     useEffect(() => {
@@ -106,10 +110,11 @@ export default function IslandsGrid({ islands, islandMap }: { islands: IslandMet
                     {
                         ready &&
                         islands.map((island, index) => {
-                            const center = islandMap.islandCenters[island.id - 1]
+                            const center = regionCenters[index]
                             return (
                                 <IslandFloatingInfo
                                     key={index}
+                                    regionId={index}
                                     island={island}
                                     center={new Vector2(center[0], center[1])}
                                 />
@@ -118,6 +123,7 @@ export default function IslandsGrid({ islands, islandMap }: { islands: IslandMet
                     }
                 </div>
                 <BgCanvas
+                    mapPage={page}
                     onContextMenu={ev => ev.preventDefault()}
                     onMouseDown={ev => {
                         if (ev.button != 2) { return }
@@ -146,18 +152,18 @@ export default function IslandsGrid({ islands, islandMap }: { islands: IslandMet
                             .multiplyScalar(islandGrid.canvasTransform.scale)
                             .add(islandGrid.canvasTransform.translation.clone())
                         const grid = px.divideScalar(GridSettings.cellSize).floor()
-                        const query = await fetchIslandAt(grid.x, grid.y)
-                        let result: { id: number | null; texVal: number; };
+                        const query = await fetchIslandAt(page, grid.x, grid.y - 1)
+                        let result: { regionId: number | null; noiseValue: number; };
                         if (query.ok && query.data.result) {
                             result = { ...query.data.result }
                         } else {
                             result = {
-                                id: null,
-                                texVal: 0,
+                                regionId: null,
+                                noiseValue: 1.0,
                             }
                         }
-                        islandGrid.focusingIslandValue.value = result.texVal
-                        islandGrid.focusingIslandId.value = result.id
+                        islandGrid.focusingRegionId.value = result.regionId
+                        islandGrid.focusingRegionValue.value = result.noiseValue
                     }}
                     onReady={() => setReady(true)}
                 />

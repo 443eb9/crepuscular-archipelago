@@ -28,9 +28,7 @@ export default function Tag({
                 }
             )}
         >
-            <Text className="text-sm">
-                # {tag.name}
-            </Text>
+            <Text className="text-sm">{tag.name}</Text>
             {
                 !hideAmount &&
                 <Text className="font-neon text-sm">{tag.amount}</Text>

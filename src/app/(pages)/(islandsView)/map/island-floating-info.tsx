@@ -6,11 +6,11 @@ import { GridSettings, islandGridContext } from "./islands-grid";
 import { Vector2 } from "three";
 import { motion, useMotionValue } from "motion/react";
 import OutlinedBox from "@/components/outlined-box";
-import IslandCard from "./island-card";
 import Text from "@/components/text";
+import IslandCard from "../island-card";
 
-export default function IslandFloatingInfo({ island, center }: { island: IslandMeta, center: Vector2 }) {
-    const { canvasSize, canvasTransform, focusingIslandId } = useContext(islandGridContext)
+export default function IslandFloatingInfo({ regionId, island, center }: { regionId: number, island: IslandMeta, center: Vector2 }) {
+    const { canvasSize, canvasTransform, focusingRegionId } = useContext(islandGridContext)
     const x = useMotionValue(0)
     const y = useMotionValue(0)
     const [state, setState] = useState<"focused" | "unfocused" | "none">("none")
@@ -32,9 +32,9 @@ export default function IslandFloatingInfo({ island, center }: { island: IslandM
             x.set(pixel.x)
             y.set(pixel.y)
 
-            if (focusingIslandId.value == null) {
+            if (focusingRegionId.value == null) {
                 setState("none")
-            } else if (focusingIslandId.value == island.id) {
+            } else if (focusingRegionId.value == regionId) {
                 setState("focused")
             } else {
                 setState("unfocused")
@@ -52,10 +52,6 @@ export default function IslandFloatingInfo({ island, center }: { island: IslandM
         }
     })
 
-    if (island.is_deleted) {
-        return <></>
-    }
-
     return (
         <motion.div
             className="absolute bg-light-background dark:bg-dark-background"
@@ -67,12 +63,16 @@ export default function IslandFloatingInfo({ island, center }: { island: IslandM
             }}
         >
             {
-                state == "focused"
-                    ? <div className="absolute w-[500px] bg-light-background dark:bg-dark-background"><IslandCard island={island} /></div>
-                    : <OutlinedBox className="p-2 flex items-center gap-2">
-                        <Text className="font-bender font-bold text-2xl mix-blend-difference" noFont>#{island.id}</Text>
-                        <Text className="font-sh-sans">{island.title}</Text>
+                island.is_deleted
+                    ? <OutlinedBox className="font-bender font-bold text-xl p-2" style={{ borderStyle: "dashed" }}>
+                        <Text className="font-bender" noFont>Access Denied</Text>
                     </OutlinedBox>
+                    : state == "focused"
+                        ? <div className="absolute w-[500px] bg-light-background dark:bg-dark-background"><IslandCard island={island} /></div>
+                        : <OutlinedBox className="p-2 flex items-center gap-2">
+                            <Text className="font-bender font-bold text-2xl mix-blend-difference" noFont>#{island.id}</Text>
+                            <Text className="font-sh-sans">{island.title}</Text>
+                        </OutlinedBox>
             }
         </motion.div>
     )

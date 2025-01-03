@@ -1,4 +1,4 @@
-import { islandGridContext } from "@/app/(pages)/updates/islands-grid"
+import { islandGridContext } from "@/app/(pages)/(islandsView)/map/islands-grid"
 import { Transform } from "@/data/utils"
 import { Size, useThree } from "@react-three/fiber"
 import { Effect } from "postprocessing"

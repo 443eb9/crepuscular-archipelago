@@ -1,7 +1,6 @@
 import { IslandMeta, IslandType } from "@/data/model"
 import { ReactNode } from "react"
 import Link from "next/link"
-import { searchParamToString } from "@/data/search-param-util"
 import DiagLines from "@/components/decos/diag-lines"
 import { useSearchParams } from "next/navigation"
 

@@ -6,7 +6,7 @@ use sqlx::SqlitePool;
 
 use crate::{
     env::get_island_storage_root,
-    islands::IslandMap,
+    islands::IslandMaps,
     sql::{IslandDB, MemorizeDB},
 };
 
@@ -37,7 +37,7 @@ async fn main() -> std::io::Result<()> {
         .unwrap(),
     };
 
-    let island_map = IslandMap::new(&islands_db);
+    let island_map = IslandMaps::new(&islands_db);
 
     HttpServer::new(move || {
         App::new()
@@ -51,8 +51,9 @@ async fn main() -> std::io::Result<()> {
             .service(http::get_island_meta)
             .service(http::get_islands_meta)
             .service(http::get_island)
-            .service(http::get_island_map)
             .service(http::get_island_map_meta)
+            .service(http::get_island_map_noise_texture)
+            .service(http::get_island_map_centers)
             .service(http::get_island_at)
             .service(http::get_projects_list)
             .service(http::submit_memorize)
