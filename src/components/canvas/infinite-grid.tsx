@@ -17,6 +17,7 @@ const fragment = `
         vec3 lineColor;
         vec3 fillColor;
         vec3 unfocusColor;
+        vec3 outlineColor;
         vec3 waveColor;
 
         float thickness;
@@ -61,7 +62,7 @@ const fragment = `
         if (state == FOCUSED_ISLAND || params.focusingValue == 1.0) {
             return params.fillColor;
         } else if (state == UNFOCUSED_ISLAND) {
-            return params.unfocusColor;
+            return params.unfocusColor * params.fillColor;
         } else {
             return vec3(0.0);
         }
@@ -119,6 +120,9 @@ const fragment = `
         int thisState = isIsland(grid);
         if (thisState == NOT_ISLAND) {
             color = wave(offset, grid);
+            if (params.focusingValue != 1.0) {
+                color *= params.unfocusColor;
+            }
         } else {
             color = applyColor(thisState);
         }
@@ -131,7 +135,7 @@ const fragment = `
         // Outline
         int outlineState = outline(pixel);
         if (outlineState != NOT_ISLAND) {
-            color = applyColor(outlineState);
+            color = params.outlineColor;
         }
 
         return color;
@@ -147,6 +151,7 @@ export type InfiniteGridParams = {
     lineColor: Color,
     fillColor: Color;
     unfocusColor: Color,
+    outlineColor: Color,
     waveColor: Color,
     thickness: number,
     dash: number,
@@ -170,8 +175,9 @@ export type InfiniteGridUniforms = {
     noise: Texture,
 
     lineColor: Color,
-    fillColor: Color;
-    unfocusColor: Color;
+    fillColor: Color,
+    unfocusColor: Color,
+    outlineColor: Color,
     waveColor: Color,
 
     thickness: number,
