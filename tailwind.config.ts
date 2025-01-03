@@ -18,8 +18,7 @@ const config: Config = {
         "sh-serif": ["SourceHanSerif", "sans-serif"],
         "bender": ["Bender"],
         "sh-sans": ["SourceHanSans"],
-        "krypton": ["MonaspaceKrypton"],
-        "argon": ["MonaspaceArgon"],
+        "neon": ["MonaspaceNeon"],
       },
       colors: {
         "443eb9": "#443eb9",

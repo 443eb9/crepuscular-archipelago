@@ -1,7 +1,7 @@
 import { ReadonlyURLSearchParams } from "next/navigation"
 
 export function searchParamBitXor(bit: number, param: string, ro: ReadonlyURLSearchParams | URLSearchParams) {
-    const params = ro instanceof ReadonlyURLSearchParams ? new URLSearchParams(ro) : ro
+    const params = new URLSearchParams(ro)
     const filter = parseInt(ro.get(param) ?? "0")
     const tags = filter ^ (1 << bit)
     params.set(param, tags.toString())
@@ -9,7 +9,7 @@ export function searchParamBitXor(bit: number, param: string, ro: ReadonlyURLSea
 }
 
 export function searchParamBitSet(bit: number, value: boolean, param: string, ro: ReadonlyURLSearchParams | URLSearchParams) {
-    const params = ro instanceof ReadonlyURLSearchParams ? new URLSearchParams(ro) : ro
+    const params = new URLSearchParams(ro)
     const filter = parseInt(ro.get(param) ?? "0")
     const tags = value ? filter | (1 << bit) : filter & (~(1 << bit))
     params.set(param, tags.toString())
@@ -21,7 +21,7 @@ export function searchParamBitGet(bit: number, param: string, ro: ReadonlyURLSea
 }
 
 export function searchParamReset(param: Array<string>, ro: ReadonlyURLSearchParams | URLSearchParams) {
-    const params = ro instanceof ReadonlyURLSearchParams ? new URLSearchParams(ro) : ro
+    const params = new URLSearchParams(ro)
     param.forEach((v, _) => params.delete(v))
     return params
 }

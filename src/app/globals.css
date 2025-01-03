@@ -18,13 +18,8 @@
 }
 
 @font-face {
-    font-family: "MonaspaceKrypton";
-    src: url('../../public/fonts/monaspace-krypton/MonaspaceKrypton-Regular.otf');
-}
-
-@font-face {
-    font-family: "MonaspaceArgon";
-    src: url('../../public/fonts/monaspace-argon/MonaspaceArgon-Regular.otf');
+    font-family: "MonaspaceNeon";
+    src: url('../../public/fonts/MonaspaceNeon-Regular.woff2');
 }
 
 ::selection {

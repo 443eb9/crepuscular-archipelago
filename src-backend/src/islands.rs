@@ -164,11 +164,11 @@ impl IslandMap {
             .collect::<Vec<_>>();
         // Land id to island id mapper.
         let mut land_to_island = vec![None; cnt as usize + 1];
-        let mut island_id_to_tex_val = vec![0.0; self.islands as usize];
-        let mut island_centers = vec![[0.0; 2]; self.islands as usize];
+        let mut island_id_to_tex_val = vec![0.0; self.islands as usize + 1];
+        let mut island_centers = vec![[0.0; 2]; self.islands as usize + 1];
 
         let mut rng = StdRng::seed_from_u64(seed as u64);
-        for island_id in 0..self.islands {
+        for island_id in 1..=self.islands {
             let land = rng.gen_range(0..land_indices.len());
             let real_land_index = land_indices[land];
             land_indices.swap_remove(land);
@@ -177,8 +177,6 @@ impl IslandMap {
             island_id_to_tex_val[island_id as usize] = real_land_index as f32 / cnt as f32;
             island_centers[island_id as usize] = land_centers[real_land_index];
         }
-
-        dbg!(&island_centers);
 
         // Convert land id to island id.
         for land_index in &mut lands_mapper {
@@ -194,7 +192,7 @@ impl IslandMap {
         let island_map = lands_mapper
             .clone()
             .into_iter()
-            .map(|x| x.unwrap_or(self.islands) as f32 / self.islands as f32)
+            .map(|x| x.unwrap_or(0) as f32 / self.islands as f32)
             .collect::<Vec<_>>();
         let image = ImageBuffer::<Luma<u8>, _>::from_vec(
             size,
@@ -237,7 +235,8 @@ impl IslandMap {
         let cache = self.cached.as_ref().unwrap();
         let pixel = coord.0 + coord.1 * cache.size as usize;
 
-        let id = cache.island_ids.get(pixel).cloned()??;
+        // TODO fix this +1
+        let id = cache.island_ids.get(pixel).cloned()?? + 1;
         let tex_val = cache.noise_values.get(pixel).cloned()?;
 
         Some(IslandMapQuery { id, tex_val })

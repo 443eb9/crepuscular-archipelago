@@ -76,7 +76,7 @@ export default function BgCanvas({ onReady, ...props }: { onReady: () => void } 
                             fillColor: params.neutralColor,
                             unfocusColor: new Color("#888888"),
                             outlineColor: new Color("#42d3ff"),
-                            waveColor: new Color("#42d3ff"),
+                            waveColor: new Color("#296ed6"),
                             cellSize: GridSettings.cellSize,
                             thickness: GridSettings.lineThickness,
                             dash: GridSettings.dash,

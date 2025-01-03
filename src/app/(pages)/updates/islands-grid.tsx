@@ -1,6 +1,6 @@
 "use client"
 
-import { IslandMapMeta, IslandMeta } from "@/data/model";
+import { IslandMapMeta, IslandMapQueryResult, IslandMeta } from "@/data/model";
 import BgCanvas from "./bg-canvas";
 import { createContext, useContext, useEffect, useState } from "react";
 import { Vector2, Vector3 } from "three";
@@ -18,6 +18,9 @@ export type IslandGridContext = {
         canvas: Vector2,
     },
     canvasTransform: Transform,
+    focusingIslandId: {
+        value: number | null,
+    },
     focusingIslandValue: {
         value: number,
     },
@@ -40,8 +43,11 @@ export const islandGridContext = createContext<IslandGridContext>({
         translation: new Vector2(),
         scale: 1,
     },
+    focusingIslandId: {
+        value: null,
+    },
     focusingIslandValue: {
-        value: 1.0,
+        value: 0.0,
     },
 })
 
@@ -140,12 +146,18 @@ export default function IslandsGrid({ islands, islandMap }: { islands: IslandMet
                             .multiplyScalar(islandGrid.canvasTransform.scale)
                             .add(islandGrid.canvasTransform.translation.clone())
                         const grid = px.divideScalar(GridSettings.cellSize).floor()
-                        // Not sure why there's one pixel offset.
                         const query = await fetchIslandAt(grid.x, grid.y)
-                        islandGrid.focusingIslandValue.value = query.ok && query.data.result
-                            ? query.data.result.texVal
-                            : 1
-                        console.log(query)
+                        let result: { id: number | null; texVal: number; };
+                        if (query.ok && query.data.result) {
+                            result = { ...query.data.result }
+                        } else {
+                            result = {
+                                id: null,
+                                texVal: 0,
+                            }
+                        }
+                        islandGrid.focusingIslandValue.value = result.texVal
+                        islandGrid.focusingIslandId.value = result.id
                     }}
                     onReady={() => setReady(true)}
                 />
