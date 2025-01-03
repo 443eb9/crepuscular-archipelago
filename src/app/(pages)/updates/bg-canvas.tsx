@@ -73,9 +73,9 @@ export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
                         params={{
                             lineColor: new Color(0.1, 0.1, 0.1),
                             fillColor: params.neutralColor,
-                            unfocusColor: params.contrastColor,
-                            outlineColor: new Color("#ffef42"),
-                            waveColor: new Color("#ffef42"),
+                            unfocusColor: new Color("#888888"),
+                            outlineColor: new Color("#42d3ff"),
+                            waveColor: new Color("#42d3ff"),
                             cellSize: GridSettings.cellSize,
                             thickness: GridSettings.lineThickness,
                             dash: GridSettings.dash,

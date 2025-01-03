@@ -12,7 +12,7 @@ export type IslandGridContext = {
     cursor: Vector2,
     canvasSize: Size,
     drag: {
-        state: "none" | "start" | "ongoing" | "end",
+        onDrag: boolean,
         cursor: Vector2,
         canvas: Vector2,
     },
@@ -32,7 +32,7 @@ export const islandGridContext = createContext<IslandGridContext>({
         left: 0,
     },
     drag: {
-        state: "none",
+        onDrag: false,
         cursor: new Vector2(),
         canvas: new Vector2(),
     },
@@ -68,9 +68,7 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
 
     useEffect(() => {
         const dragHandler = () => {
-            if (islandGrid.drag.state == "start" || islandGrid.drag.state == "ongoing") {
-                islandGrid.drag.state = "ongoing"
-
+            if (islandGrid.drag.onDrag) {
                 const curCursor = cursorCanvasPos()
                 const oldCursor = islandGrid.drag.cursor
                 const oldCanvas = islandGrid.drag.canvas
@@ -80,11 +78,7 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
             }
         }
 
-        const endDragHandler = () => {
-            if (islandGrid.drag.state == "ongoing") {
-                islandGrid.drag.state = "end"
-            }
-        }
+        const endDragHandler = () => islandGrid.drag.onDrag = false
 
         document.addEventListener("mousemove", dragHandler)
         document.addEventListener("mouseup", endDragHandler)
@@ -92,7 +86,7 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
             document.removeEventListener("mousemove", dragHandler)
             document.removeEventListener("mouseup", endDragHandler)
         }
-    }, [islandGrid.drag.state])
+    }, [islandGrid.drag.onDrag])
 
     useEffect(() => {
         async function fetch() {
@@ -109,8 +103,10 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
         <div>
             <islandGridContext.Provider value={islandGrid}>
                 <BgCanvas
-                    onMouseDown={() => {
-                        islandGrid.drag.state = "start"
+                    onContextMenu={ev => ev.preventDefault()}
+                    onMouseDown={ev => {
+                        if (ev.button != 2) { return }
+                        islandGrid.drag.onDrag = true
 
                         const initial = cursorCanvasPos()
                         islandGrid.drag.cursor.x = initial.x
@@ -124,12 +120,8 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
                         const newScale = Math.max(Math.min(oldScale + ev.deltaY * 0.0008, 2), 0.5)
                         islandGrid.canvasTransform.scale = newScale
                     }}
-                    onClick={async () => {
-                        if (islandGrid.drag.state == "end") {
-                            islandGrid.drag.state = "none"
-                            return
-                        }
-                        islandGrid.drag.state = "none"
+                    onClick={async ev => {
+                        if (ev.button != 0) { return }
 
                         const cursor = islandGrid.cursor.clone()
                             .multiplyScalar(0.5)
