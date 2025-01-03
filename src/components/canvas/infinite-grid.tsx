@@ -10,18 +10,19 @@ const fragment = `
 
     struct InfiniteGrid {
         vec2 canvasSize;
+        vec2 translation;
+        float focusingValue;
+        sampler2D noise;
 
         vec3 lineColor;
         vec3 fillColor;
         vec3 unfocusColor;
+        vec3 waveColor;
 
         float thickness;
         float scale;
         float cellSize;
         float dash;
-        float focusingValue;
-        vec2 translation;
-        sampler2D noise;
 
         float focusOutlineThickness;
         float focusOutlineDist;
@@ -91,7 +92,7 @@ const fragment = `
         return result;
     }
 
-    vec3 waveColor(vec2 offset, vec2 grid) {
+    vec3 wave(vec2 offset, vec2 grid) {
         vec3 temporalOffset = params.waveDir * time;
         float noise = fbm(vec3(grid / params.waveScale, 0.0) + temporalOffset);
         float gap = params.cellSize / float(params.waveDensity) * params.scale;
@@ -99,7 +100,7 @@ const fragment = `
         vec2 dotted = mod(offset + gap * 0.5, gap * 2.0);
 
         if (all(lessThan(dotted, vec2(gap)))) {
-            return vec3(noise * params.waveIntensity);
+            return noise * params.waveIntensity * params.waveColor;
         }
         return vec3(0.0);
     }
@@ -117,7 +118,7 @@ const fragment = `
         // Island blocks
         int thisState = isIsland(grid);
         if (thisState == NOT_ISLAND) {
-            color = waveColor(offset, grid);
+            color = wave(offset, grid);
         } else {
             color = applyColor(thisState);
         }
@@ -146,6 +147,7 @@ export type InfiniteGridParams = {
     lineColor: Color,
     fillColor: Color;
     unfocusColor: Color,
+    waveColor: Color,
     thickness: number,
     dash: number,
     transform: Transform,
@@ -162,19 +164,23 @@ export type InfiniteGridParams = {
 }
 
 export type InfiniteGridUniforms = {
+    canvasSize: Vector2,
+    translation: Vector2,
+    focusingValue: number,
+    noise: Texture,
+
     lineColor: Color,
     fillColor: Color;
     unfocusColor: Color;
+    waveColor: Color,
+
     thickness: number,
     scale: number,
     cellSize: number,
     dash: number,
-    focusingValue: number,
-    translation: Vector2,
-    noise: Texture,
-    canvasSize: Vector2,
     focusOutlineThickness: number,
     focusOutlineDist: number,
+
     waveDir: Vector3,
     waveDensity: number,
     waveIntensity: number,
