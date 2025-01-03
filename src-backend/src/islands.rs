@@ -81,6 +81,13 @@ impl<T: Default + Clone> Generic2dMap<T> {
 }
 
 #[derive(Clone)]
+pub struct FbmSettings {
+    pub frequency: f32,
+    pub lacunarity: f32,
+    pub persistence: f32,
+}
+
+#[derive(Clone)]
 pub struct GeneratedMap {
     pub size: u32,
     /// Noise texture map for rendering. 1.0 indicates no island exists.
@@ -95,13 +102,18 @@ pub struct GeneratedMap {
 impl GeneratedMap {
     pub fn new(
         size: u32,
-        min_island_size: u32,
+        min_region_size: u32,
+        max_region_size: u32,
         seed: u32,
         land_threshold: f32,
         expected_region_cnt: u32,
+        fbm: FbmSettings,
     ) -> Option<Self> {
         let map = PlaneMapBuilder::new(
-            noise::Fbm::<Simplex>::new(seed).set_frequency(size as f64 / 10.0),
+            noise::Fbm::<Simplex>::new(seed)
+                .set_frequency(fbm.frequency as f64)
+                .set_lacunarity(fbm.lacunarity as f64)
+                .set_persistence(fbm.persistence as f64),
         )
         .set_x_bounds(0.0, 1.0)
         .set_y_bounds(0.0, 1.0)
@@ -190,7 +202,7 @@ impl GeneratedMap {
                         &mut position_sum,
                     );
 
-                    let valid = region_size >= min_island_size;
+                    let valid = region_size >= min_region_size && region_size <= max_region_size;
                     is_discarded.push(!valid);
                     if valid {
                         valid_region_cnt += 1;
@@ -346,17 +358,31 @@ impl IslandMaps {
 
         self.cached = (0..self.pages)
             .map(|page| {
-                log::info!("Generating island map: {}/{}", page, self.pages);
+                let mut attempt = 0;
+
                 loop {
+                    log::info!(
+                        "Generating island map: {}/{} attempt: {}",
+                        page,
+                        self.pages,
+                        attempt
+                    );
                     if let Some(map) = GeneratedMap::new(
                         self.page_size,
-                        10,
+                        20,
+                        40,
                         temporal_seed + page as u32 + seed_offset,
                         0.04,
                         self.per_page_regions,
+                        FbmSettings {
+                            frequency: self.page_size as f32 / 10.0,
+                            lacunarity: 1.5,
+                            persistence: 0.5,
+                        },
                     ) {
                         break map;
                     }
+                    attempt += 1;
                     seed_offset += 1;
                 }
             })

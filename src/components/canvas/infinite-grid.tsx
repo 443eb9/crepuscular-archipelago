@@ -39,13 +39,17 @@ const fragment = `
     const int UNFOCUSED_ISLAND = 1;
     const int FOCUSED_ISLAND = 2;
 
-    int isIsland(vec2 coord) {
+    float sampleIslandNoise(vec2 coord) {
         vec2 uv = coord / vec2(textureSize(params.noise, 0));
         uv.y = 1.0 - uv.y;
         if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
-            return NOT_ISLAND;
+            return 1.0;
         }
-        float noise = texture2D(params.noise, uv).r;
+        return texture2D(params.noise, uv).r;
+    }
+
+    int isIsland(vec2 coord) {
+        float noise = sampleIslandNoise(coord);
         
         if (noise < 1.0) {
             if (abs(noise - params.focusingValue) < 0.01) {
