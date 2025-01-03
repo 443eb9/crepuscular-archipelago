@@ -40,7 +40,7 @@ const fragment = `
     const int FOCUSED_ISLAND = 2;
 
     int isIsland(vec2 coord) {
-        vec2 uv = coord / vec2(textureSize(params.noise, 0)) + 0.5;
+        vec2 uv = coord / vec2(textureSize(params.noise, 0));
         uv.y = 1.0 - uv.y;
         if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
             return NOT_ISLAND;

@@ -10,6 +10,7 @@
     "npm:axios@^1.7.9": "1.7.9",
     "npm:eslint-config-next@14.2.22": "14.2.22_eslint@8.57.1_typescript@5.7.2_@typescript-eslint+parser@8.19.0__eslint@8.57.1__typescript@5.7.2_eslint-plugin-import@2.31.0__eslint@8.57.1",
     "npm:eslint@8": "8.57.1",
+    "npm:motion@^11.15.0": "11.15.0_react@18.3.1_react-dom@18.3.1__react@18.3.1",
     "npm:next-themes@~0.4.4": "0.4.4_react@18.3.1_react-dom@18.3.1__react@18.3.1",
     "npm:next@14.2.22": "14.2.22_react@18.3.1_react-dom@18.3.1__react@18.3.1",
     "npm:postcss@8": "8.4.49",
@@ -1168,6 +1169,16 @@
         "mime-types"
       ]
     },
+    "framer-motion@11.15.0_react@18.3.1_react-dom@18.3.1__react@18.3.1": {
+      "integrity": "sha512-MLk8IvZntxOMg7lDBLw2qgTHHv664bYoYmnFTmE0Gm/FW67aOJk0WM3ctMcG+Xhcv+vh5uyyXwxvxhSeJzSe+w==",
+      "dependencies": [
+        "motion-dom",
+        "motion-utils",
+        "react",
+        "react-dom",
+        "tslib"
+      ]
+    },
     "fs.realpath@1.0.0": {
       "integrity": "sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw=="
     },
@@ -1662,6 +1673,21 @@
     },
     "minipass@7.1.2": {
       "integrity": "sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw=="
+    },
+    "motion-dom@11.14.3": {
+      "integrity": "sha512-lW+D2wBy5vxLJi6aCP0xyxTxlTfiu+b+zcpVbGVFUxotwThqhdpPRSmX8xztAgtZMPMeU0WGVn/k1w4I+TbPqA=="
+    },
+    "motion-utils@11.14.3": {
+      "integrity": "sha512-Xg+8xnqIJTpr0L/cidfTTBFkvRw26ZtGGuIhA94J9PQ2p4mEa06Xx7QVYZH0BP+EpMSaDlu+q0I0mmvwADPsaQ=="
+    },
+    "motion@11.15.0_react@18.3.1_react-dom@18.3.1__react@18.3.1": {
+      "integrity": "sha512-iZ7dwADQJWGsqsSkBhNHdI2LyYWU+hA1Nhy357wCLZq1yHxGImgt3l7Yv0HT/WOskcYDq9nxdedyl4zUv7UFFw==",
+      "dependencies": [
+        "framer-motion",
+        "react",
+        "react-dom",
+        "tslib"
+      ]
     },
     "ms@2.1.3": {
       "integrity": "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA=="
@@ -2557,6 +2583,7 @@
         "npm:axios@^1.7.9",
         "npm:eslint-config-next@14.2.22",
         "npm:eslint@8",
+        "npm:motion@^11.15.0",
         "npm:next-themes@~0.4.4",
         "npm:next@14.2.22",
         "npm:postcss@8",

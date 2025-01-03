@@ -1,12 +1,13 @@
 "use client"
 
-import { IslandMeta } from "@/data/model";
+import { IslandMapMeta, IslandMeta } from "@/data/model";
 import BgCanvas from "./bg-canvas";
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { Vector2, Vector3 } from "three";
 import { Transform } from "@/data/utils";
 import { Size } from "@react-three/fiber";
-import { fetchIslandAt, fetchIslandMapMeta } from "@/data/api";
+import { fetchIslandAt } from "@/data/api";
+import IslandFloatingInfo from "./island-floating-info";
 
 export type IslandGridContext = {
     cursor: Vector2,
@@ -20,7 +21,6 @@ export type IslandGridContext = {
     focusingIslandValue: {
         value: number,
     },
-    mapSize: number,
 }
 
 export const islandGridContext = createContext<IslandGridContext>({
@@ -43,7 +43,6 @@ export const islandGridContext = createContext<IslandGridContext>({
     focusingIslandValue: {
         value: 1.0,
     },
-    mapSize: 0,
 })
 
 export const GridSettings = {
@@ -58,13 +57,19 @@ export const GridSettings = {
     waveScale: 20,
 }
 
-export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
+export default function IslandsGrid({ islands, islandMap }: { islands: IslandMeta[], islandMap: IslandMapMeta }) {
+    const [ready, setReady] = useState(false)
     const islandGrid = useContext(islandGridContext)
 
     function cursorCanvasPos() {
         const canvas = new Vector2(islandGrid.canvasSize.width, islandGrid.canvasSize.height)
         return islandGrid.cursor.clone().multiply(canvas)
     }
+
+    useEffect(() => {
+        islandGrid.canvasTransform.translation.x = islandMap.size * 0.5 * GridSettings.cellSize
+        islandGrid.canvasTransform.translation.y = islandMap.size * 0.5 * GridSettings.cellSize
+    }, [])
 
     useEffect(() => {
         const dragHandler = () => {
@@ -86,26 +91,31 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
             document.removeEventListener("mousemove", dragHandler)
             document.removeEventListener("mouseup", endDragHandler)
         }
-    }, [islandGrid.drag.onDrag])
-
-    useEffect(() => {
-        async function fetch() {
-            const meta = await fetchIslandMapMeta()
-            if (meta.ok) {
-                islandGrid.mapSize = meta.data.size
-            }
-        }
-
-        fetch()
     }, [])
 
     return (
-        <div>
+        <div className="overflow-hidden w-[100vw] h-[100vh]">
             <islandGridContext.Provider value={islandGrid}>
+                <div className="absolute z-10 w-[100vw] h-[100vh] overflow-hidden pointer-events-none">
+                    {
+                        ready &&
+                        islands.map((island, index) => {
+                            const center = islandMap.islandCenters[island.id - 1]
+                            return (
+                                <IslandFloatingInfo
+                                    key={index}
+                                    island={island}
+                                    center={new Vector2(center[0], center[1])}
+                                />
+                            )
+                        })
+                    }
+                </div>
                 <BgCanvas
                     onContextMenu={ev => ev.preventDefault()}
                     onMouseDown={ev => {
                         if (ev.button != 2) { return }
+
                         islandGrid.drag.onDrag = true
 
                         const initial = cursorCanvasPos()
@@ -129,13 +139,15 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
                         const px = cursor
                             .multiplyScalar(islandGrid.canvasTransform.scale)
                             .add(islandGrid.canvasTransform.translation.clone())
-                        const grid = px.divideScalar(GridSettings.cellSize).floor().addScalar(islandGrid.mapSize / 2)
+                        const grid = px.divideScalar(GridSettings.cellSize).floor()
                         // Not sure why there's one pixel offset.
-                        const query = await fetchIslandAt(grid.x, grid.y - 1)
+                        const query = await fetchIslandAt(grid.x, grid.y)
                         islandGrid.focusingIslandValue.value = query.ok && query.data.result
                             ? query.data.result.texVal
                             : 1
+                        console.log(query)
                     }}
+                    onReady={() => setReady(true)}
                 />
             </islandGridContext.Provider>
         </div>

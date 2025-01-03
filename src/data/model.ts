@@ -122,4 +122,5 @@ export type IslandMapQueryResult = {
 
 export type IslandMapMeta = {
     size: number,
+    islandCenters: [number, number][],
 }

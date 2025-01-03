@@ -26,8 +26,10 @@ const config: Config = {
         "warn": "#ffff00",
         // light-contrast
         "light-contrast": "#171717",
+        "light-background": "#f5f5f5",
         // neutral-50
         "dark-contrast": "#fafafa",
+        "dark-background": "#181818",
         "light-unfocused": "#e5e5e5",
         "dark-unfocused": "#404040",
         "light-dark-neutral": "#737373"

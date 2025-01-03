@@ -6,10 +6,10 @@ import { islandMapUrl } from "@/data/api";
 import { Canvas, useThree } from "@react-three/fiber";
 import { EffectComposer } from "@react-three/postprocessing";
 import { HTMLAttributes, useContext, useEffect, useRef, useState } from "react";
-import { Color, NearestFilter, Texture, TextureLoader, Vector2 } from "three";
+import { Color, NearestFilter, Texture, TextureLoader } from "three";
 import { GridSettings, islandGridContext } from "./islands-grid";
 
-export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
+export default function BgCanvas({ onReady, ...props }: { onReady: () => void } & HTMLAttributes<HTMLDivElement>) {
     const resolverRef = useRef<HTMLDivElement>(null)
     const [params, setParams] = useState<{
         contrastColor: Color,
@@ -50,6 +50,7 @@ export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
                 islandGrid.canvasSize = three.size
 
                 setUpdateFlag(!updateFlag)
+                onReady()
             }
         }, [])
 

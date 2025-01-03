@@ -1,13 +1,7 @@
-use std::{
-    collections::HashMap,
-    io::{BufReader, Cursor, Write},
-};
+use std::io::Write;
 
 use chrono::{Datelike, Local};
-use image::{
-    codecs::png::{PngDecoder, PngEncoder},
-    DynamicImage, ExtendedColorType, GenericImageView, ImageBuffer, ImageEncoder, Luma, RgbaImage,
-};
+use image::{codecs::png::PngEncoder, ExtendedColorType, ImageBuffer, ImageEncoder, Luma};
 use noise::{
     utils::{NoiseMapBuilder, PlaneMapBuilder},
     MultiFractal, Simplex,
@@ -36,6 +30,7 @@ struct GeneratedMap {
     island_ids: Vec<Option<u32>>,
     /// Noise value on each pixel.
     noise_values: Vec<f32>,
+    island_centers: Vec<[f32; 2]>,
 }
 
 #[derive(Clone)]
@@ -95,6 +90,7 @@ impl IslandMap {
             size: u32,
             noise: &mut Vec<bool>,
             land_mapper: &mut Vec<Option<u32>>,
+            position_sum: &mut [u32; 2],
         ) {
             let index = (start_x + start_y * size as i32) as usize;
             if start_x < 0
@@ -109,6 +105,9 @@ impl IslandMap {
             noise[index] = false;
             land_mapper[index] = Some(area_index);
             *island_size += 1;
+            position_sum[0] += start_x as u32;
+            position_sum[1] += start_y as u32;
+
             for dx in [0, 0, 1, -1] {
                 for dy in [1, -1, 0, 0] {
                     bfs_island(
@@ -119,6 +118,7 @@ impl IslandMap {
                         size,
                         noise,
                         land_mapper,
+                        position_sum,
                     );
                 }
             }
@@ -126,6 +126,7 @@ impl IslandMap {
 
         // Land id of each pixel.
         let mut lands_mapper = vec![None; binary_map.len()];
+        let mut land_centers = Vec::new();
         let mut is_discarded = Vec::new();
         let mut cnt = 0;
 
@@ -133,6 +134,8 @@ impl IslandMap {
             for y in 0..size as usize {
                 if binary_map[x + y * size as usize] {
                     let mut island_size = 0;
+                    let mut position_sum = [0; 2];
+
                     bfs_island(
                         x as i32,
                         y as i32,
@@ -141,9 +144,14 @@ impl IslandMap {
                         size,
                         &mut binary_map,
                         &mut lands_mapper,
+                        &mut position_sum,
                     );
 
                     is_discarded.push(island_size < 10);
+                    land_centers.push([
+                        position_sum[0] as f32 / island_size as f32,
+                        position_sum[1] as f32 / island_size as f32,
+                    ]);
                     cnt += 1;
                 }
             }
@@ -157,6 +165,7 @@ impl IslandMap {
         // Land id to island id mapper.
         let mut land_to_island = vec![None; cnt as usize + 1];
         let mut island_id_to_tex_val = vec![0.0; self.islands as usize];
+        let mut island_centers = vec![[0.0; 2]; self.islands as usize];
 
         let mut rng = StdRng::seed_from_u64(seed as u64);
         for island_id in 0..self.islands {
@@ -166,7 +175,10 @@ impl IslandMap {
 
             land_to_island[real_land_index as usize] = Some(island_id);
             island_id_to_tex_val[island_id as usize] = real_land_index as f32 / cnt as f32;
+            island_centers[island_id as usize] = land_centers[real_land_index];
         }
+
+        dbg!(&island_centers);
 
         // Convert land id to island id.
         for land_index in &mut lands_mapper {
@@ -207,6 +219,7 @@ impl IslandMap {
             texture: buffer,
             island_ids: lands_mapper,
             noise_values: island_map,
+            island_centers,
         });
     }
 
@@ -237,6 +250,9 @@ impl IslandMap {
 
         let cache = self.cached.as_ref().unwrap();
 
-        IslandMapMeta { size: cache.size }
+        IslandMapMeta {
+            size: cache.size,
+            island_centers: cache.island_centers.clone(),
+        }
     }
 }
