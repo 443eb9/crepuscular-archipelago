@@ -52,6 +52,10 @@ export default function IslandFloatingInfo({ island, center }: { island: IslandM
         }
     })
 
+    if (island.is_deleted) {
+        return <></>
+    }
+
     return (
         <motion.div
             className="absolute bg-light-background dark:bg-dark-background"
