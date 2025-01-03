@@ -119,3 +119,7 @@ export type IslandMapQuery = {
 export type IslandMapQueryResult = {
     result: IslandMapQuery | null,
 }
+
+export type IslandMapMeta = {
+    size: number,
+}

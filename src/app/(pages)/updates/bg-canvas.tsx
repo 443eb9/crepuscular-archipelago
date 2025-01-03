@@ -48,6 +48,7 @@ export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
             if (islandGrid.cursor != three.pointer || islandGrid.canvasSize != three.size) {
                 islandGrid.cursor = three.pointer
                 islandGrid.canvasSize = three.size
+
                 setUpdateFlag(!updateFlag)
             }
         }, [])
@@ -62,7 +63,7 @@ export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
     return (
         <div
             {...props}
-            className={`absolute w-[100vw] h-[100vh] ${props.className}`}
+            className={`absolute w-[100vw] h-[100vh] cursor-none ${props.className}`}
         >
             <ColorResolver />
             <Canvas>

@@ -28,7 +28,7 @@ const fragment = `
 
     // Returns 0 for not island, 1 for island not focusing, 2 for island focusing.
     int isIsland(vec2 coord) {
-        vec2 uv = coord / vec2(textureSize(params.noise, 0));;
+        vec2 uv = coord / vec2(textureSize(params.noise, 0)) + 0.5;
         uv.y = 1.0 - uv.y;
         if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
             return NOT_ISLAND;
@@ -46,13 +46,13 @@ const fragment = `
         }
     }
 
-    vec4 applyColor(int state) {
+    vec3 applyColor(int state) {
         if (state == FOCUSED_ISLAND || params.focusingValue == 1.0) {
-            return vec4(params.fillColor, 1.0);
+            return params.fillColor;
         } else if (state == UNFOCUSED_ISLAND) {
-            return vec4(params.unfocusColor, 1.0);
+            return params.unfocusColor;
         } else {
-            return vec4(0.0);
+            return vec3(0.0);
         }
     }
 
@@ -81,9 +81,10 @@ const fragment = `
         return result;
     }
 
-    void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
-        vec2 pixel = (uv * 2.0 - 1.0) * 0.5 * params.canvasSize * params.scale + params.translation;
-        vec2 offset = mod(pixel + params.thickness * params.scale, params.cellSize);
+    vec3 getPixelColor(vec2 pixel) {
+        vec3 color;
+
+        vec2 offset = mod(pixel + params.thickness * params.scale * 0.5, params.cellSize);
         vec2 grid = floor(pixel / params.cellSize);
 
         vec2 dash = mod(offset, params.dash * 2.0 * params.scale);
@@ -93,7 +94,7 @@ const fragment = `
         // Grid borders
         if (lined) {
             if (dashed) {
-                outputColor = vec4(params.lineColor, 1.0);
+                color = params.lineColor;
             }
         }
         
@@ -104,12 +105,18 @@ const fragment = `
         int outlineState = outline(pixel);
 
         if (outlineState != NOT_ISLAND) {
-            outputColor = applyColor(outlineState);
+            color = applyColor(outlineState);
         }
-        // if (thisState != NOT_ISLAND && !(lined && dashed)) {
-        if (thisState != NOT_ISLAND && !lined) {
-            outputColor = applyColor(thisState);
+        if (thisState != NOT_ISLAND && !(lined && dashed)) {
+            color = applyColor(thisState);
         }
+
+        return color;
+    }
+
+    void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
+        vec2 pixel = (uv * 2.0 - 1.0) * 0.5 * params.canvasSize * params.scale + params.translation;
+        outputColor = vec4(getPixelColor(pixel), 1.0);
     }
 `
 

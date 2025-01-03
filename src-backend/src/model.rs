@@ -180,3 +180,9 @@ pub struct Project {
 pub struct IslandMapQueryResponse {
     pub result: Option<IslandMapQuery>,
 }
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IslandMapMeta {
+    pub size: u32,
+}

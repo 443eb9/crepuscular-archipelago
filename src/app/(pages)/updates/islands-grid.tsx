@@ -2,26 +2,25 @@
 
 import { IslandMeta } from "@/data/model";
 import BgCanvas from "./bg-canvas";
-import { createContext, useContext, useEffect, useRef } from "react";
+import { createContext, useContext, useEffect } from "react";
 import { Vector2 } from "three";
 import { Transform } from "@/data/utils";
 import { Size } from "@react-three/fiber";
-import { fetchIslandAt } from "@/data/api";
+import { fetchIslandAt, fetchIslandMapMeta } from "@/data/api";
 
 export type IslandGridContext = {
     cursor: Vector2,
     canvasSize: Size,
-    drag: DragState,
+    drag: {
+        state: "none" | "start" | "ongoing" | "end",
+        cursor: Vector2,
+        canvas: Vector2,
+    },
     canvasTransform: Transform,
     focusingIslandValue: {
         value: number,
     },
-}
-
-type DragState = {
-    onDrag: boolean,
-    cursor: Vector2,
-    canvas: Vector2,
+    mapSize: number,
 }
 
 export const islandGridContext = createContext<IslandGridContext>({
@@ -33,7 +32,7 @@ export const islandGridContext = createContext<IslandGridContext>({
         left: 0,
     },
     drag: {
-        onDrag: false,
+        state: "none",
         cursor: new Vector2(),
         canvas: new Vector2(),
     },
@@ -44,11 +43,12 @@ export const islandGridContext = createContext<IslandGridContext>({
     focusingIslandValue: {
         value: 1.0,
     },
+    mapSize: 0,
 })
 
 export const GridSettings = {
     cellSize: 40,
-    lineThickness: 3,
+    lineThickness: 2,
     dash: 3,
     focusOutlineThickness: 10,
     focusOutlineDist: 5,
@@ -64,7 +64,9 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
 
     useEffect(() => {
         const dragHandler = () => {
-            if (islandGrid.drag.onDrag) {
+            if (islandGrid.drag.state == "start" || islandGrid.drag.state == "ongoing") {
+                islandGrid.drag.state = "ongoing"
+
                 const curCursor = cursorCanvasPos()
                 const oldCursor = islandGrid.drag.cursor
                 const oldCanvas = islandGrid.drag.canvas
@@ -74,7 +76,11 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
             }
         }
 
-        const endDragHandler = () => islandGrid.drag.onDrag = false
+        const endDragHandler = () => {
+            if (islandGrid.drag.state == "ongoing") {
+                islandGrid.drag.state = "end"
+            }
+        }
 
         document.addEventListener("mousemove", dragHandler)
         document.addEventListener("mouseup", endDragHandler)
@@ -82,14 +88,25 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
             document.removeEventListener("mousemove", dragHandler)
             document.removeEventListener("mouseup", endDragHandler)
         }
-    }, [islandGrid.drag.onDrag])
+    }, [islandGrid.drag.state])
+
+    useEffect(() => {
+        async function fetch() {
+            const meta = await fetchIslandMapMeta()
+            if (meta.ok) {
+                islandGrid.mapSize = meta.data.size
+            }
+        }
+
+        fetch()
+    }, [])
 
     return (
         <div>
             <islandGridContext.Provider value={islandGrid}>
                 <BgCanvas
                     onMouseDown={() => {
-                        islandGrid.drag.onDrag = true
+                        islandGrid.drag.state = "start"
 
                         const initial = cursorCanvasPos()
                         islandGrid.drag.cursor.x = initial.x
@@ -103,9 +120,12 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
                         const newScale = Math.max(Math.min(oldScale + ev.deltaY * 0.0008, 2), 0.5)
                         islandGrid.canvasTransform.scale = newScale
                     }}
-                    onClick={async ev => {
-                        // if (ev.detail != 2) { return }
-                        if (islandGrid.drag.onDrag) { return }
+                    onClick={async () => {
+                        if (islandGrid.drag.state == "end") {
+                            islandGrid.drag.state = "none"
+                            return
+                        }
+                        islandGrid.drag.state = "none"
 
                         const cursor = islandGrid.cursor.clone()
                             .multiplyScalar(0.5)
@@ -113,8 +133,7 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
                         const px = cursor
                             .multiplyScalar(islandGrid.canvasTransform.scale)
                             .add(islandGrid.canvasTransform.translation.clone())
-                        console.log(px.clone().divideScalar(GridSettings.cellSize))
-                        const grid = px.divideScalar(GridSettings.cellSize).floor()
+                        const grid = px.divideScalar(GridSettings.cellSize).floor().addScalar(islandGrid.mapSize / 2)
                         // Not sure why there's one pixel offset.
                         const query = await fetchIslandAt(grid.x, grid.y - 1)
                         islandGrid.focusingIslandValue.value = query.ok && query.data.result

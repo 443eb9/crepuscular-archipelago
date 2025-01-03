@@ -89,6 +89,14 @@ pub async fn get_island_map(island_map: Data<Mutex<IslandMap>>) -> impl Responde
         .body(island_map.lock().unwrap().get_cache().to_vec())
 }
 
+#[get("/api/get/islandMap/meta")]
+pub async fn get_island_map_meta(island_map: Data<Mutex<IslandMap>>) -> impl Responder {
+    match island_map.lock() {
+        Ok(mut map) => HttpResponse::Ok().json(map.gen_meta()),
+        Err(err) => HttpResponse::InternalServerError().json(err.to_string()),
+    }
+}
+
 #[get("/api/get/islandMap/{x}/{y}")]
 pub async fn get_island_at(
     params: Path<(i32, i32)>,

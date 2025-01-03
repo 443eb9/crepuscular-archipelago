@@ -15,7 +15,10 @@ use noise::{
 use rand::{rngs::StdRng, Rng, SeedableRng};
 use serde::Serialize;
 
-use crate::sql::{self, IslandDB};
+use crate::{
+    model::IslandMapMeta,
+    sql::{self, IslandDB},
+};
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -225,5 +228,15 @@ impl IslandMap {
         let tex_val = cache.noise_values.get(pixel).cloned()?;
 
         Some(IslandMapQuery { id, tex_val })
+    }
+
+    pub fn gen_meta(&mut self) -> IslandMapMeta {
+        if self.cached.is_none() {
+            self.update();
+        }
+
+        let cache = self.cached.as_ref().unwrap();
+
+        IslandMapMeta { size: cache.size }
     }
 }
