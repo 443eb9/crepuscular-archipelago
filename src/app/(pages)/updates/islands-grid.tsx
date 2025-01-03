@@ -50,7 +50,8 @@ export const GridSettings = {
     cellSize: 40,
     lineThickness: 2,
     dash: 3,
-    focusOutline: 10,
+    focusOutlineThickness: 10,
+    focusOutlineDist: 5,
 }
 
 export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {

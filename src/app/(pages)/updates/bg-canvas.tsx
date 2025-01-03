@@ -12,8 +12,8 @@ import { GridSettings, islandGridContext } from "./islands-grid";
 export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
     const resolverRef = useRef<HTMLDivElement>(null)
     const [params, setParams] = useState<{
-        gridColor: Color,
-        trackerColor: Color,
+        contrastColor: Color,
+        neutralColor: Color,
     } | undefined>()
     const islandGrid = useContext(islandGridContext)
     const [noise, setNoise] = useState<Texture | undefined>()
@@ -23,8 +23,8 @@ export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
         if (resolverRef.current) {
             const style = window.getComputedStyle(resolverRef.current)
             setParams({
-                gridColor: new Color(style.borderColor),
-                trackerColor: new Color(style.backgroundColor),
+                contrastColor: new Color(style.borderColor),
+                neutralColor: new Color(style.backgroundColor),
             })
         }
     }, [])
@@ -37,7 +37,10 @@ export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
     }, [])
 
     const ColorResolver = () =>
-        <div className="bg-light-contrast dark:bg-dark-contrast border-light-dark-neutral" ref={resolverRef} />
+        <div
+            ref={resolverRef}
+            className="bg-light-contrast dark:bg-dark-contrast border-light-dark-neutral"
+        />
 
     const CanvasStateTracker = () => {
         const three = useThree()
@@ -67,9 +70,9 @@ export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
                 <EffectComposer>
                     <InfiniteGrid
                         params={{
-                            color: params.gridColor,
-                            fillColor: params.trackerColor,
-                            unfocusColor: params.gridColor,
+                            lineColor: new Color(0.1, 0.1, 0.1),
+                            fillColor: params.neutralColor,
+                            unfocusColor: params.contrastColor,
                             cellSize: GridSettings.cellSize,
                             thickness: GridSettings.lineThickness,
                             dash: GridSettings.dash,
@@ -77,12 +80,13 @@ export default function BgCanvas(props: HTMLAttributes<HTMLDivElement>) {
                             noise,
                             transform: islandGrid.canvasTransform,
                             canvasSize: islandGrid.canvasSize,
-                            focusOutline: GridSettings.focusOutline,
+                            focusOutlineThickness: GridSettings.focusOutlineThickness,
+                            focusOutlineDist: GridSettings.focusOutlineDist,
                         }}
                     />
                     <MouseTracker
                         params={{
-                            color: params.trackerColor,
+                            color: params.neutralColor,
                             thickness: GridSettings.lineThickness,
                             blockSize: GridSettings.cellSize,
                             transform: islandGrid.canvasTransform,

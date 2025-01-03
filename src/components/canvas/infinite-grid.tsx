@@ -6,7 +6,7 @@ import { Color, Texture, Uniform, Vector2, WebGLRenderer, WebGLRenderTarget } fr
 
 const fragment = `
     struct InfiniteGrid {
-        vec3 color;
+        vec3 lineColor;
         vec3 fillColor;
         vec3 unfocusColor;
         float thickness;
@@ -17,7 +17,8 @@ const fragment = `
         vec2 translation;
         sampler2D noise;
         vec2 canvasSize;
-        float focusOutline;
+        float focusOutlineThickness;
+        float focusOutlineDist;
     };
     uniform InfiniteGrid params;
 
@@ -45,14 +46,39 @@ const fragment = `
         }
     }
 
-    void applyColor(int state, out vec4 color) {
-        if (state == NOT_ISLAND) {
-            // Skip
-        } else if (state == FOCUSED_ISLAND || params.focusingValue == 1.0) {
-            color = vec4(params.fillColor, 1.0);
+    vec4 applyColor(int state) {
+        if (state == FOCUSED_ISLAND || params.focusingValue == 1.0) {
+            return vec4(params.fillColor, 1.0);
         } else if (state == UNFOCUSED_ISLAND) {
-            color = vec4(params.unfocusColor, 1.0);
+            return vec4(params.unfocusColor, 1.0);
+        } else {
+            return vec4(0.0);
         }
+    }
+
+    int outline(vec2 pixel) {
+        int result = NOT_ISLAND;
+        
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                if (dx == 0 && dy == 0) { continue; }
+
+                vec2 sampleCoord = pixel + vec2(dx, dy) * params.focusOutlineThickness;
+                vec2 gapCoord = pixel + vec2(dx, dy) * params.focusOutlineDist;
+                int sampleState = isIsland(floor(sampleCoord / params.cellSize));
+                int gapState = isIsland(floor(gapCoord / params.cellSize));
+
+                if (gapState == FOCUSED_ISLAND) {
+                    return NOT_ISLAND;
+                }
+                
+                if (sampleState == FOCUSED_ISLAND && gapState != FOCUSED_ISLAND) {
+                    result = sampleState;
+                }
+            }
+        }
+        
+        return result;
     }
 
     void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
@@ -67,37 +93,28 @@ const fragment = `
         // Grid borders
         if (lined) {
             if (dashed) {
-                outputColor = vec4(params.color, 1.0);
+                outputColor = vec4(params.lineColor, 1.0);
             }
-            return;
+            // return;
         }
         
         // Island blocks
         int thisState = isIsland(grid);
-        applyColor(thisState, outputColor);
-
-        if (thisState != 0 || params.focusingValue == 1.0) {
-            return;
-        }
         
         // Outline
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-                if (dx == 0 && dy == 0) { continue; }
+        int outlineState = outline(pixel);
 
-                vec2 sampleCoord = pixel + vec2(dx, dy) * params.focusOutline;
-                int state = isIsland(floor(sampleCoord / params.cellSize));
-                if (state == FOCUSED_ISLAND) {
-                    applyColor(state, outputColor);
-                    return;
-                }
-            }
+        if (outlineState != NOT_ISLAND) {
+            outputColor = applyColor(outlineState);
+        }
+        if (thisState != NOT_ISLAND && !(lined && dashed)) {
+            outputColor = applyColor(thisState);
         }
     }
 `
 
 export type InfiniteGridParams = {
-    color: Color,
+    lineColor: Color,
     fillColor: Color;
     unfocusColor: Color,
     thickness: number,
@@ -107,11 +124,12 @@ export type InfiniteGridParams = {
     cellSize: number,
     noise: Texture,
     canvasSize: Size,
-    focusOutline: number,
+    focusOutlineThickness: number,
+    focusOutlineDist: number,
 }
 
 export type InfiniteGridUniforms = {
-    color: Color,
+    lineColor: Color,
     fillColor: Color;
     unfocusColor: Color;
     thickness: number,
@@ -122,7 +140,8 @@ export type InfiniteGridUniforms = {
     translation: Vector2,
     noise: Texture,
     canvasSize: Vector2,
-    focusOutline: number,
+    focusOutlineThickness: number,
+    focusOutlineDist: number,
 }
 
 function paramToUniforms(params: InfiniteGridParams): InfiniteGridUniforms {
