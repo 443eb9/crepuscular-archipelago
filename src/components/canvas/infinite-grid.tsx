@@ -58,7 +58,7 @@ const fragment = `
 
     int outline(vec2 pixel) {
         int result = NOT_ISLAND;
-        
+
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 if (dx == 0 && dy == 0) { continue; }
@@ -83,7 +83,7 @@ const fragment = `
 
     void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
         vec2 pixel = (uv * 2.0 - 1.0) * 0.5 * params.canvasSize * params.scale + params.translation;
-        vec2 offset = mod(pixel, params.cellSize);
+        vec2 offset = mod(pixel + params.thickness * params.scale, params.cellSize);
         vec2 grid = floor(pixel / params.cellSize);
 
         vec2 dash = mod(offset, params.dash * 2.0 * params.scale);
@@ -95,7 +95,6 @@ const fragment = `
             if (dashed) {
                 outputColor = vec4(params.lineColor, 1.0);
             }
-            // return;
         }
         
         // Island blocks
@@ -107,7 +106,8 @@ const fragment = `
         if (outlineState != NOT_ISLAND) {
             outputColor = applyColor(outlineState);
         }
-        if (thisState != NOT_ISLAND && !(lined && dashed)) {
+        // if (thisState != NOT_ISLAND && !(lined && dashed)) {
+        if (thisState != NOT_ISLAND && !lined) {
             outputColor = applyColor(thisState);
         }
     }

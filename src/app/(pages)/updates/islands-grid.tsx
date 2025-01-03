@@ -48,7 +48,7 @@ export const islandGridContext = createContext<IslandGridContext>({
 
 export const GridSettings = {
     cellSize: 40,
-    lineThickness: 2,
+    lineThickness: 3,
     dash: 3,
     focusOutlineThickness: 10,
     focusOutlineDist: 5,
@@ -100,7 +100,7 @@ export default function IslandsGrid({ islands }: { islands: IslandMeta[] }) {
                     }}
                     onWheel={ev => {
                         const oldScale = islandGrid.canvasTransform.scale
-                        const newScale = Math.max(Math.min(oldScale + ev.deltaY * 0.0008, 8), 1)
+                        const newScale = Math.max(Math.min(oldScale + ev.deltaY * 0.0008, 2), 0.5)
                         islandGrid.canvasTransform.scale = newScale
                     }}
                     onClick={async ev => {
