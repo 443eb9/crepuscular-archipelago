@@ -8,6 +8,9 @@ import { Transform } from "@/data/utils";
 import { Size } from "@react-three/fiber";
 import { fetchIslandAt } from "@/data/api";
 import IslandFloatingInfo from "./island-floating-info";
+import OutlinedBox from "@/components/outlined-box";
+import Text from "@/components/text";
+import Pagination from "../pagination";
 
 export type IslandGridContext = {
     cursor: Vector2,
@@ -64,9 +67,9 @@ export const GridSettings = {
 }
 
 export default function IslandsGrid({
-    islands, islandMapMeta, regionCenters, page
+    islands, islandMapMeta, regionCenters, currentPage, totalPages
 }: {
-    islands: IslandMeta[], islandMapMeta: IslandMapMeta, regionCenters: IslandMapRegionCenters, page: number
+    islands: IslandMeta[], islandMapMeta: IslandMapMeta, regionCenters: IslandMapRegionCenters, currentPage: number, totalPages: number,
 }) {
     const [ready, setReady] = useState(false)
     const islandGrid = useContext(islandGridContext)
@@ -123,7 +126,7 @@ export default function IslandsGrid({
                     }
                 </div>
                 <BgCanvas
-                    mapPage={page}
+                    mapPage={currentPage}
                     onContextMenu={ev => ev.preventDefault()}
                     onMouseDown={ev => {
                         if (ev.button != 2) { return }
@@ -152,7 +155,7 @@ export default function IslandsGrid({
                             .multiplyScalar(islandGrid.canvasTransform.scale)
                             .add(islandGrid.canvasTransform.translation.clone())
                         const grid = px.divideScalar(GridSettings.cellSize).floor()
-                        const query = await fetchIslandAt(page, grid.x, grid.y - 1)
+                        const query = await fetchIslandAt(currentPage, grid.x, grid.y - 1)
                         let result: { regionId: number | null; noiseValue: number; };
                         if (query.ok && query.data.result) {
                             result = { ...query.data.result }
@@ -168,6 +171,12 @@ export default function IslandsGrid({
                     onReady={() => setReady(true)}
                 />
             </islandGridContext.Provider>
+            <OutlinedBox className="absolute z-50 flex flex-col gap-2 p-2 m-2 backdrop-blur-md">
+                <Pagination
+                    total={totalPages}
+                    current={currentPage}
+                />
+            </OutlinedBox>
         </div>
     )
 }
