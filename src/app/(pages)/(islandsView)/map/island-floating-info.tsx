@@ -41,6 +41,8 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
             }
         }
 
+        updateHandler()
+
         document.addEventListener("mousemove", updateHandler)
         document.addEventListener("mousedown", updateHandler)
         document.addEventListener("wheel", updateHandler)
