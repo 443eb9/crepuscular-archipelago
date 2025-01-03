@@ -108,6 +108,15 @@ export default function IslandsGrid({
 
     return (
         <div className="overflow-hidden w-[100vw] h-[100vh]">
+            <div
+                className="w-[100vw] h-[100vh] absolute z-[10000] flex justify-center items-center"
+                style={{
+                    display: ready ? "none" : undefined,
+                }}
+                suppressHydrationWarning
+            >
+                <Text className="font-bender font-bold text-[80px] italic" noFont>Loading...</Text>
+            </div>
             <islandGridContext.Provider value={islandGrid}>
                 <div className="absolute z-10 w-[100vw] h-[100vh] overflow-hidden pointer-events-none">
                     {

@@ -11,7 +11,7 @@ import { GridSettings, islandGridContext } from "./islands-grid";
 
 export default function BgCanvas({ onReady, mapPage, ...props }: { onReady: () => void, mapPage: number } & HTMLAttributes<HTMLDivElement>) {
     const resolverRef = useRef<HTMLDivElement>(null)
-    const [params, setParams] = useState<{
+    const [colors, setColors] = useState<{
         contrastColor: Color,
         neutralColor: Color,
     } | undefined>()
@@ -22,7 +22,7 @@ export default function BgCanvas({ onReady, mapPage, ...props }: { onReady: () =
     useEffect(() => {
         if (resolverRef.current) {
             const style = window.getComputedStyle(resolverRef.current)
-            setParams({
+            setColors({
                 contrastColor: new Color(style.borderColor),
                 neutralColor: new Color(style.backgroundColor),
             })
@@ -57,7 +57,7 @@ export default function BgCanvas({ onReady, mapPage, ...props }: { onReady: () =
         return <></>
     }
 
-    if (!params || !noise) {
+    if (!colors || !noise) {
         return <ColorResolver />
     }
 
@@ -73,7 +73,7 @@ export default function BgCanvas({ onReady, mapPage, ...props }: { onReady: () =
                     <InfiniteGrid
                         params={{
                             lineColor: new Color(0.1, 0.1, 0.1),
-                            fillColor: params.neutralColor,
+                            fillColor: colors.neutralColor,
                             unfocusColor: new Color("#888888"),
                             outlineColor: new Color("#42d3ff"),
                             waveColor: new Color("#296ed6"),
@@ -94,7 +94,7 @@ export default function BgCanvas({ onReady, mapPage, ...props }: { onReady: () =
                     />
                     <MouseTracker
                         params={{
-                            color: params.neutralColor,
+                            color: colors.neutralColor,
                             thickness: GridSettings.lineThickness,
                             blockSize: GridSettings.cellSize,
                             transform: islandGrid.canvasTransform,
