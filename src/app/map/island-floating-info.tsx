@@ -17,11 +17,13 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
     const x = useMotionValue(0)
     const y = useMotionValue(0)
     const [state, setState] = useState<"focused" | "unfocused" | "none">("none")
+
     const visitingIsland = useContext(visitingIslandContext)
     const islandGrid = useContext(islandGridContext)
+    const [islandContent, setIslandContent] = useState<string | undefined>()
 
     useEffect(() => {
-        const updateHandler = () => {
+        const updateHandler = async () => {
             const translation = canvasTransform.translation.clone()
             const scale = canvasTransform.scale
             const size = new Vector2(canvasSize.width, canvasSize.height)
@@ -41,6 +43,13 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
                 setState("none")
             } else if (focusingRegionId.value == regionId) {
                 setState("focused")
+
+                if (island.ty == "note") {
+                    const content = await fetchIsland(island.id)
+                    if (content.ok) {
+                        setIslandContent(content.data.content)
+                    }
+                }
             } else {
                 setState("unfocused")
             }
@@ -92,7 +101,7 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
                                 }
                             }}
                         >
-                            <IslandCard island={island} />
+                            <IslandCard island={island} content={islandContent} />
                         </div>
                         : <OutlinedBox className="p-2 flex items-center gap-2">
                             <Text className="font-bender font-bold text-2xl mix-blend-difference" noFont>#{island.id}</Text>
