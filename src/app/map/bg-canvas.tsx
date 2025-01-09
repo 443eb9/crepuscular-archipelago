@@ -1,7 +1,7 @@
 "use client"
 
-import { InfiniteGrid } from "@/app/(pages)/map/infinite-grid";
-import { MouseTracker } from "@/app/(pages)/map/mouse-tracker";
+import { InfiniteGrid } from "@/app/map/infinite-grid";
+import { MouseTracker } from "@/app/map/mouse-tracker";
 import { islandMapUrl } from "@/data/api";
 import { Canvas, useThree } from "@react-three/fiber";
 import { EffectComposer } from "@react-three/postprocessing";

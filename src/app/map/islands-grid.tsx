@@ -10,7 +10,7 @@ import { fetchIslandAt } from "@/data/api"
 import IslandFloatingInfo from "./island-floating-info"
 import OutlinedBox from "@/components/outlined-box"
 import Text from "@/components/text"
-import Pagination from "../(islandsView)/pagination"
+import Pagination from "../(pages)/(islandsView)/pagination"
 
 export type IslandGridContext = {
     cursor: Vector2,

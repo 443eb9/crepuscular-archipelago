@@ -16,7 +16,7 @@ export default function ArticleHeader({ meta, params }: { meta: IslandMeta, para
                     href={`/updates?${params.toString()}`}
                     className="font-argon font-bold bg-dark-contrast dark:bg-light-contrast p-1"
                 >
-                    &lt $ cd .._
+                    &lt; $ cd .._
                 </Link>
                 <h1 className="w-24 font-bender text-lg font-bold px-2
                 bg-light-contrast dark:bg-dark-contrast

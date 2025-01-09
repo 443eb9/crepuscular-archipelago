@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import NavButtons from './(pages)/nav-buttons'
 
 export const metadata: Metadata = {
 	title: "443eb9#C - Crepuscular Archipelago",
@@ -29,6 +30,10 @@ export default async function Page() {
 				</div>
 			</div>
 			<div className="absolute left-[10%] bottom-1/4">
+				<NavButtons
+					className="w-20 h-10 md:w-40 md:h-20 text-lg md:text-3xl"
+					containerClassName="gap-4 md:gap-10 flex-col md:flex-row"
+				></NavButtons>
 			</div>
 		</main>
 	)

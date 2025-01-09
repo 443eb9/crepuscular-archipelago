@@ -4,7 +4,6 @@ import Text from "./text";
 import { useRouter } from "next/navigation";
 import { searchParamBitXor } from "@/data/search-param-util";
 import { TagData } from "@/data/model";
-import OutlinedBox from "./outlined-box";
 import clsx from "clsx";
 import OutlinedButton from "./outlined-button";
 

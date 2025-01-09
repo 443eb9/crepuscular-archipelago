@@ -7,7 +7,7 @@ import { Vector2 } from "three";
 import { motion, useMotionValue } from "motion/react";
 import OutlinedBox from "@/components/outlined-box";
 import Text from "@/components/text";
-import IslandCard from "../(islandsView)/island-card";
+import IslandCard from "../(pages)/(islandsView)/island-card";
 
 export default function IslandFloatingInfo({ regionId, island, center }: { regionId: number, island: IslandMeta, center: Vector2 }) {
     const { canvasSize, canvasTransform, focusingRegionId } = useContext(islandGridContext)

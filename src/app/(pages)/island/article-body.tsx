@@ -1,11 +1,11 @@
 import OutlinedBox from "@/components/outlined-box"
-import MarkdownContainer from "@/components/markdown-container"
+import Markdown from "@/components/markdown"
 
 export default async function ArticleBody({ body }: { body: string }) {
     return (
         <div className="flex flex-col gap-5 w-full">
             <OutlinedBox className="px-5 py-8">
-                <MarkdownContainer body={body}></MarkdownContainer>
+                <Markdown body={body}></Markdown>
             </OutlinedBox>
         </div>
     )

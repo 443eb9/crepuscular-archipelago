@@ -11,7 +11,7 @@ export default function ArticleFooter({ giscus, params }: { giscus: boolean, par
                     className="font-argon font-bold text-4xl mb-4 w-full flex items-center 
                     border-2 border-light-contrast dark:border-dark-contrast"
                 >
-                    <div className="bg-dark-contrast dark:bg-light-contrast p-5">&lt $ cd .._</div>
+                    <div className="bg-dark-contrast dark:bg-light-contrast p-5">&lt; $ cd .._</div>
                 </div>
                 {
                     giscus
