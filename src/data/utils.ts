@@ -16,10 +16,10 @@ export type QueryParams = {
 }
 
 export function processQueryParams(params: RawSearchParams): QueryParams {
-    const page = parseInt(params?.page ?? "0");
-    const len = parseInt(params?.len ?? "10");
-    const tags = parseInt(params?.tags ?? "0");
-    const advf = parseInt(params?.advf ?? "0");
+    const page = parseInt(params?.page ?? "0")
+    const len = parseInt(params?.len ?? "10")
+    const tags = parseInt(params?.tags ?? "0")
+    const advf = parseInt(params?.advf ?? "0")
     return { page, len, tags, advf }
 }
 

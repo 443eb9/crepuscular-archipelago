@@ -3,26 +3,18 @@ import { Metadata } from "next"
 import { fetchAllTags, fetchIslandCount, fetchIslandsMeta } from "@/data/api"
 import BlogInfo from "./blog-info"
 import NetworkErrorable from "@/components/network-errorable"
-import { processQueryParams } from "@/data/utils"
+import { processQueryParams, RawSearchParams } from "@/data/utils"
 import ContentWrapper from "@/components/content-wrapper"
 import OutlinedBox from "@/components/outlined-box"
 import IslandCard from "../(islandsView)/island-card"
 import Pagination from "../(islandsView)/pagination"
+import Link from "next/link"
 
 export const metadata: Metadata = {
     title: "Updates - Crepuscular Archipelago",
 }
 
-export default async function Page(
-    props: {
-        searchParams: Promise<{
-            page?: string,
-            len?: string,
-            tags?: string,
-            advf?: string
-        }>
-    }
-) {
+export default async function Page(props: { searchParams: Promise<RawSearchParams> }) {
     const queryParams = processQueryParams(await props.searchParams)
 
     const islands = await fetchIslandsMeta(queryParams.page, queryParams.len, queryParams.tags, queryParams.advf)
@@ -34,7 +26,7 @@ export default async function Page(
             <div className="flex flex-col gap-10 pr-2 md:pr-0">
                 <aside className="block md:hidden px-5">
                     <NetworkErrorable resp={allTags}>
-                        {data => <BlogInfo queryParams={queryParams} allTags={data} />}
+                        {data => <OutlinedBox><BlogInfo queryParams={queryParams} allTags={data} /></OutlinedBox>}
                     </NetworkErrorable>
                 </aside>
                 <ContentWrapper className="gap-10">
@@ -68,7 +60,18 @@ export default async function Page(
                     <aside className="hidden md:flex w-full max-w-72">
                         <div className="fixed max-w-72 md:flex md:flex-col gap-5">
                             <NetworkErrorable resp={allTags}>
-                                {data => <BlogInfo queryParams={queryParams} allTags={data} />}
+                                {data =>
+                                    <>
+                                        <OutlinedBox>
+                                            <BlogInfo queryParams={queryParams} allTags={data} />
+                                        </OutlinedBox>
+                                        <OutlinedBox className="p-2">
+                                            <div className="italic font-bender font-bold">
+                                                RSS Feed: <Link href={"https://443eb9.dev/rss"} className="underline">https://443eb9.dev/rss</Link>
+                                            </div>
+                                        </OutlinedBox>
+                                    </>
+                                }
                             </NetworkErrorable>
                         </div>
                     </aside>

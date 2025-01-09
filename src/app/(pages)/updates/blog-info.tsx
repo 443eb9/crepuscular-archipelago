@@ -18,7 +18,7 @@ export default function BlogInfo({ queryParams, allTags }: { queryParams: QueryP
     const router = useRouter()
 
     return (
-        <OutlinedBox className="flex flex-col gap-4 p-2">
+        <div className="flex flex-col gap-4 p-2">
             <div className="flex flex-col">
                 <Text className="font-bold text-lg">定位</Text>
                 <div className="flex flex-wrap gap-1">
@@ -69,11 +69,7 @@ export default function BlogInfo({ queryParams, allTags }: { queryParams: QueryP
                 >
                     <Text>重置</Text>
                 </OutlinedButton>
-                <EndpointDottedSegment thickness={1} dotSize={5} style="dashed" className="my-2"></EndpointDottedSegment>
-                <div className="italic font-bender font-bold">
-                    RSS Feed: <Link href={"https://443eb9.dev/rss"} className="underline">https://443eb9.dev/rss</Link>
-                </div>
             </div>
-        </OutlinedBox>
+        </div>
     )
 }

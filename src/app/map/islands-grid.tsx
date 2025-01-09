@@ -67,9 +67,9 @@ export const GridSettings = {
 }
 
 export default function IslandsGrid({
-    islands, islandMapMeta, regionCenters, currentPage, totalPages
+    islands, islandMapMeta, regionCenters, currentPage
 }: {
-    islands: IslandMeta[], islandMapMeta: IslandMapMeta, regionCenters: IslandMapRegionCenters, currentPage: number, totalPages: number,
+    islands: IslandMeta[], islandMapMeta: IslandMapMeta, regionCenters: IslandMapRegionCenters, currentPage: number
 }) {
     const [ready, setReady] = useState(false)
     const islandGrid = useContext(islandGridContext)
@@ -180,12 +180,6 @@ export default function IslandsGrid({
                     onReady={() => setReady(true)}
                 />
             </islandGridContext.Provider>
-            <OutlinedBox className="absolute z-50 flex flex-col gap-2 p-2 m-2 backdrop-blur-md">
-                <Pagination
-                    total={totalPages}
-                    current={currentPage}
-                />
-            </OutlinedBox>
         </div>
     )
 }
