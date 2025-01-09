@@ -1,7 +1,7 @@
 ---
 title: Krenz 构成 13 期
 desc: Krenz 构成 13 期圆满结束~这里是我每次课的作业，还有结课的设计~虽然多年之后这会成为黑历史（捂脸
-ty: Article
+ty: article
 date: 2024-12-08T19:05:04.000+08:00
 tags: 绘画
 ---

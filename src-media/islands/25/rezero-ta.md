@@ -2,7 +2,7 @@
 title: 从零开始的异世界 TA Chapter 0
 subtitle: 大气散射与空气透视 Atmosphere Scattering and Aerial Perspective
 desc: 简单的大气散射，与空气透视（废话
-ty: Article
+ty: article
 date: 2024-12-26T01:17:51.000+08:00
 banner: true
 tags: 图形学,Shader

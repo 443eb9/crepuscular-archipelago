@@ -7,10 +7,10 @@ import Image from "next/image"
 export default function CardHeader({ island }: { island: IslandMeta }) {
     let header
     switch (island.ty) {
-        case IslandType.Achievement:
+        case "achievement":
             header = <AchievementCardHeader></AchievementCardHeader>
             break
-        case IslandType.Article:
+        case "article":
             header = <ArticleCardHeader island={island}></ArticleCardHeader>
             break
     }

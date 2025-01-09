@@ -1,7 +1,7 @@
 ---
 title: 三角函数
 desc: 澡尔冯的三角函数😅
-ty: Article
+ty: article
 date: 2024-11-15T14:16:46.000+08:00
 is_original: false
 is_deleted: true

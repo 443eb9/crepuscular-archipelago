@@ -1,7 +1,7 @@
 ---
 title: 基础透视与结构 L01 B02 作业
 desc: 学习记录x2~
-ty: Note
+ty: note
 date: 2024-08-08T17:20:00.000+08:00
 tags: 绘画
 ---

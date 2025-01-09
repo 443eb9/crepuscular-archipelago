@@ -6,12 +6,19 @@ import BlogInfo from "../(pages)/updates/blog-info";
 import { TagData } from "@/data/model";
 import { QueryParams } from "@/data/utils";
 import Text from "@/components/text";
+import { useContext } from "react";
+import { visitingIslandContext } from "./islands-map";
+import { useSearchParams } from "next/navigation";
+import InlinedArticle from "./inlined-article";
 
 export default function IslandPanels({
     totalPages, currentPage, queryParams, allTags
 }: {
     totalPages: number, currentPage: number, queryParams: QueryParams, allTags: TagData[]
 }) {
+    const searchParams = new URLSearchParams(useSearchParams())
+    const visitingIsland = useContext(visitingIslandContext)
+
     return (
         <div className="absolute z-50 w-full h-full pointer-events-none p-2">
             <OutlinedBox className="absolute flex flex-col gap-2 p-2 backdrop-blur-md pointer-events-auto">
@@ -24,6 +31,18 @@ export default function IslandPanels({
             <OutlinedBox className="absolute right-0 w-72 backdrop-blur-md pointer-events-auto">
                 <BlogInfo queryParams={queryParams} allTags={allTags} />
             </OutlinedBox>
+            {
+                visitingIsland?.value &&
+                <div className="w-full h-full flex justify-center items-center pointer-events-auto">
+                    <div className="backdrop-blur-md w-[95%] h-[95%] pointer-events-auto">
+                        <InlinedArticle
+                            meta={visitingIsland.value.meta}
+                            content={visitingIsland.value.content.content}
+                            params={searchParams}
+                        />
+                    </div>
+                </div>
+            }
         </div>
     )
 }

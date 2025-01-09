@@ -1,10 +1,10 @@
 import axios from "axios"
-import { combineRemoteApi } from "./backend"
 import { MemorizeForm } from "./model"
+import { combineApi } from "./backend"
 
 export async function submitMemorize(form: FormData) {
     const payload: MemorizeForm = {
-        stu_id: (form.get("stu_id") ?? "").toString(),
+        stuId: (form.get("stu_id") ?? "").toString(),
         name: (form.get("name") ?? "").toString(),
 
         wechat: (form.get("wechat") ?? "").toString(),
@@ -15,19 +15,19 @@ export async function submitMemorize(form: FormData) {
         desc: (form.get("desc") ?? "").toString(),
         hobby: (form.get("hobby") ?? "").toString(),
         position: (form.get("position") ?? "").toString(),
-        ftr_major: (form.get("ftr_major") ?? "").toString(),
+        ftrMajor: (form.get("ftr_major") ?? "").toString(),
 
         message: (form.get("message") ?? "").toString(),
         ip: (await axios.get("https://api.ipify.org?format=json")).data["ip"],
     }
 
-    return axios.post(combineRemoteApi("/post/memorize"), payload)
+    return axios.post(combineApi("/post/memorize"), payload)
 }
 
 export async function downloadMemorizeDb() {
-    (await axios.get(combineRemoteApi("/get/memorizeDb"), { responseType: "blob" }))
+    (await axios.get(combineApi("/get/memorizeDb"), { responseType: "blob" }))
 }
 
 export async function downloadMemorizeCsv() {
-    (await axios.get(combineRemoteApi("/get/memorizeCsv"), { responseType: "stream" }))
+    (await axios.get(combineApi("/get/memorizeCsv"), { responseType: "stream" }))
 }

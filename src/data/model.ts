@@ -1,10 +1,6 @@
 import { AxiosResponse } from "axios"
 
-export enum IslandType {
-    Article,
-    Achievement,
-    Note,
-}
+export type IslandType = "article" | "achievement" | "note"
 
 export type RequestResult<T> = T | string
 
@@ -25,9 +21,9 @@ export type IslandMeta = {
     ty: IslandType,
     tags: TagData[],
     banner: boolean,
-    is_original: boolean,
-    is_encrypted: boolean,
-    is_deleted: boolean,
+    isOriginal: boolean,
+    isEncrypted: boolean,
+    isDeleted: boolean,
 }
 
 export type TagData = {
@@ -45,7 +41,7 @@ export type IslandCount = {
 }
 
 export type MemorizeForm = {
-    stu_id: string,
+    stuId: string,
     name: string,
 
     wechat: string,
@@ -56,7 +52,7 @@ export type MemorizeForm = {
     desc: string,
     hobby: string,
     position: string,
-    ftr_major: string,
+    ftrMajor: string,
 
     message: string,
     ip: string,

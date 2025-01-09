@@ -8,12 +8,15 @@ import { motion, useMotionValue } from "motion/react";
 import OutlinedBox from "@/components/outlined-box";
 import Text from "@/components/text";
 import IslandCard from "../(pages)/(islandsView)/island-card";
+import { fetchIsland } from "@/data/api";
+import { visitingIslandContext } from "./islands-map";
 
 export default function IslandFloatingInfo({ regionId, island, center }: { regionId: number, island: IslandMeta, center: Vector2 }) {
     const { canvasSize, canvasTransform, focusingRegionId } = useContext(islandGridContext)
     const x = useMotionValue(0)
     const y = useMotionValue(0)
     const [state, setState] = useState<"focused" | "unfocused" | "none">("none")
+    const visitingIsland = useContext(visitingIslandContext)
 
     useEffect(() => {
         const updateHandler = () => {
@@ -65,12 +68,27 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
             }}
         >
             {
-                island.is_deleted
+                island.isDeleted
                     ? <OutlinedBox className="font-bender font-bold text-xl p-2" style={{ borderStyle: "dashed" }}>
                         <Text className="font-bender" noFont>Access Denied</Text>
                     </OutlinedBox>
                     : state == "focused"
-                        ? <div className="absolute w-[500px] bg-light-background dark:bg-dark-background"><IslandCard island={island} /></div>
+                        ? <div
+                            className="absolute w-[500px] bg-light-background dark:bg-dark-background cursor-pointer"
+                            onClick={async () => {
+                                if (visitingIsland?.value?.meta.id != island.id) {
+                                    const content = await fetchIsland(island.id)
+                                    if (content.ok) {
+                                        visitingIsland?.setter({
+                                            meta: island,
+                                            content: content.data,
+                                        })
+                                    }
+                                }
+                            }}
+                        >
+                            <IslandCard island={island} />
+                        </div>
                         : <OutlinedBox className="p-2 flex items-center gap-2">
                             <Text className="font-bender font-bold text-2xl mix-blend-difference" noFont>#{island.id}</Text>
                             <Text className="font-sh-sans">{island.title}</Text>

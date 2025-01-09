@@ -2,7 +2,7 @@
 title: 从零开始的渲染引擎-Aurora Chapter 2
 subtitle: 阴影映射 Shadow Mapping
 desc: 第二章，是时候出现影子了！主要是阴影的原理，实现细节，和一些优化的方法，例如CSM，和滤波的方法，例如PCF等。
-ty: Article
+ty: article
 date: 2024-10-24T21:40:56.000+08:00
 banner: true
 tags: 图形学,Shader
@@ -16,7 +16,7 @@ tags: 图形学,Shader
 - *Real-time Rendering 4th Edition*
 - Learn OpenGL [Shadow Mapping](https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping)
 - [Bevy Engine](https://bevyengine.org/)
-- [LearnOpenGL - CSM](https://learnopengl.com/Guest-Articles/2021/CSM)
+- [LearnOpenGL - CSM](https://learnopengl.com/Guest-articles/2021/CSM)
 - [Tutorial 49: Cascaded Shadow Mapping](https://ogldev.org/www/tutorial49/tutorial49.html)
 - [高质量实时渲染：实时软阴影](https://yangwc.com/2021/04/14/PCSS/)
 - [Chapter 10. Parallel-Split Shadow Maps on Programmable GPUs](https://developer.nvidia.com/gpugems/gpugems3/part-ii-light-and-shadows/chapter-10-parallel-split-shadow-maps-programmable-gpus)

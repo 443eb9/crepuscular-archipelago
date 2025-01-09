@@ -116,9 +116,8 @@ export default function IslandsGrid({
                 style={{
                     display: ready ? "none" : undefined,
                 }}
-                suppressHydrationWarning
             >
-                <Text className="font-bender font-bold text-[80px] italic" noFont>Loading...</Text>
+                <Text className="font-bender font-bold text-[80px] italic" noFont>Loading Canvas...</Text>
             </div>
             <islandGridContext.Provider value={islandGrid}>
                 <div className="absolute z-10 w-[100vw] h-[100vh] overflow-hidden pointer-events-none">

@@ -19,8 +19,8 @@ export default function GiscusSection({ className }: { className?: string }) {
                 emitMetadata="0"
                 inputPosition="bottom"
                 theme={theme == "light" ? "light" : "transparent_dark"}
-                lang={"en"}>
-            </Giscus>
+                lang={"en"}
+            />
         </div>
     )
 }

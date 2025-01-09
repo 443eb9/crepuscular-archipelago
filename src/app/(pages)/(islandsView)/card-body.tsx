@@ -1,16 +1,12 @@
-import { IslandMeta, IslandType } from "@/data/model"
-import { ReactNode } from "react"
-import Link from "next/link"
+import { IslandMeta } from "@/data/model"
 import DiagLines from "@/components/decos/diag-lines"
-import { useSearchParams } from "next/navigation"
+import Markdown from "@/components/markdown"
 
-export default function CardBody({ island, content }: { island: IslandMeta, content?: ReactNode }) {
-    const searchParams = new URLSearchParams(useSearchParams())
-
-    const body = (
+export default function CardBody({ island, content }: { island: IslandMeta, content?: string }) {
+    return (
         <div>
             {
-                island.ty != IslandType.Achievement
+                island.ty != "achievement"
                 && <DiagLines className="absolute right-5 size-10" scale="300%"></DiagLines>
             }
             <div className="flex flex-col" style={{ maxWidth: "calc(100% - 50px)" }}>
@@ -23,17 +19,10 @@ export default function CardBody({ island, content }: { island: IslandMeta, cont
                 <div className="w-2 h-1 bg-light-contrast dark:bg-dark-contrast ml-3"></div>
             </div>
             <p className="font-sh-sans text-ellipsis overflow-hidden line-clamp-6" style={{ width: "calc(100% - 80px)" }}>{island.desc}</p>
-            {content}
+            {
+                content &&
+                <Markdown body={content} />
+            }
         </div>
     )
-
-    if (island.ty == IslandType.Article) {
-        return (
-            <Link href={`/island?id=${island.id}${searchParams.size == 0 ? "" : `&${searchParams}`}`}>
-                {body}
-            </Link>
-        )
-    } else {
-        return body
-    }
 }

@@ -2,7 +2,7 @@
 title: 从零开始的渲染引擎-Aurora Chapter 0
 subtitle: 基于物理的着色 Physically Based Shading
 desc: 第零章，介绍PBR实现的理论模型。着重介绍BRDF与微表面学说，本文注重理论而非实现，实现以及其他细节在第一章。
-ty: Article
+ty: article
 date: 2024-06-07T20:49:10.000+08:00
 banner: true
 tags: 图形学,数学

@@ -1,7 +1,7 @@
 import { Transform } from "@/data/utils"
-import { Size, useThree } from "@react-three/fiber"
+import { Size } from "@react-three/fiber"
 import { Effect } from "postprocessing"
-import { forwardRef, useContext, useEffect } from "react"
+import { forwardRef } from "react"
 import { Color, Uniform, Vector2, WebGLRenderer, WebGLRenderTarget } from "three"
 
 const fragment = `

@@ -9,7 +9,7 @@ import CardBody from "./card-body";
 import Text from "@/components/text";
 import CardFooter from "./card-footer";
 
-export default function IslandCard({ island }: { island: IslandMeta }) {
+export default function IslandCard({ island, content }: { island: IslandMeta, content?: string }) {
     const container = useRef(null)
     const [expandState, setExpandState] = useState<boolean | undefined>()
 
@@ -27,17 +27,17 @@ export default function IslandCard({ island }: { island: IslandMeta }) {
         <div className="relative pointer-events-auto">
             <OutlinedBox className={clsx(
                 "flex flex-col justify-between p-4 shadow-md gap-2",
-                { "border-dashed": island.date == undefined || island.is_deleted },
-                { "min-h-[200px]": !island.is_deleted }
+                { "border-dashed": island.date == undefined || island.isDeleted },
+                { "min-h-[200px]": !island.isDeleted }
             )}>
                 <div>
-                    <CardHeader island={island}></CardHeader>
+                    <CardHeader island={island} />
                     <div className={
                         clsx("",
                             { "max-h-[250px] overflow-clip": expandState == false }
                         )
                     } ref={container}>
-                        <CardBody island={island} />
+                        <CardBody island={island} content={content} />
                     </div>
                     <button
                         className={
@@ -56,14 +56,6 @@ export default function IslandCard({ island }: { island: IslandMeta }) {
                 </div>
                 <CardFooter island={island} />
             </OutlinedBox>
-            {
-                !island.is_deleted &&
-                <div className={clsx("", { "hidden": island.date == undefined })}>
-                    <div className="absolute w-2 h-24 bg-light-contrast dark:bg-dark-contrast -bottom-4 -right-4"></div>
-                    <div className="absolute w-8 h-2 bg-light-contrast dark:bg-dark-contrast -bottom-4 right-36"></div>
-                    <div className="absolute w-36 h-2 bg-light-contrast dark:bg-dark-contrast -bottom-4 -right-4"></div>
-                </div>
-            }
         </div>
     )
 }

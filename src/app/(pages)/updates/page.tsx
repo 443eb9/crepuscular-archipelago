@@ -1,15 +1,16 @@
 import { Suspense } from "react"
 import { Metadata } from "next"
-import { fetchAllTags, fetchIslandCount, fetchIslandsMeta } from "@/data/api"
+import { fetchAllTags, fetchIsland, fetchIslandCount, fetchIslandsMeta } from "@/data/api"
 import BlogInfo from "./blog-info"
 import NetworkErrorable from "@/components/network-errorable"
-import { processQueryParams, RawSearchParams } from "@/data/utils"
+import { processQueryParams, queryParamsToSearchParams, RawSearchParams } from "@/data/utils"
 import ContentWrapper from "@/components/content-wrapper"
 import OutlinedBox from "@/components/outlined-box"
 import IslandCard from "../(islandsView)/island-card"
 import Pagination from "../(islandsView)/pagination"
 import Link from "next/link"
 import Text from "@/components/text"
+import { IslandType } from "@/data/model"
 
 export const metadata: Metadata = {
     title: "Updates - Crepuscular Archipelago",
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
 
 export default async function Page(props: { searchParams: Promise<RawSearchParams> }) {
     const queryParams = processQueryParams(await props.searchParams)
+    const params = queryParamsToSearchParams(queryParams)
 
     const islands = await fetchIslandsMeta(queryParams.page, queryParams.len, queryParams.tags, queryParams.advf)
     const total = await fetchIslandCount(queryParams.tags, queryParams.advf)
@@ -38,7 +40,21 @@ export default async function Page(props: { searchParams: Promise<RawSearchParam
                                     {
                                         data.length == 0
                                             ? <Text className="font-bender font-bold italic">Void</Text>
-                                            : data.reverse().map((data, i) => <IslandCard island={data} key={i} />)
+                                            : <Suspense>
+                                                {
+                                                    Promise.all(data.reverse().map(async (island, i) => {
+                                                        const href = `/island?id=${island.id}&${params}`
+                                                        return island.ty == "note"
+                                                            ?
+                                                            <NetworkErrorable resp={await fetchIsland(island.id)}>
+                                                                {content => <Link href={href} target="_blank"><IslandCard island={island} key={i} content={content.content} /></Link>}
+                                                            </NetworkErrorable>
+                                                            : <Link href={href}>
+                                                                <IslandCard island={island} key={i} />
+                                                            </Link>
+                                                    }))
+                                                }
+                                            </Suspense>
                                     }
                                 </div>
                             }

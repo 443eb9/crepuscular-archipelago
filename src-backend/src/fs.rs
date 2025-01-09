@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
 use chrono::DateTime;
+use serde::Deserialize;
+use serde_json::Value;
 use sqlx::{query, sqlite::SqliteConnectOptions, SqlitePool};
 
 use crate::{
@@ -23,7 +25,6 @@ pub async fn init_cache() -> SqlitePool {
         .filename(get_island_cache_root().join("archipelago.sqlite3"))
         .create_if_missing(true);
     let db = SqlitePool::connect_with(conn_opt).await.unwrap();
-    return db;
 
     let (islands, tags) = load_and_cache_all_islands();
     const INIT_TABLES: &[&'static str] = &[
@@ -231,7 +232,7 @@ fn front_matter_parse(lines: &[&str]) -> (IslandMeta, Vec<String>) {
             "title" => meta.title = data.to_string(),
             "subtitle" => meta.subtitle = (!data.is_empty()).then(|| data.to_string()),
             "desc" => meta.desc = (!data.is_empty()).then(|| data.to_string()),
-            "ty" => meta.ty = IslandType::from_str(data).unwrap(),
+            "ty" => meta.ty = IslandType::deserialize(Value::from(data)).unwrap(),
             "date" => meta.date = Some(DateTime::parse_from_rfc3339(data).unwrap()),
             "banner" => meta.banner = data.parse::<bool>().unwrap(),
             "is_original" => meta.is_original = data.parse::<bool>().unwrap(),

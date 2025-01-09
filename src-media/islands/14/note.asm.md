@@ -1,12 +1,12 @@
 ---
-title: 汇编学习笔记 Note.asm
+title: 汇编学习笔记 note.asm
 desc: 汇编学习笔记，字面意思（10.18注：改掉WIP的时候忘记填时间了，所以并不是真实的日期（（
-ty: Article
+ty: article
 date: 2024-10-18T17:59:20.000+08:00
 tags: 未分类
 ---
 
-# 汇编学习笔记 Note.asm
+# 汇编学习笔记 note.asm
 
 此笔记仅适用于8086处理器，x86的...以后再补吧（逃
 

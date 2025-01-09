@@ -1,4 +1,4 @@
-import { HTMLAttributes, MouseEventHandler, ReactNode } from "react"
+import { HTMLAttributes, ReactNode } from "react"
 
 export default function OutlinedButton({ children, ...props }: { children?: ReactNode } & HTMLAttributes<HTMLButtonElement>) {
     return (

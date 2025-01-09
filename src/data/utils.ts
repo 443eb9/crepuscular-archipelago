@@ -47,3 +47,8 @@ export type Transform = {
     translation: Vector2,
     scale: number,
 }
+
+export type StatefulContext<T> = {
+    value: T,
+    setter: (value: T) => void,
+}

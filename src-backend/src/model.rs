@@ -1,30 +1,19 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
-use serde_repr::Serialize_repr;
 use sqlx::{prelude::Type, FromRow, Row};
 
 use crate::islands::IslandMapQuery;
 
-#[derive(Debug, Serialize_repr, Type, PartialEq, Eq)]
-#[repr(u32)]
+#[derive(Debug, Serialize, Deserialize, Type, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
 pub enum IslandType {
     Article,
     Achievement,
     Note,
 }
 
-impl IslandType {
-    pub fn from_str(s: &str) -> Option<Self> {
-        match s {
-            "Article" => Some(Self::Article),
-            "Achievement" => Some(Self::Achievement),
-            "Note" => Some(Self::Note),
-            _ => None,
-        }
-    }
-}
-
 #[derive(Debug, Serialize, FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct TagData {
     pub id: u32,
     pub name: String,
@@ -32,6 +21,7 @@ pub struct TagData {
 }
 
 #[derive(Debug, Serialize, FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct IslandMeta {
     pub id: u32,
     pub title: String,
@@ -63,6 +53,7 @@ impl Default for IslandMeta {
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IslandMetaTagged {
     pub id: u32,
     pub title: String,
@@ -96,22 +87,26 @@ impl IslandMetaTagged {
 }
 
 #[derive(Debug, Serialize, FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct Island {
     pub id: u32,
     pub content: String,
 }
 
 #[derive(Debug, Serialize, FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct IslandCount {
     pub count: u32,
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IslandSearchResults {
     pub results: Vec<IslandSearchResult>,
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IslandSearchResult {
     pub score: f32,
     pub id: u32,
@@ -119,6 +114,7 @@ pub struct IslandSearchResult {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct MemorizeForm {
     pub stu_id: String,
     pub name: String,
@@ -164,12 +160,14 @@ where
 }
 
 #[derive(Debug, Serialize, FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct MemorizeFormMeta {
     pub time: String,
     pub ip: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Project {
     pub owner: String,
     pub name: String,

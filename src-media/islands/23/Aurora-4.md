@@ -2,7 +2,7 @@
 title: 从零开始的渲染引擎-Aurora Chapter 4
 subtitle: 基础后处理 Basic Post-processing
 desc: 基础后处理效果，包括 镜头光晕 Lens Flare，泛光 Bloom，景深 Depth of Field，运动模糊 Motion Blur。还有小部分关于 HDR 和伽马校正的前置内容。
-ty: Article
+ty: article
 date: 2024-11-27T21:21:08.000+08:00
 banner: true
 tags: 图形学,Shader
@@ -18,7 +18,7 @@ tags: 图形学,Shader
 - [john-chapman-graphics: Pseudo Lens Flare](http://john-chapman-graphics.blogspot.com/2013/02/pseudo-lens-flare.html)
 - [Chapter 28. Practical Post-Process Depth of Field](https://developer.nvidia.com/gpugems/gpugems3/part-iv-image-effects/chapter-28-practical-post-process-depth-field)
 - [Hexagonal Bokeh Blur Revisited](https://colinbarrebrisebois.com/2017/04/18/hexagonal-bokeh-blur-revisited-part-1-basic-3-pass-version/)
-- [LearnOpenGL - Phys. Based Bloom](https://learnopengl.com/Guest-Articles/2022/Phys.-Based-Bloom)
+- [LearnOpenGL - Phys. Based Bloom](https://learnopengl.com/Guest-articles/2022/Phys.-Based-Bloom)
 - [Bloom - CatlikeCoding](https://catlikecoding.com/unity/tutorials/advanced-rendering/bloom/)
 - [Understanding Gamma Correction](https://www.cambridgeincolour.com/tutorials/gamma-correction.htm)
 - [image - Formula to determine perceived brightness of RGB color - Stack Overflow](https://stackoverflow.com/questions/596216/formula-to-determine-perceived-brightness-of-rgb-color)

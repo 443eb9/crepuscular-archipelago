@@ -11,7 +11,7 @@ export default function ArticleHeader({ island, params }: { island: IslandMeta, 
     params.delete("id")
 
     return (
-        <OutlinedBox className="flex justify-between p-5">
+        <div className="flex justify-between p-5 w-full">
             <div className="flex flex-col gap-1 w-full">
                 <Link
                     href={`/updates?${params.toString()}`}
@@ -38,7 +38,7 @@ export default function ArticleHeader({ island, params }: { island: IslandMeta, 
                     </div>
                 }
                 {
-                    !island.is_original &&
+                    !island.isOriginal &&
                     <div className="text-light-contrast bg-warn">
                         注意：这是一篇非原创的文章，请注意查看文章简介和正文中的原文地址！
                     </div>
@@ -63,13 +63,13 @@ export default function ArticleHeader({ island, params }: { island: IslandMeta, 
                         <div className="bg-light-contrast dark:bg-dark-contrast w-3 h-3"></div>
                         <div className="bg-light-contrast dark:bg-dark-contrast w-3 h-3"></div>
                     </div>
-                    {island.is_original && <License />}
+                    {island.isOriginal && <License />}
                 </div>
             </div>
             <div className="flex flex-col justify-between items-end">
                 <DiagLines className="w-8 md:w-14 h-8 md:h-14" scale="500%"></DiagLines>
                 <div className="bg-light-contrast dark:bg-dark-contrast w-2" style={{ height: "calc(100% - 75px)" }}></div>
             </div>
-        </OutlinedBox>
+        </div>
     )
 }

@@ -1,7 +1,7 @@
 ---
 title: Bevy基础渲染（0.13）
 desc: 介绍了Bevy的自定义渲染，从自定义材质，到后处理，到自定义整个渲染流程，再到计算着色器。
-ty: Article
+ty: article
 date: 2024-04-30T19:11:02.000+08:00
 tags: 图形学,Shader
 ---
