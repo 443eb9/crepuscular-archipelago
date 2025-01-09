@@ -10,6 +10,7 @@ import Text from "@/components/text";
 import IslandCard from "../(pages)/(islandsView)/island-card";
 import { fetchIsland } from "@/data/api";
 import { islandGridContext, visitingIslandContext } from "./islands-map";
+import clsx from "clsx";
 
 export default function IslandFloatingInfo({ regionId, island, center }: { regionId: number, island: IslandMeta, center: Vector2 }) {
     const { canvasSize, canvasTransform, focusingRegionId } = useContext(islandGridContext)
@@ -75,9 +76,9 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
                     </OutlinedBox>
                     : state == "focused"
                         ? <div
-                            className="absolute w-[500px] bg-light-background dark:bg-dark-background cursor-pointer"
+                            className={clsx("absolute w-[500px] bg-light-background dark:bg-dark-background", { "cursor-pointer": island.ty == "article" })}
                             onClick={async () => {
-                                if (visitingIsland?.value?.meta.id != island.id) {
+                                if (visitingIsland?.value?.meta.id != island.id && island.ty == "article") {
                                     const content = await fetchIsland(island.id)
                                     if (content.ok) {
                                         visitingIsland?.setter({

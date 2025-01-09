@@ -39,7 +39,7 @@ export default function BgCanvas({
         noise.magFilter = NearestFilter
         noise.minFilter = NearestFilter
         setNoise(noise)
-    }, [])
+    }, [mapPage])
 
     const ColorResolver = () =>
         <div
