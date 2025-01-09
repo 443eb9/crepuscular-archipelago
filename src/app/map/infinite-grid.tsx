@@ -12,6 +12,7 @@ const fragment = `
         vec2 canvasSize;
         vec2 translation;
         float focusingValue;
+        float maxValidNoiseValue;
         sampler2D noise;
 
         vec3 lineColor;
@@ -51,7 +52,7 @@ const fragment = `
     int isIsland(vec2 coord) {
         float noise = sampleIslandNoise(coord);
         
-        if (noise < 1.0) {
+        if (noise < 1.0 && noise < params.maxValidNoiseValue) {
             if (abs(noise - params.focusingValue) < 0.01) {
                 return FOCUSED_ISLAND;
             } else {
@@ -161,6 +162,7 @@ export type InfiniteGridParams = {
     dash: number,
     transform: Transform,
     focusingValue: { value: number },
+    maxValidNoiseValue: number,
     cellSize: number,
     noise: Texture,
     canvasSize: Size,
@@ -176,6 +178,7 @@ export type InfiniteGridUniforms = {
     canvasSize: Vector2,
     translation: Vector2,
     focusingValue: number,
+    maxValidNoiseValue: number,
     noise: Texture,
 
     lineColor: Color,

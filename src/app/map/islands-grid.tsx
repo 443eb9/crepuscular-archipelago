@@ -105,6 +105,9 @@ export default function IslandsGrid({
             document.removeEventListener("mouseup", endDragHandler)
         }
     }, [])
+    
+    // +0.01 Avoid float point precision issue
+    const maxValidNoiseValue = (islands.length - 1 + 0.01) / islandMapMeta.perPageRegions
 
     return (
         <div className="overflow-hidden w-[100vw] h-[100vh]">
@@ -136,6 +139,7 @@ export default function IslandsGrid({
                 </div>
                 <BgCanvas
                     mapPage={currentPage}
+                    maxValidNoiseValue={maxValidNoiseValue}
                     onContextMenu={ev => ev.preventDefault()}
                     onMouseDown={ev => {
                         if (ev.button != 2) { return }
@@ -166,7 +170,7 @@ export default function IslandsGrid({
                         const grid = px.divideScalar(GridSettings.cellSize).floor()
                         const query = await fetchIslandAt(currentPage, grid.x, grid.y - 1)
                         let result: { regionId: number | null; noiseValue: number }
-                        if (query.ok && query.data.result) {
+                        if (query.ok && query.data.result && query.data.result.noiseValue < maxValidNoiseValue) {
                             result = { ...query.data.result }
                         } else {
                             result = {
