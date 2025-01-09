@@ -6,6 +6,7 @@ import { searchParamBitXor } from "@/data/search-param-util";
 import { TagData } from "@/data/model";
 import OutlinedBox from "./outlined-box";
 import clsx from "clsx";
+import OutlinedButton from "./outlined-button";
 
 export default function Tag({
     tag, hideAmount, searchParams
@@ -13,18 +14,17 @@ export default function Tag({
     { tag: TagData, hideAmount?: boolean, searchParams: URLSearchParams }
 >) {
     const router = useRouter()
-    const curTags = parseInt(searchParams.get("tags") ?? "0")
-    const params = searchParamBitXor(tag.id, "tags", searchParams)
+    const params = new URLSearchParams(searchParams)
+    const curTags = parseInt(params.get("tags") ?? "0")
+    const paramsAfterClick = searchParamBitXor(tag.id, "tags", searchParams)
 
     return (
-        <OutlinedBox
-            onClick={() => router.replace(`/updates?${params}`)}
-            className={clsx(`flex items-baseline gap-1 p-1
-                border-light-contrast dark:border-dark-contrast
-                hover:bg-light-contrast hover:dark:bg-dark-contrast
-                hover:text-dark-contrast hover:dark:text-light-contrast`,
+        <OutlinedButton
+            onClick={() => router.replace(`/updates?${paramsAfterClick}`)}
+            className={clsx(`flex items-baseline gap-1 p-1`,
                 {
-                    "bg-light-contrast dark:bg-dark-contrast text-dark-contrast dark:text-light-contrast": (curTags >> tag.id & 1) == 1,
+                    "bg-light-contrast dark:bg-dark-contrast text-dark-contrast dark:text-light-contrast":
+                        (curTags >> tag.id & 1) == 1,
                 }
             )}
         >
@@ -33,6 +33,6 @@ export default function Tag({
                 !hideAmount &&
                 <Text className="font-neon text-sm">{tag.amount}</Text>
             }
-        </OutlinedBox>
+        </OutlinedButton>
     )
 }

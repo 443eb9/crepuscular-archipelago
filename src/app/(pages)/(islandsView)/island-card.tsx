@@ -1,3 +1,5 @@
+"use client"
+
 import OutlinedBox from "@/components/outlined-box";
 import { IslandMeta } from "@/data/model";
 import { useEffect, useRef, useState } from "react";

@@ -1,16 +1,16 @@
 "use client"
 
-import { IslandMapMeta, IslandMapRegionCenters, IslandMeta } from "@/data/model";
-import BgCanvas from "./bg-canvas";
-import { createContext, useContext, useEffect, useState } from "react";
-import { Vector2, Vector3 } from "three";
-import { Transform } from "@/data/utils";
-import { Size } from "@react-three/fiber";
-import { fetchIslandAt } from "@/data/api";
-import IslandFloatingInfo from "./island-floating-info";
-import OutlinedBox from "@/components/outlined-box";
-import Text from "@/components/text";
-import Pagination from "../pagination";
+import { IslandMapMeta, IslandMapRegionCenters, IslandMeta } from "@/data/model"
+import BgCanvas from "./bg-canvas"
+import { createContext, useContext, useEffect, useState } from "react"
+import { Vector2, Vector3 } from "three"
+import { Transform } from "@/data/utils"
+import { Size } from "@react-three/fiber"
+import { fetchIslandAt } from "@/data/api"
+import IslandFloatingInfo from "./island-floating-info"
+import OutlinedBox from "@/components/outlined-box"
+import Text from "@/components/text"
+import Pagination from "../(islandsView)/pagination"
 
 export type IslandGridContext = {
     cursor: Vector2,
@@ -165,7 +165,7 @@ export default function IslandsGrid({
                             .add(islandGrid.canvasTransform.translation.clone())
                         const grid = px.divideScalar(GridSettings.cellSize).floor()
                         const query = await fetchIslandAt(currentPage, grid.x, grid.y - 1)
-                        let result: { regionId: number | null; noiseValue: number; };
+                        let result: { regionId: number | null; noiseValue: number }
                         if (query.ok && query.data.result) {
                             result = { ...query.data.result }
                         } else {

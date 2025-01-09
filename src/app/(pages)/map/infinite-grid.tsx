@@ -3,7 +3,7 @@ import { Size } from "@react-three/fiber"
 import { Effect } from "postprocessing"
 import { forwardRef, useMemo } from "react"
 import { Color, Texture, Uniform, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget } from "three"
-import resolveLygia from "../../data/lygia"
+import resolveLygia from "../../../data/lygia"
 
 const fragment = `
     #include "lygia/generative/fbm.glsl"

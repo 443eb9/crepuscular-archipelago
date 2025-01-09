@@ -1,6 +1,6 @@
 "use client"
 
-import OutlinedBox from "@/components/outlined-box";
+import OutlinedButton from "@/components/outlined-button";
 import Text from "@/components/text";
 import clsx from "clsx";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -14,13 +14,11 @@ export default function Pagination({ total, current }: { total: number, current:
         <>
             {
                 Array.from(Array(total).keys()).map(page =>
-                    <OutlinedBox
+                    <OutlinedButton
                         key={page}
                         className={clsx(
-                            `w-12 aspect-square flex justify-center items-center
-                            hover:bg-light-contrast dark:hover:bg-dark-contrast
-                            hover:text-dark-contrast dark:hover:text-light-contrast
-                        ${current == page ? "text-light-contrast" : "dark:text-dark-contrast"}`,
+                            `w-12 aspect-square
+                            ${current == page ? "text-light-contrast" : "dark:text-dark-contrast"}`,
                             { "bg-light-contrast dark:bg-dark-contrast": current == page }
                         )}
                         onClick={() => {
@@ -35,7 +33,7 @@ export default function Pagination({ total, current }: { total: number, current:
                         >
                             {page}
                         </Text>
-                    </OutlinedBox>
+                    </OutlinedButton>
                 )
             }
         </>
