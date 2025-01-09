@@ -19,7 +19,7 @@ export default async function ArticleContainer({ id, params }: { id: number, par
         <div className="flex flex-col gap-10 w-full">
             <NetworkErrorable resp={meta}>
                 {data =>
-                    <ArticleHeader meta={data} params={params}></ArticleHeader>
+                    <ArticleHeader island={data} params={params}></ArticleHeader>
                 }
             </NetworkErrorable>
             <NetworkErrorable resp={article}>
