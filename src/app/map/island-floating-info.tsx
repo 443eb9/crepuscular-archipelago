@@ -2,14 +2,14 @@
 
 import { IslandMeta } from "@/data/model";
 import { useContext, useEffect, useState } from "react";
-import { GridSettings, islandGridContext } from "./islands-grid";
+import { GridSettings } from "./islands-grid";
 import { Vector2 } from "three";
 import { motion, useMotionValue } from "motion/react";
 import OutlinedBox from "@/components/outlined-box";
 import Text from "@/components/text";
 import IslandCard from "../(pages)/(islandsView)/island-card";
 import { fetchIsland } from "@/data/api";
-import { visitingIslandContext } from "./islands-map";
+import { islandGridContext, visitingIslandContext } from "./islands-map";
 
 export default function IslandFloatingInfo({ regionId, island, center }: { regionId: number, island: IslandMeta, center: Vector2 }) {
     const { canvasSize, canvasTransform, focusingRegionId } = useContext(islandGridContext)
@@ -17,6 +17,7 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
     const y = useMotionValue(0)
     const [state, setState] = useState<"focused" | "unfocused" | "none">("none")
     const visitingIsland = useContext(visitingIslandContext)
+    const islandGrid = useContext(islandGridContext)
 
     useEffect(() => {
         const updateHandler = () => {
@@ -84,6 +85,9 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
                                             content: content.data,
                                         })
                                     }
+
+                                    islandGrid.focusingRegionValue.value = 1
+                                    islandGrid.focusingRegionId.value = null
                                 }
                             }}
                         >

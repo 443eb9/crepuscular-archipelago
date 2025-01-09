@@ -2,57 +2,12 @@
 
 import { IslandMapMeta, IslandMapRegionCenters, IslandMeta } from "@/data/model"
 import BgCanvas from "./bg-canvas"
-import { createContext, useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Vector2, Vector3 } from "three"
-import { Transform } from "@/data/utils"
-import { Size } from "@react-three/fiber"
 import { fetchIslandAt } from "@/data/api"
 import IslandFloatingInfo from "./island-floating-info"
-import OutlinedBox from "@/components/outlined-box"
 import Text from "@/components/text"
-import Pagination from "../(pages)/(islandsView)/pagination"
-
-export type IslandGridContext = {
-    cursor: Vector2,
-    canvasSize: Size,
-    drag: {
-        onDrag: boolean,
-        cursor: Vector2,
-        canvas: Vector2,
-    },
-    canvasTransform: Transform,
-    focusingRegionId: {
-        value: number | null,
-    },
-    focusingRegionValue: {
-        value: number,
-    },
-}
-
-export const islandGridContext = createContext<IslandGridContext>({
-    cursor: new Vector2(),
-    canvasSize: {
-        width: 0,
-        height: 0,
-        top: 0,
-        left: 0,
-    },
-    drag: {
-        onDrag: false,
-        cursor: new Vector2(),
-        canvas: new Vector2(),
-    },
-    canvasTransform: {
-        translation: new Vector2(),
-        scale: 1,
-    },
-    focusingRegionId: {
-        value: null,
-    },
-    focusingRegionValue: {
-        value: 1.0,
-    },
-})
+import { islandGridContext } from "./islands-map"
 
 export const GridSettings = {
     cellSize: 40,
@@ -105,7 +60,7 @@ export default function IslandsGrid({
             document.removeEventListener("mouseup", endDragHandler)
         }
     }, [])
-    
+
     // +0.01 Avoid float point precision issue
     const maxValidNoiseValue = (islands.length - 1 + 0.01) / islandMapMeta.perPageRegions
 
@@ -119,70 +74,68 @@ export default function IslandsGrid({
             >
                 <Text className="font-bender font-bold text-[80px] italic" noFont>Loading Canvas...</Text>
             </div>
-            <islandGridContext.Provider value={islandGrid}>
-                <div className="absolute z-10 w-[100vw] h-[100vh] overflow-hidden pointer-events-none">
-                    {
-                        ready &&
-                        islands.map((island, index) => {
-                            const center = regionCenters[index]
-                            return (
-                                <IslandFloatingInfo
-                                    key={index}
-                                    regionId={index}
-                                    island={island}
-                                    center={new Vector2(center[0], center[1])}
-                                />
-                            )
-                        })
-                    }
-                </div>
-                <BgCanvas
-                    mapPage={currentPage}
-                    maxValidNoiseValue={maxValidNoiseValue}
-                    onContextMenu={ev => ev.preventDefault()}
-                    onMouseDown={ev => {
-                        if (ev.button != 2) { return }
+            <div className="absolute z-10 w-[100vw] h-[100vh] overflow-hidden pointer-events-none">
+                {
+                    ready &&
+                    islands.map((island, index) => {
+                        const center = regionCenters[index]
+                        return (
+                            <IslandFloatingInfo
+                                key={index}
+                                regionId={index}
+                                island={island}
+                                center={new Vector2(center[0], center[1])}
+                            />
+                        )
+                    })
+                }
+            </div>
+            <BgCanvas
+                mapPage={currentPage}
+                maxValidNoiseValue={maxValidNoiseValue}
+                onContextMenu={ev => ev.preventDefault()}
+                onMouseDown={ev => {
+                    if (ev.button != 2) { return }
 
-                        islandGrid.drag.onDrag = true
+                    islandGrid.drag.onDrag = true
 
-                        const initial = cursorCanvasPos()
-                        islandGrid.drag.cursor.x = initial.x
-                        islandGrid.drag.cursor.y = initial.y
+                    const initial = cursorCanvasPos()
+                    islandGrid.drag.cursor.x = initial.x
+                    islandGrid.drag.cursor.y = initial.y
 
-                        islandGrid.drag.canvas.x = islandGrid.canvasTransform.translation.x
-                        islandGrid.drag.canvas.y = islandGrid.canvasTransform.translation.y
-                    }}
-                    onWheel={ev => {
-                        const oldScale = islandGrid.canvasTransform.scale
-                        const newScale = Math.max(Math.min(oldScale + ev.deltaY * 0.0008, 2), 0.5)
-                        islandGrid.canvasTransform.scale = newScale
-                    }}
-                    onClick={async ev => {
-                        if (ev.button != 0) { return }
+                    islandGrid.drag.canvas.x = islandGrid.canvasTransform.translation.x
+                    islandGrid.drag.canvas.y = islandGrid.canvasTransform.translation.y
+                }}
+                onWheel={ev => {
+                    const oldScale = islandGrid.canvasTransform.scale
+                    const newScale = Math.max(Math.min(oldScale + ev.deltaY * 0.0008, 2), 0.5)
+                    islandGrid.canvasTransform.scale = newScale
+                }}
+                onClick={async ev => {
+                    if (ev.button != 0) { return }
 
-                        const cursor = islandGrid.cursor.clone()
-                            .multiplyScalar(0.5)
-                            .multiply(new Vector2(islandGrid.canvasSize.width, islandGrid.canvasSize.height))
-                        const px = cursor
-                            .multiplyScalar(islandGrid.canvasTransform.scale)
-                            .add(islandGrid.canvasTransform.translation.clone())
-                        const grid = px.divideScalar(GridSettings.cellSize).floor()
-                        const query = await fetchIslandAt(currentPage, grid.x, grid.y - 1)
-                        let result: { regionId: number | null; noiseValue: number }
-                        if (query.ok && query.data.result && query.data.result.noiseValue < maxValidNoiseValue) {
-                            result = { ...query.data.result }
-                        } else {
-                            result = {
-                                regionId: null,
-                                noiseValue: 1.0,
-                            }
+                    const cursor = islandGrid.cursor.clone()
+                        .multiplyScalar(0.5)
+                        .multiply(new Vector2(islandGrid.canvasSize.width, islandGrid.canvasSize.height))
+                    const px = cursor
+                        .multiplyScalar(islandGrid.canvasTransform.scale)
+                        .add(islandGrid.canvasTransform.translation.clone())
+                    const grid = px.divideScalar(GridSettings.cellSize).floor()
+                    const query = await fetchIslandAt(currentPage, grid.x, grid.y - 1)
+                    let result: { regionId: number | null; noiseValue: number }
+                    if (query.ok && query.data.result && query.data.result.noiseValue < maxValidNoiseValue) {
+                        result = { ...query.data.result }
+                    } else {
+                        result = {
+                            regionId: null,
+                            noiseValue: 1.0,
                         }
-                        islandGrid.focusingRegionId.value = result.regionId
-                        islandGrid.focusingRegionValue.value = result.noiseValue
-                    }}
-                    onReady={() => setReady(true)}
-                />
-            </islandGridContext.Provider>
+                    }
+                    islandGrid.focusingRegionId.value = result.regionId
+                    islandGrid.focusingRegionValue.value = result.noiseValue
+                }}
+                onReady={() => setReady(true)}
+            />
         </div>
     )
 }

@@ -7,7 +7,8 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { EffectComposer } from "@react-three/postprocessing";
 import { HTMLAttributes, useContext, useEffect, useRef, useState } from "react";
 import { Color, NearestFilter, Texture, TextureLoader } from "three";
-import { GridSettings, islandGridContext } from "./islands-grid";
+import { GridSettings } from "./islands-grid";
+import { islandGridContext } from "./islands-map";
 
 export default function BgCanvas({
     onReady, mapPage, maxValidNoiseValue, ...props
