@@ -30,7 +30,7 @@ export default async function Page() {
 				<NavButtons
 					className="w-20 h-10 md:w-40 md:h-20 text-lg md:text-3xl"
 					containerClassName="gap-4 md:gap-10 flex-col md:flex-row"
-				></NavButtons>
+				/>
 			</div>
 		</main>
 	)

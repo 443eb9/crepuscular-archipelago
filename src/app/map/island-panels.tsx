@@ -10,6 +10,7 @@ import { useContext } from "react";
 import { visitingIslandContext } from "./islands-map";
 import { useSearchParams } from "next/navigation";
 import InlinedArticle from "./inlined-article";
+import NavButtons from "../(pages)/nav-buttons";
 
 export default function IslandPanels({
     totalPages, currentPage, queryParams, allTags
@@ -20,15 +21,15 @@ export default function IslandPanels({
     const visitingIsland = useContext(visitingIslandContext)
 
     return (
-        <div className="absolute z-50 w-full h-full pointer-events-none p-2">
-            <OutlinedBox className="absolute flex flex-col gap-2 p-2 backdrop-blur-md pointer-events-auto">
+        <div className="absolute z-50 w-full h-full pointer-events-none">
+            <OutlinedBox className="absolute flex flex-col gap-2 p-2 left-2 top-2 backdrop-blur-md pointer-events-auto">
                 {
                     totalPages > 0
                         ? <Pagination total={totalPages} current={currentPage} />
                         : <Text className="font-bender font-bold">Void</Text>
                 }
             </OutlinedBox>
-            <OutlinedBox className="absolute right-0 w-72 backdrop-blur-md pointer-events-auto">
+            <OutlinedBox className="absolute right-2 top-2 w-72 backdrop-blur-md pointer-events-auto">
                 <BlogInfo queryParams={queryParams} allTags={allTags} />
             </OutlinedBox>
             {
@@ -43,6 +44,11 @@ export default function IslandPanels({
                     </div>
                 </div>
             }
+            <div className="flex w-full justify-center">
+                <OutlinedBox className="absolute p-1 top-2 backdrop-blur-md pointer-events-auto">
+                    <NavButtons className="w-16 h-12 p-1" />
+                </OutlinedBox>
+            </div>
         </div>
     )
 }

@@ -35,6 +35,17 @@ export default function BgCanvas({
     }, [])
 
     useEffect(() => {
+        const resizeHandler = () => {
+            setUpdateFlag(!updateFlag)
+        }
+
+        window.addEventListener("resize", resizeHandler)
+        return () => {
+            window.removeEventListener("resize", resizeHandler)
+        }
+    }, [updateFlag])
+
+    useEffect(() => {
         const noise = new TextureLoader().load(islandMapUrl(mapPage))
         noise.magFilter = NearestFilter
         noise.minFilter = NearestFilter
