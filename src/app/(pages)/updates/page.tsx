@@ -9,6 +9,7 @@ import OutlinedBox from "@/components/outlined-box"
 import IslandCard from "../(islandsView)/island-card"
 import Pagination from "../(islandsView)/pagination"
 import Link from "next/link"
+import Text from "@/components/text"
 
 export const metadata: Metadata = {
     title: "Updates - Crepuscular Archipelago",
@@ -33,29 +34,23 @@ export default async function Page(props: { searchParams: Promise<RawSearchParam
                     <div className="flex flex-col gap-8 w-full">
                         <NetworkErrorable resp={islands}>
                             {data =>
-                                <Suspense>
-                                    <div className="flex w-full flex-col gap-10">
-                                        {
-                                            data.reverse().map((data, i) =>
-                                                <Suspense key={i}>
-                                                    <IslandCard
-                                                        island={data}
-                                                        key={data.id}
-                                                    />
-                                                </Suspense>
-                                            )
-                                        }
-                                    </div>
-                                </Suspense>
+                                <div className="flex w-full flex-col gap-10">
+                                    {
+                                        data.length == 0
+                                            ? <Text className="font-bender font-bold italic">Void</Text>
+                                            : data.reverse().map((data, i) => <IslandCard island={data} key={i} />)
+                                    }
+                                </div>
                             }
                         </NetworkErrorable>
-                        <OutlinedBox className="flex gap-2 py-2 border-x-0 border-dashed">
-                            <NetworkErrorable resp={total}>
-                                {data =>
+                        <NetworkErrorable resp={total}>
+                            {data =>
+                                data.count > 0 &&
+                                <OutlinedBox className="flex gap-2 py-2 border-x-0 border-dashed">
                                     <Pagination total={Math.ceil(data.count / queryParams.len)} current={queryParams.page} />
-                                }
-                            </NetworkErrorable>
-                        </OutlinedBox>
+                                </OutlinedBox>
+                            }
+                        </NetworkErrorable>
                     </div>
                     <aside className="hidden md:flex w-full max-w-72">
                         <div className="fixed max-w-72 md:flex md:flex-col gap-5">

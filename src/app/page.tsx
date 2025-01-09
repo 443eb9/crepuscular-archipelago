@@ -9,16 +9,13 @@ export const metadata: Metadata = {
 export default async function Page() {
 	return (
 		<main className="">
-			<div className="absolute top-[10%] md:top-1/4 left-[10%]">
-				<div className="font-bender">
-					<h1 className="text-4xl md:text-5xl">Welcome To:</h1>
-					<h1 className="text-4xl md:text-7xl font-extrabold">Crepuscular</h1>
-					<h1 className="text-4xl md:text-7xl font-extrabold">Archipelago</h1>
-					<p className="md:leading-loose text-xl md:text-2xl">
-						Islands that owned by 443eb9#C.
-					</p>
-				</div>
-				<div className="font-bender">Background under construction...</div>
+			<div className="absolute top-[10%] md:top-1/4 left-[10%] font-bender">
+				<h1 className="text-4xl md:text-5xl">Welcome To:</h1>
+				<h1 className="text-4xl md:text-7xl font-extrabold">Crepuscular</h1>
+				<h1 className="text-4xl md:text-7xl font-extrabold">Archipelago</h1>
+				<p className="md:leading-loose text-xl md:text-2xl">
+					Islands that owned by 443eb9#C.
+				</p>
 			</div>
 			<div className="absolute bottom-[15%] md:top-1/4 right-[10%] text-right">
 				<div>
