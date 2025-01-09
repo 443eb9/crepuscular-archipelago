@@ -44,7 +44,7 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
             } else if (focusingRegionId.value == regionId) {
                 setState("focused")
 
-                if (island.ty == "note") {
+                if (island.ty == "note" && !islandContent) {
                     const content = await fetchIsland(island.id)
                     if (content.ok) {
                         setIslandContent(content.data.content)
