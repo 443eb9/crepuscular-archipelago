@@ -63,10 +63,10 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
 
         return () => {
             document.removeEventListener("mousemove", updateHandler)
-            document.addEventListener("mousedown", updateHandler)
-            document.addEventListener("wheel", updateHandler)
+            document.removeEventListener("mousedown", updateHandler)
+            document.removeEventListener("wheel", updateHandler)
         }
-    })
+    }, [islandContent])
 
     return (
         <motion.div
@@ -87,18 +87,18 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
                         ? <div
                             className={clsx("absolute w-[500px] bg-light-background dark:bg-dark-background", { "cursor-pointer": island.ty == "article" })}
                             onClick={async () => {
-                                if (visitingIsland?.value?.meta.id != island.id && island.ty == "article") {
-                                    const content = await fetchIsland(island.id)
-                                    if (content.ok) {
-                                        visitingIsland?.setter({
-                                            meta: island,
-                                            content: content.data,
-                                        })
-                                    }
+                                // if (visitingIsland?.value?.meta.id != island.id && island.ty == "article") {
+                                //     const content = await fetchIsland(island.id)
+                                //     if (content.ok) {
+                                //         visitingIsland?.setter({
+                                //             meta: island,
+                                //             content: content.data,
+                                //         })
+                                //     }
 
-                                    islandGrid.focusingRegionValue.value = 1
-                                    islandGrid.focusingRegionId.value = null
-                                }
+                                //     islandGrid.focusingRegionValue.value = 1
+                                //     islandGrid.focusingRegionId.value = null
+                                // }
                             }}
                         >
                             <IslandCard island={island} content={islandContent} />

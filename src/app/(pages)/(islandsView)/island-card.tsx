@@ -19,7 +19,6 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
         }
         const div: HTMLDivElement = container.current
         if (div.clientHeight > 100) {
-            console.log("AAAAAAAAAAAAAA")
             setExpandState(false)
         }
     }, [])

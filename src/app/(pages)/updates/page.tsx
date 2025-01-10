@@ -10,7 +10,6 @@ import IslandCard from "../(islandsView)/island-card"
 import Pagination from "../(islandsView)/pagination"
 import Link from "next/link"
 import Text from "@/components/text"
-import { IslandType } from "@/data/model"
 
 export const metadata: Metadata = {
     title: "Updates - Crepuscular Archipelago",

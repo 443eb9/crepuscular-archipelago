@@ -55,7 +55,6 @@ export default function Markdown({ body }: { body: string }) {
                                         alt={props.src ?? ""}
                                         width={mediaWidth}
                                         height={0}
-                                        objectFit="cover"
                                     />
                                 </div>
                             )
@@ -87,7 +86,7 @@ export default function Markdown({ body }: { body: string }) {
                         },
                         blockquote(props) {
                             return (
-                                <blockquote {...props} className="border-l-4 px-2 py-1">
+                                <blockquote {...props} className="border-l-2 px-1 opacity-50">
                                     <Text children={props.children} className="italic" />
                                 </blockquote>
                             )
@@ -119,13 +118,13 @@ export default function Markdown({ body }: { body: string }) {
                             )
                         },
                         ul(props) {
-                            return <ul {...props} className="mx-4"><Text children={props.children} /></ul>
+                            return <ul {...props} className="mx-8"><Text children={props.children} /></ul>
                         },
                         li(props) {
                             return <li {...props}><Text children={props.children} /></li>
                         },
                         a(props) {
-                            return <Link {...props} href={props.href ?? ""} target="_blank" className="text-accent-light dark:text-accent-dark underline" />
+                            return <Link {...props} href={props.href ?? ""} target="_blank" className="underline" />
                         },
                     }}>
                     {body}

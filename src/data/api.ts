@@ -12,7 +12,7 @@ export type Response<T> = {
 
 const axiosInstance = axios.create()
 
-async function wrappedGet<T>(url: string): Promise<Response<T>> {
+export async function wrappedGet<T>(url: string): Promise<Response<T>> {
     return await axiosInstance
         .get(url)
         .then(data => {
@@ -29,11 +29,7 @@ async function wrappedGet<T>(url: string): Promise<Response<T>> {
         })
 }
 
-async function wrappedApiGet<T>(endpoint: string): Promise<Response<T>> {
-    return wrappedGet(combineApi(endpoint))
-}
-
-async function wrappedRemoteApiGet<T>(endpoint: string): Promise<Response<T>> {
+export async function wrappedApiGet<T>(endpoint: string): Promise<Response<T>> {
     return wrappedGet(combineApi(endpoint))
 }
 
@@ -66,7 +62,7 @@ export function islandMapUrl(page: number) {
 }
 
 export function fetchIslandAt(page: number, x: number, y: number): Promise<Response<IslandMapQueryResult>> {
-    return wrappedRemoteApiGet(`/get/islandMap/${page}/${x}/${y}`)
+    return wrappedApiGet(`/get/islandMap/${page}/${x}/${y}`)
 }
 
 export function fetchIslandMapMeta(): Promise<Response<IslandMapMeta>> {
