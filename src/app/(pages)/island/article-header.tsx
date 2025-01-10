@@ -2,10 +2,8 @@ import { FaClock } from "react-icons/fa6"
 import { IslandMeta } from "@/data/model"
 import Link from "next/link"
 import { TbClockQuestion } from "react-icons/tb"
-import OutlinedBox from "@/components/outlined-box"
 import Tag from "@/components/tag"
 import DiagLines from "@/components/decos/diag-lines"
-import License from "../updates/license"
 
 export default function ArticleHeader({ island, params }: { island: IslandMeta, params: URLSearchParams }) {
     params.delete("id")
@@ -56,14 +54,11 @@ export default function ArticleHeader({ island, params }: { island: IslandMeta, 
                             </div>
                     }
                 </div>
-                <div className="flex justify-between w-full items-center">
-                    <div className="flex gap-3 mt-1">
-                        <div className="bg-light-contrast dark:bg-dark-contrast w-3 h-3"></div>
-                        <div className="bg-light-contrast dark:bg-dark-contrast w-3 h-3"></div>
-                        <div className="bg-light-contrast dark:bg-dark-contrast w-3 h-3"></div>
-                        <div className="bg-light-contrast dark:bg-dark-contrast w-3 h-3"></div>
-                    </div>
-                    {island.isOriginal && <License />}
+                <div className="flex gap-3 mt-1">
+                    <div className="bg-light-contrast dark:bg-dark-contrast w-3 h-3"></div>
+                    <div className="bg-light-contrast dark:bg-dark-contrast w-3 h-3"></div>
+                    <div className="bg-light-contrast dark:bg-dark-contrast w-3 h-3"></div>
+                    <div className="bg-light-contrast dark:bg-dark-contrast w-3 h-3"></div>
                 </div>
             </div>
             <div className="flex flex-col justify-between items-end">

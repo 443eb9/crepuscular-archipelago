@@ -18,7 +18,6 @@ export default function Markdown({ body }: { body: string }) {
 
     const updateWidth = () => {
         if (containerRef.current) {
-            console.log(window.innerWidth, window.outerWidth)
             setMediaWidth(containerRef.current.clientWidth * 0.5)
         }
     }

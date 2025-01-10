@@ -18,7 +18,8 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
             return
         }
         const div: HTMLDivElement = container.current
-        if (div.offsetHeight > 249) {
+        if (div.clientHeight > 100) {
+            console.log("AAAAAAAAAAAAAA")
             setExpandState(false)
         }
     }, [])
@@ -32,19 +33,14 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
             )}>
                 <div>
                     <CardHeader island={island} />
-                    <div className={
-                        clsx("",
-                            { "max-h-[250px] overflow-clip": expandState == false }
-                        )
-                    } ref={container}>
+                    <div className={expandState == false ? "max-h-[200px] overflow-y-clip" : ""} ref={container}>
                         <CardBody island={island} content={content} />
                     </div>
                     <button
-                        className={
-                            clsx("mt-2 w-full h-10 border-2 border-light-contrast dark:border-dark-contrast",
-                                { "hidden": expandState == undefined }
-                            )
-                        }
+                        className={clsx(
+                            "mt-2 w-full h-10 border-2 border-light-contrast dark:border-dark-contrast",
+                            { "hidden": expandState == undefined }
+                        )}
                         onClick={() => setExpandState(!expandState)}
                     >
                         {

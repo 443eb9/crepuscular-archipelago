@@ -44,14 +44,18 @@ export default async function Page(props: { searchParams: Promise<RawSearchParam
                                                 {
                                                     Promise.all(data.reverse().map(async (island, i) => {
                                                         const href = `/island?id=${island.id}&${params}`
-                                                        return island.ty == "note"
-                                                            ?
-                                                            <NetworkErrorable resp={await fetchIsland(island.id)}>
-                                                                {content => <Link href={href} target="_blank"><IslandCard island={island} key={i} content={content.content} /></Link>}
-                                                            </NetworkErrorable>
-                                                            : <Link href={href}>
-                                                                <IslandCard island={island} key={i} />
-                                                            </Link>
+                                                        switch (island.ty) {
+                                                            case "article":
+                                                                return <Link href={href}>
+                                                                    <IslandCard island={island} key={i} />
+                                                                </Link>
+                                                            case "achievement":
+                                                                return <IslandCard island={island} key={i} />
+                                                            case "note":
+                                                                return <NetworkErrorable resp={await fetchIsland(island.id)}>
+                                                                    {content => <Link href={href} target="_blank"><IslandCard island={island} key={i} content={content.content} /></Link>}
+                                                                </NetworkErrorable>
+                                                        }
                                                     }))
                                                 }
                                             </Suspense>

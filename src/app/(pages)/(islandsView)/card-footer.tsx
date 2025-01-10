@@ -3,7 +3,6 @@ import { TbClockQuestion } from "react-icons/tb"
 import { FaClock } from "react-icons/fa6"
 import Tag from "@/components/tag"
 import { useSearchParams } from "next/navigation"
-import License from "../updates/license"
 
 export default function CardFooter({ island }: { island: IslandMeta }) {
     const searchParams = new URLSearchParams(useSearchParams())
@@ -37,7 +36,6 @@ export default function CardFooter({ island }: { island: IslandMeta }) {
                             </div>
                     }
                 </div>
-                {island.isOriginal && <License />}
             </div>
             {
                 !island.isDeleted && !island.date != undefined &&
