@@ -8,7 +8,6 @@ import EndpointDottedSegment from "@/components/decos/endpoint-dotted-segment"
 import AboutSection from "./about-section"
 import LinkExchange from "./link-exchange"
 import Projects from "./projects"
-import SteamInfo from "./steam-info"
 import GiscusSection from "@/components/giscus-section"
 import Text from "@/components/text"
 import { wrappedGet } from "@/data/api"
@@ -33,7 +32,7 @@ export default async function Page() {
                             <Text className="text-right">——2024.8.15留</Text>
                         </OutlinedBox>
                     </div>
-                    <OutlinedBox className="w-full">
+                    <OutlinedBox className="w-full p-4">
                         <NetworkErrorable resp={selfIntro}>
                             {data => <Markdown body={data} />}
                         </NetworkErrorable>
@@ -52,12 +51,6 @@ export default async function Page() {
                 <AboutSection title="一些项目">
                     <Suspense>
                         <Projects></Projects>
-                    </Suspense>
-                </AboutSection>
-                <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
-                <AboutSection title="Steam状态">
-                    <Suspense>
-                        <SteamInfo></SteamInfo>
                     </Suspense>
                 </AboutSection>
                 <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>

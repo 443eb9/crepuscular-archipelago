@@ -73,31 +73,6 @@ export function fetchIslandMapRegionCenters(page: number): Promise<Response<Isla
     return wrappedApiGet(`/get/islandMap/${page}/centers`)
 }
 
-const steamKey = process.env.STEAM_KEY
-const steamUserId = process.env.STEAM_USER_ID
-
-export async function fetchSteamRecentlyPlayedGames(): Promise<Response<{ response: SteamRecentlyPlayedGames }>> {
-    if (steamKey && steamUserId) {
-        return wrappedGet(`https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${steamKey}&steamid=${steamUserId}&format=json`)
-    } else {
-        return {
-            ok: false,
-            err: "No secret provided.",
-        }
-    }
-}
-
-export async function fetchSteamPlayerSummaries(): Promise<Response<{ response: SteamPlayerSummaries }>> {
-    if (steamKey && steamUserId) {
-        return wrappedGet(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${steamKey}&steamids=${steamUserId}`)
-    } else {
-        return {
-            ok: false,
-            err: "No secret provided.",
-        }
-    }
-}
-
 export async function fetchBookmarks(): Promise<Response<Bookmarks[]>> {
     return wrappedGet("https://raw.githubusercontent.com/443eb9/aetheric-cargo/main/partitions/bookmarks.json")
 }

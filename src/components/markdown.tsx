@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from "react"
 import Text from "./text"
 import Link from "next/link"
 import markdownStyle from "./markdown-style"
+import "./markdown.css"
 
 export default function Markdown({ body }: { body: string }) {
     const [mediaWidth, setMediaWidth] = useState<number | undefined>()
