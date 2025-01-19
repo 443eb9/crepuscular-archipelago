@@ -1,6 +1,6 @@
 import axios from "axios"
 import { MemorizeForm } from "./model"
-import { combineApi } from "./backend"
+import { apiEndpoint } from "./backend"
 
 export async function submitMemorize(form: FormData) {
     const payload: MemorizeForm = {
@@ -21,13 +21,13 @@ export async function submitMemorize(form: FormData) {
         ip: (await axios.get("https://api.ipify.org?format=json")).data["ip"],
     }
 
-    return axios.post(combineApi("/post/memorize"), payload)
+    return axios.post(apiEndpoint("/post/memorize"), payload)
 }
 
 export async function downloadMemorizeDb() {
-    (await axios.get(combineApi("/get/memorizeDb"), { responseType: "blob" }))
+    (await axios.get(apiEndpoint("/get/memorizeDb"), { responseType: "blob" }))
 }
 
 export async function downloadMemorizeCsv() {
-    (await axios.get(combineApi("/get/memorizeCsv"), { responseType: "stream" }))
+    (await axios.get(apiEndpoint("/get/memorizeCsv"), { responseType: "stream" }))
 }

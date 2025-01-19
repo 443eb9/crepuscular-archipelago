@@ -1,13 +1,12 @@
-const BACKEND = "http://localhost:8080/api"
-const REMOTE_BACKEND = "https://443eb9.dev/api"
+const production = process.env.NODE_ENV == "production"
+const BACKEND = production ? "https://443eb9.dev" : "http://localhost:3000"
+const API_BACKEND = production ? "https://443eb9.dev/api" : "http://localhost:3000/api"
 export const OSS = "https://oss.443eb9.dev/islandsmedia"
 
-const env = process.env.NODE_ENV
+export function backendEndpoint(path: string) {
+    return `${BACKEND}${path}`
+}
 
-export function combineApi(endpoint: string) {
-    if (env == "production") {
-        return `${REMOTE_BACKEND}${endpoint}`
-    } else {
-        return `${BACKEND}${endpoint}`
-    }
+export function apiEndpoint(endpoint: string) {
+    return `${API_BACKEND}${endpoint}`
 }

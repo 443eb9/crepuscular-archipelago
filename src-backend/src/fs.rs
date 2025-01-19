@@ -10,14 +10,6 @@ use crate::{
     model::{IslandMeta, IslandMetaTagged, IslandType, Project, TagData},
 };
 
-pub fn load_projects_list() -> Vec<Project> {
-    serde_json::from_str(
-        &std::fs::read_to_string(get_island_storage_root().join("json").join("projects.json"))
-            .unwrap(),
-    )
-    .unwrap()
-}
-
 pub async fn init_cache() -> SqlitePool {
     let _ = std::fs::create_dir_all(get_island_cache_root());
 

@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios"
-import { combineApi } from "./backend"
+import { apiEndpoint } from "./backend"
 import { Bookmarks, Island, IslandCount, IslandMapMeta, IslandMapQueryResult, IslandMapRegionCenters, IslandMeta, LinkExchangeData, ProjectData, SteamPlayerSummaries, SteamRecentlyPlayedGames, TagData } from "./model"
 
 export type Response<T> = {
@@ -30,7 +30,7 @@ export async function wrappedGet<T>(url: string): Promise<Response<T>> {
 }
 
 export async function wrappedApiGet<T>(endpoint: string): Promise<Response<T>> {
-    return wrappedGet(combineApi(endpoint))
+    return wrappedGet(apiEndpoint(endpoint))
 }
 
 export async function fetchAllTags(): Promise<Response<TagData[]>> {
@@ -53,12 +53,8 @@ export async function fetchIsland(id: number): Promise<Response<Island>> {
     return wrappedApiGet(`/get/island/${id}`)
 }
 
-export async function fetchProjectList(): Promise<Response<ProjectData[]>> {
-    return wrappedApiGet("/get/projects")
-}
-
 export function islandMapUrl(page: number) {
-    return combineApi(`/get/islandMap/${page}`)
+    return apiEndpoint(`/get/islandMap/${page}`)
 }
 
 export function fetchIslandAt(page: number, x: number, y: number): Promise<Response<IslandMapQueryResult>> {

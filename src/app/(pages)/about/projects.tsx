@@ -1,9 +1,11 @@
 import EmphasizedBox from "@/components/decos/emphasized-box"
 import NetworkErrorable from "@/components/network-errorable"
-import { fetchGithubProjectStat, fetchProjectList } from "@/data/api"
+import { fetchGithubProjectStat, wrappedGet } from "@/data/api"
+import { backendEndpoint } from "@/data/backend"
+import { ProjectData } from "@/data/model"
 
 export default async function Projects() {
-    const projects = await fetchProjectList()
+    const projects = await wrappedGet<ProjectData[]>(backendEndpoint("/projects.json"))
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">

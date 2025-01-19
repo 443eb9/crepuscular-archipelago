@@ -13,13 +13,14 @@ import Text from "@/components/text"
 import { wrappedGet } from "@/data/api"
 import NetworkErrorable from "@/components/network-errorable"
 import Markdown from "@/components/markdown"
+import { backendEndpoint } from "@/data/backend"
 
 export const metadata: Metadata = {
     title: "About - Crepuscular Archipelago",
 }
 
 export default async function Page() {
-    const selfIntro = await wrappedGet<string>("http://localhost:3000/self-intro.md")
+    const selfIntro = await wrappedGet<string>(backendEndpoint("/self-intro.md"))
 
     return (
         <main>
