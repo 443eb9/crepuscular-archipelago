@@ -9,11 +9,11 @@ import { QueryParams, queryParamsToSearchParams } from "@/data/search-param-util
 import Link from "next/link"
 
 export default function Tag({
-    tag, hideAmount, params
+    tag, hideAmount, params, pathnameOverride
 }: Readonly<
-    { tag: TagData, hideAmount?: boolean, params: QueryParams }
+    { tag: TagData, hideAmount?: boolean, params: QueryParams, pathnameOverride?: string }
 >) {
-    const pathname = usePathname()
+    const pathname = pathnameOverride ?? usePathname()
     const paramsAfterClick = {
         ...params,
         tags: params.tags ^ (1 << tag.id),

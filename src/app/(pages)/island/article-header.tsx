@@ -24,7 +24,7 @@ export default function ArticleHeader({ island, params }: { island: IslandMeta, 
                     <h2 className="font-sh-serif font-bold italic text-md mb-1">{island.subtitle}</h2>
                 </div>
                 <div className="flex gap-1">
-                    {island.tags.map((tag) => <Tag tag={tag} key={tag.id} params={params}></Tag>)}
+                    {island.tags.map((tag) => <Tag tag={tag} key={tag.id} params={params} pathnameOverride="updates" />)}
                     {/* {meta.date == undefined && <SpTag content="WIP"></SpTag>}
                     {!meta.is_original && <SpTag content="非原创"></SpTag>} */}
                 </div>
