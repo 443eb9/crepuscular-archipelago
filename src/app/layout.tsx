@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
-import "./globals.css";
-import { ThemeProvider } from "next-themes";
+import { ReactNode } from "react"
+import "./globals.css"
+import { ThemeProvider } from "next-themes"
 
 export const revalidate = 600
 

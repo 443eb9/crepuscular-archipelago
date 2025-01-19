@@ -3,16 +3,16 @@
 import OutlinedBox from "@/components/outlined-box"
 import { IslandMeta } from "@/data/model"
 import { useEffect, useRef, useState } from "react"
-import CardHeader from "./card/card-header"
+import CardHeader from "./card-header"
 import clsx from "clsx"
-import CardBody from "./card/card-body"
+import CardBody from "./card-body"
 import Text from "@/components/text"
-import CardFooter from "./card/card-footer"
+import CardFooter from "./card-footer"
 import OutlinedButton from "@/components/outlined-button"
 import Link from "next/link"
 import { QueryParams, queryParamsToSearchParams } from "@/data/search-param-util"
 
-export default function IslandCard({ island, content, params }: { island: IslandMeta, content?: string, params: QueryParams }) {
+export default function IslandCard({ island, content, params, noLink }: { island: IslandMeta, content?: string, params: QueryParams, noLink?: boolean }) {
     const container = useRef<HTMLDivElement>(null)
     const [expandState, setExpandState] = useState<boolean | undefined>()
 
@@ -62,7 +62,7 @@ export default function IslandCard({ island, content, params }: { island: Island
 
     switch (island.ty) {
         case "article":
-            return <Link href={`/island?id=${island.id}&${queryParamsToSearchParams(params)}`}><CardMain /></Link>
+            if (!noLink) { return <Link href={`/island?id=${island.id}&${queryParamsToSearchParams(params)}`}><CardMain /></Link> }
         case "achievement":
         case "note":
             return <CardMain />

@@ -7,7 +7,7 @@ import { Vector2 } from "three"
 import { motion, useMotionValue } from "motion/react"
 import OutlinedBox from "@/components/outlined-box"
 import Text from "@/components/text"
-import IslandCard from "../../components/island-card"
+import IslandCard from "../../components/card/island-card"
 import { fetchIsland } from "@/data/api"
 import { islandGridContext, visitingIslandContext } from "./islands-map"
 import clsx from "clsx"
@@ -102,7 +102,7 @@ export default function IslandFloatingInfo({ regionId, island, center, params }:
                                 }
                             }}
                         >
-                            <IslandCard island={island} content={islandContent} params={params} />
+                            <IslandCard island={island} content={islandContent} params={params} noLink />
                         </div>
                         : <OutlinedBox className="p-2 flex items-center gap-2">
                             <Text className="font-bender font-bold text-2xl" noFont>#{island.id}</Text>
