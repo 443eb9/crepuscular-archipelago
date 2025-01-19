@@ -1,5 +1,3 @@
-"use client"
-
 import Text from "@/components/text"
 import Tag from "@/components/tag"
 import EndpointDottedSegment from "@/components/decos/endpoint-dotted-segment"
@@ -8,12 +6,9 @@ import OutlinedButton from "@/components/outlined-button"
 import { TagData } from "@/data/model"
 import Toggle from "@/components/toggle"
 import RadioButtonGroup from "@/components/radio-button-group"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 
 export default function BlogInfo({ params, allTags }: { params: QueryParams, allTags: TagData[] }) {
-    const router = useRouter()
-
     return (
         <div className="flex flex-col gap-4 p-2">
             <div className="flex flex-col">

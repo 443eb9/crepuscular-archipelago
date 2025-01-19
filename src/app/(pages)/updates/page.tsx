@@ -5,8 +5,8 @@ import BlogInfo from "./blog-info"
 import NetworkErrorable from "@/components/network-errorable"
 import ContentWrapper from "@/components/content-wrapper"
 import OutlinedBox from "@/components/outlined-box"
-import IslandCard from "../(islandsView)/island-card"
-import Pagination from "../(islandsView)/pagination"
+import IslandCard from "../../../components/island-card"
+import Pagination from "../../../components/pagination"
 import Link from "next/link"
 import Text from "@/components/text"
 import { processQueryParams, RawSearchParams } from "@/data/search-param-util"
@@ -62,7 +62,7 @@ export default async function Page(props: { searchParams: Promise<RawSearchParam
                             {data =>
                                 data.count > 0 &&
                                 <OutlinedBox className="flex gap-2 py-2 border-x-0 border-dashed">
-                                    <Pagination total={Math.ceil(data.count / queryParams.len)} current={queryParams.page} buttonSize={48} />
+                                    <Pagination total={Math.ceil(data.count / queryParams.len)} current={queryParams.page} buttonSize={48} params={queryParams} />
                                 </OutlinedBox>
                             }
                         </NetworkErrorable>

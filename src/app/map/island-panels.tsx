@@ -1,7 +1,7 @@
 "use client"
 
 import OutlinedBox from "@/components/outlined-box"
-import Pagination from "../(pages)/(islandsView)/pagination"
+import Pagination from "../../components/pagination"
 import BlogInfo from "../(pages)/updates/blog-info"
 import { TagData } from "@/data/model"
 import Text from "@/components/text"
@@ -28,7 +28,7 @@ export default function IslandPanels({
                 <OutlinedBox className="flex flex-col gap-2 p-2 backdrop-blur-md pointer-events-auto">
                     {
                         totalPages > 0
-                            ? <Pagination total={totalPages} current={currentPage} buttonSize={36} />
+                            ? <Pagination total={totalPages} current={currentPage} buttonSize={36} params={params} />
                             : <Text className="font-bender font-bold">Void</Text>
                     }
                 </OutlinedBox>
