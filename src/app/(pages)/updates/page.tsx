@@ -42,17 +42,14 @@ export default async function Page(props: { searchParams: Promise<RawSearchParam
                                             : <Suspense>
                                                 {
                                                     Promise.all(data.reverse().map(async (island, i) => {
-                                                        const href = `/island?id=${island.id}&${params}`
                                                         switch (island.ty) {
                                                             case "article":
-                                                                return <Link href={href}>
-                                                                    <IslandCard island={island} key={i} />
-                                                                </Link>
+                                                                return <IslandCard island={island} key={i} params={queryParams} />
                                                             case "achievement":
-                                                                return <IslandCard island={island} key={i} />
+                                                                return <IslandCard island={island} key={i} params={queryParams} />
                                                             case "note":
                                                                 return <NetworkErrorable resp={await fetchIsland(island.id)}>
-                                                                    {content => <Link href={href} target="_blank"><IslandCard island={island} key={i} content={content.content} /></Link>}
+                                                                    {content => <IslandCard island={island} key={i} content={content.content} params={queryParams} />}
                                                                 </NetworkErrorable>
                                                         }
                                                     }))
