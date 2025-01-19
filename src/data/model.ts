@@ -58,11 +58,17 @@ export type MemorizeForm = {
     ip: string,
 }
 
+export type FriendSelfIntro = {
+    expression: string,
+    content: string,
+}
+
 export type LinkExchangeData = {
     avatar: string,
     name: string,
     link: string,
     message: string,
+    selfIntro?: FriendSelfIntro[],
 }
 
 export type ProjectData = {
