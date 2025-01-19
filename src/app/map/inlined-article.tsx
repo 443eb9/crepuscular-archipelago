@@ -9,6 +9,7 @@ import { IoArrowForwardOutline, IoChevronDownOutline, IoChevronUpOutline, IoClos
 import { useContext, useState } from "react";
 import { visitingIslandContext } from "./islands-map";
 import Link from "next/link";
+import Text from "@/components/text";
 
 export default function InlinedArticle({ meta, content, params }: { meta: IslandMeta, content: string, params: URLSearchParams }) {
     const [headerExpanded, setHeaderExpanded] = useState(true)
@@ -20,7 +21,14 @@ export default function InlinedArticle({ meta, content, params }: { meta: Island
                 <div className="flex grow">
                     {headerExpanded && <ArticleHeader island={meta} params={params} />}
                 </div>
-                <div className="flex justify-end">
+                <div className="flex justify-between">
+                    {
+                        headerExpanded
+                            ? <div></div>
+                            : <div className="flex items-center pl-4">
+                                <Text elem="h1" className="text-lg">{meta.title}</Text>
+                            </div>
+                    }
                     <div className="flex gap-2 m-2">
                         <OutlinedButton>
                             <Link

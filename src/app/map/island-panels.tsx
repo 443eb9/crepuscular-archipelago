@@ -41,7 +41,7 @@ export default function IslandPanels({
             {
                 visitingIsland?.value &&
                 <div className="w-full h-full flex justify-center items-center pointer-events-auto">
-                    <div className="backdrop-blur-md w-[95%] h-[95%] pointer-events-auto">
+                    <div className="z-[100] w-[95%] h-[95%] pointer-events-auto bg-light-background dark:bg-dark-background">
                         <InlinedArticle
                             meta={visitingIsland.value.meta}
                             content={visitingIsland.value.content.content}
