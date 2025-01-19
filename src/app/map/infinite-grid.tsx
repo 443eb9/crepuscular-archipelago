@@ -15,6 +15,7 @@ const fragment = `
         float maxValidNoiseValue;
         sampler2D noise;
 
+        vec3 backgroundColor;
         vec3 lineColor;
         vec3 fillColor;
         vec3 unfocusColor;
@@ -69,7 +70,7 @@ const fragment = `
         } else if (state == UNFOCUSED_ISLAND) {
             return params.unfocusColor * params.fillColor;
         } else {
-            return vec3(0.0);
+            return params.backgroundColor;
         }
     }
 
@@ -106,13 +107,14 @@ const fragment = `
         vec2 dotted = mod(offset + gap * 0.5, gap * 2.0);
 
         if (all(lessThan(dotted, vec2(gap)))) {
-            return noise * params.waveIntensity * params.waveColor;
+            vec3 waveColor = params.waveIntensity * params.waveColor;
+            return mix(waveColor, params.backgroundColor, 1.0 - noise);
         }
-        return vec3(0.0);
+        return params.backgroundColor;
     }
 
     vec3 getPixelColor(vec2 pixel) {
-        vec3 color;
+        vec3 color = params.backgroundColor;
 
         vec2 offset = mod(pixel + params.thickness * params.scale * 0.5, params.cellSize);
         vec2 grid = floor(pixel / params.cellSize);
@@ -153,6 +155,7 @@ const fragment = `
 `
 
 export type InfiniteGridParams = {
+    backgroundColor: Color,
     lineColor: Color,
     fillColor: Color;
     unfocusColor: Color,
@@ -175,6 +178,7 @@ export type InfiniteGridParams = {
 }
 
 export type InfiniteGridUniforms = {
+    backgroundColor: Color,
     canvasSize: Vector2,
     translation: Vector2,
     focusingValue: number,

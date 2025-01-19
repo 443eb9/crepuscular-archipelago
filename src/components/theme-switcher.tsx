@@ -14,17 +14,17 @@ export default function ThemeSwither({ className }: { className?: string }) {
         return null
     }
 
-    if (resolvedTheme == 'light') {
+    if (resolvedTheme == "light") {
         return (
-            <button className={className} onClick={() => { setTheme('dark') }} >
+            <button className={className} onClick={() => { setTheme("dark") }} >
                 <IoSunnySharp className="text-4xl"></IoSunnySharp>
             </button>
         )
     }
 
-    if (resolvedTheme == 'dark') {
+    if (resolvedTheme == "dark") {
         return (
-            <button className={className} onClick={() => { setTheme('light') }} >
+            <button className={className} onClick={() => { setTheme("light") }} >
                 <IoMoonSharp className="text-4xl"></IoMoonSharp>
             </button>
         )

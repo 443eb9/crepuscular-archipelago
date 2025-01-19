@@ -9,6 +9,7 @@ import { HTMLAttributes, useContext, useEffect, useRef, useState } from "react";
 import { Color, NearestFilter, Texture, TextureLoader } from "three";
 import { GridSettings } from "./islands-grid";
 import { islandGridContext } from "./islands-map";
+import { useTheme } from "next-themes";
 
 export default function BgCanvas({
     onReady, mapPage, maxValidNoiseValue, ...props
@@ -19,20 +20,26 @@ export default function BgCanvas({
     const [colors, setColors] = useState<{
         contrastColor: Color,
         neutralColor: Color,
+        backgroundColor: Color,
     } | undefined>()
     const islandGrid = useContext(islandGridContext)
     const [noise, setNoise] = useState<Texture | undefined>()
     const [updateFlag, setUpdateFlag] = useState(false)
+    const { resolvedTheme } = useTheme()
 
     useEffect(() => {
-        if (resolverRef.current) {
-            const style = window.getComputedStyle(resolverRef.current)
-            setColors({
-                contrastColor: new Color(style.borderColor),
-                neutralColor: new Color(style.backgroundColor),
-            })
-        }
-    }, [])
+        // TODO not elegant, although works
+        setTimeout(() => {
+            if (resolverRef.current) {
+                const style = window.getComputedStyle(resolverRef.current)
+                setColors({
+                    contrastColor: new Color(style.borderLeftColor),
+                    neutralColor: new Color(style.backgroundColor),
+                    backgroundColor: new Color(style.borderRightColor),
+                })
+            }
+        }, 100)
+    }, [resolvedTheme])
 
     useEffect(() => {
         const resizeHandler = () => {
@@ -52,11 +59,14 @@ export default function BgCanvas({
         setNoise(noise)
     }, [mapPage])
 
-    const ColorResolver = () =>
-        <div
-            ref={resolverRef}
-            className="bg-light-contrast dark:bg-dark-contrast border-light-dark-neutral"
-        />
+    const ColorResolver = () => {
+        return (
+            <div
+                ref={resolverRef}
+                className="bg-light-contrast dark:bg-dark-contrast border-l-light-dark-neutral border-r-light-background dark:border-r-dark-background"
+            />
+        )
+    }
 
     const CanvasStateTracker = () => {
         const three = useThree()
@@ -88,6 +98,7 @@ export default function BgCanvas({
                 <EffectComposer>
                     <InfiniteGrid
                         params={{
+                            backgroundColor: colors.backgroundColor,
                             lineColor: new Color(0.1, 0.1, 0.1),
                             fillColor: colors.neutralColor,
                             unfocusColor: new Color("#888888"),

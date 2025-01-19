@@ -1,8 +1,8 @@
-import ContentWrapper from "@/components/content-wrapper";
-import GlobalNavBar from "./global-nav-bar";
-import Footer from "@/components/footer";
-import EmphasizedBox from "@/components/decos/emphasized-box";
-import ThemeSwitcher from "./theme-switcher";
+import ContentWrapper from "@/components/content-wrapper"
+import GlobalNavBar from "./global-nav-bar"
+import Footer from "@/components/footer"
+import EmphasizedBox from "@/components/decos/emphasized-box"
+import ThemeSwitcher from "@/components/theme-switcher"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (

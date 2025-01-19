@@ -12,7 +12,8 @@ export default function Text({
         {
             ...props,
             className: `
-                ${!noFont ? elem && elem[0] == "h" ? "font-sh-serif font-bold" : "font-sh-sans" : ""}
+                ${!noFont ? elem && elem[0] == "h" ? "font-sh-serif" : "font-sh-sans" : ""}
+                ${elem && elem[0] == "h" ? "font-bold" : ""}
                 ${props.className}
             `
         },

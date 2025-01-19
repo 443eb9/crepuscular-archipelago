@@ -87,24 +87,24 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
                         ? <div
                             className={clsx("absolute w-[500px] bg-light-background dark:bg-dark-background", { "cursor-pointer": island.ty == "article" })}
                             onClick={async () => {
-                                // if (visitingIsland?.value?.meta.id != island.id && island.ty == "article") {
-                                //     const content = await fetchIsland(island.id)
-                                //     if (content.ok) {
-                                //         visitingIsland?.setter({
-                                //             meta: island,
-                                //             content: content.data,
-                                //         })
-                                //     }
+                                if (visitingIsland?.value?.meta.id != island.id && island.ty == "article") {
+                                    const content = await fetchIsland(island.id)
+                                    if (content.ok) {
+                                        visitingIsland?.setter({
+                                            meta: island,
+                                            content: content.data,
+                                        })
+                                    }
 
-                                //     islandGrid.focusingRegionValue.value = 1
-                                //     islandGrid.focusingRegionId.value = null
-                                // }
+                                    islandGrid.focusingRegionValue.value = 1
+                                    islandGrid.focusingRegionId.value = null
+                                }
                             }}
                         >
                             <IslandCard island={island} content={islandContent} />
                         </div>
                         : <OutlinedBox className="p-2 flex items-center gap-2">
-                            <Text className="font-bender font-bold text-2xl mix-blend-difference" noFont>#{island.id}</Text>
+                            <Text className="font-bender font-bold text-2xl" noFont>#{island.id}</Text>
                             <Text className="font-sh-sans">{island.title}</Text>
                         </OutlinedBox>
             }

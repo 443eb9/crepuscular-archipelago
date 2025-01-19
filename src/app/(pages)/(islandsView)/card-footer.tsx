@@ -3,6 +3,7 @@ import { TbClockQuestion } from "react-icons/tb"
 import { FaClock } from "react-icons/fa6"
 import Tag from "@/components/tag"
 import { useSearchParams } from "next/navigation"
+import Text from "@/components/text"
 
 export default function CardFooter({ island }: { island: IslandMeta }) {
     const searchParams = new URLSearchParams(useSearchParams())
@@ -29,10 +30,10 @@ export default function CardFooter({ island }: { island: IslandMeta }) {
                                 <div className="font-bender">Future</div>
                             </div>
                             : <div className="flex items-center gap-1">
-                                <FaClock></FaClock>
-                                <div className="font-bender" suppressHydrationWarning>
+                                <FaClock />
+                                <Text className="font-bender" suppressHydrationWarning>
                                     {(new Date(island.date)).toLocaleDateString()}
-                                </div>
+                                </Text>
                             </div>
                     }
                 </div>

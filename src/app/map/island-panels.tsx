@@ -11,6 +11,7 @@ import { visitingIslandContext } from "./islands-map";
 import { useSearchParams } from "next/navigation";
 import InlinedArticle from "./inlined-article";
 import NavButtons from "../(pages)/nav-buttons";
+import ThemeSwither from "@/components/theme-switcher";
 
 export default function IslandPanels({
     totalPages, currentPage, queryParams, allTags
@@ -22,13 +23,18 @@ export default function IslandPanels({
 
     return (
         <div className="absolute z-50 w-full h-full pointer-events-none">
-            <OutlinedBox className="absolute flex flex-col gap-2 p-2 left-2 top-2 backdrop-blur-md pointer-events-auto">
-                {
-                    totalPages > 0
-                        ? <Pagination total={totalPages} current={currentPage} />
-                        : <Text className="font-bender font-bold">Void</Text>
-                }
-            </OutlinedBox>
+            <div className="absolute left-2 top-2 flex flex-col gap-2">
+                <OutlinedBox className="pointer-events-auto backdrop-blur aspect-square flex items-center justify-center">
+                    <ThemeSwither />
+                </OutlinedBox>
+                <OutlinedBox className="flex flex-col gap-2 p-2 backdrop-blur-md pointer-events-auto">
+                    {
+                        totalPages > 0
+                            ? <Pagination total={totalPages} current={currentPage} buttonSize={36} />
+                            : <Text className="font-bender font-bold">Void</Text>
+                    }
+                </OutlinedBox>
+            </div>
             <OutlinedBox className="absolute right-2 top-2 w-72 backdrop-blur-md pointer-events-auto">
                 <BlogInfo queryParams={queryParams} allTags={allTags} />
             </OutlinedBox>
