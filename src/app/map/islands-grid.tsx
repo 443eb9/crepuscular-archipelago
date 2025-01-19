@@ -8,6 +8,7 @@ import { fetchIslandAt } from "@/data/api"
 import IslandFloatingInfo from "./island-floating-info"
 import Text from "@/components/text"
 import { islandGridContext } from "./islands-map"
+import { QueryParams } from "@/data/search-param-util"
 
 export const GridSettings = {
     cellSize: 40,
@@ -22,9 +23,9 @@ export const GridSettings = {
 }
 
 export default function IslandsGrid({
-    islands, islandMapMeta, regionCenters, currentPage
+    islands, islandMapMeta, regionCenters, params
 }: {
-    islands: IslandMeta[], islandMapMeta: IslandMapMeta, regionCenters: IslandMapRegionCenters, currentPage: number
+    islands: IslandMeta[], islandMapMeta: IslandMapMeta, regionCenters: IslandMapRegionCenters, params: QueryParams
 }) {
     const [ready, setReady] = useState(false)
     const islandGrid = useContext(islandGridContext)
@@ -67,12 +68,13 @@ export default function IslandsGrid({
     return (
         <div className="overflow-hidden w-[100vw] h-[100vh]">
             <div
-                className="w-[100vw] h-[100vh] absolute z-[10000] flex justify-center items-center"
+                className="w-[100vw] h-[100vh] absolute z-[10000] flex flex-col justify-center items-center"
                 style={{
                     display: ready ? "none" : undefined,
                 }}
             >
                 <Text className="font-bender font-bold text-[80px] italic" noFont>Loading Canvas...</Text>
+                <Text className="font-bold text-[20px]" noFont>屏幕会突然变白一下，请注意护眼！</Text>
             </div>
             <div className="absolute z-10 w-[100vw] h-[100vh] overflow-hidden pointer-events-none">
                 {
@@ -85,13 +87,14 @@ export default function IslandsGrid({
                                 regionId={index}
                                 island={island}
                                 center={new Vector2(center[0], center[1])}
+                                params={params}
                             />
                         )
                     })
                 }
             </div>
             <BgCanvas
-                mapPage={currentPage}
+                mapPage={params.page}
                 maxValidNoiseValue={maxValidNoiseValue}
                 onContextMenu={ev => ev.preventDefault()}
                 onMouseDown={ev => {
@@ -121,7 +124,7 @@ export default function IslandsGrid({
                         .multiplyScalar(islandGrid.canvasTransform.scale)
                         .add(islandGrid.canvasTransform.translation.clone())
                     const grid = px.divideScalar(GridSettings.cellSize).floor()
-                    const query = await fetchIslandAt(currentPage, grid.x, grid.y - 1)
+                    const query = await fetchIslandAt(params.page, grid.x, grid.y - 1)
                     let result: { regionId: number | null; noiseValue: number }
                     if (query.ok && query.data.result && query.data.result.noiseValue < maxValidNoiseValue) {
                         result = { ...query.data.result }

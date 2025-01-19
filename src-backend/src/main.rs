@@ -55,7 +55,6 @@ async fn main() -> std::io::Result<()> {
             .service(http::get_island_map_noise_texture)
             .service(http::get_island_map_centers)
             .service(http::get_island_at)
-            .service(http::get_projects_list)
             .service(http::submit_memorize)
             .service(http::download_memorize_db)
             .service(http::download_memorize_csv)

@@ -1,7 +1,7 @@
 import { fetchAllTags, fetchIslandCount, fetchIslandMapMeta, fetchIslandMapRegionCenters, fetchIslandsMeta } from "@/data/api"
-import { processQueryParams, RawSearchParams } from "@/data/utils"
 import NetworkErrorable from "@/components/network-errorable"
 import IslandsMap from "./islands-map"
+import { processQueryParams, RawSearchParams } from "@/data/search-param-util"
 
 export default async function Page({ searchParams }: { searchParams: Promise<RawSearchParams> }) {
     const params = processQueryParams(await searchParams)

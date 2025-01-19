@@ -1,14 +1,13 @@
-import { Suspense } from "react"
 import { Metadata } from "next"
 import { fetchIsland, fetchIslandMeta } from "@/data/api"
 import ContentWrapper from "@/components/content-wrapper"
 import ArticleContainer from "./article-container"
-import { RawSearchParams } from "@/data/utils"
 import NetworkErrorable from "@/components/network-errorable"
+import { processQueryParams, RawSearchParams } from "@/data/search-param-util"
 
-export default async function Page(props: { searchParams?: Promise<RawSearchParams & { id: string }> }) {
-    const searchParams = await props.searchParams
-    const id = Number.parseInt(searchParams?.id ?? "-1")
+export default async function Page(props: { searchParams: Promise<RawSearchParams> }) {
+    const params = processQueryParams(await props.searchParams)
+    const id = params.id ?? -1
     const meta = await fetchIslandMeta(id)
     const content = await fetchIsland(id)
 
@@ -22,7 +21,7 @@ export default async function Page(props: { searchParams?: Promise<RawSearchPara
                                 <ArticleContainer
                                     meta={meta}
                                     content={content.content}
-                                    params={new URLSearchParams(searchParams)}
+                                    params={params}
                                 />
                         }
                     </NetworkErrorable>

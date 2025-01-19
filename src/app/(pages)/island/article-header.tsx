@@ -4,10 +4,9 @@ import Link from "next/link"
 import { TbClockQuestion } from "react-icons/tb"
 import Tag from "@/components/tag"
 import DiagLines from "@/components/decos/diag-lines"
+import { QueryParams } from "@/data/search-param-util"
 
-export default function ArticleHeader({ island, params }: { island: IslandMeta, params: URLSearchParams }) {
-    params.delete("id")
-
+export default function ArticleHeader({ island, params }: { island: IslandMeta, params: QueryParams }) {
     return (
         <div className="flex justify-between p-5 w-full">
             <div className="flex flex-col gap-1 w-full">
@@ -25,7 +24,7 @@ export default function ArticleHeader({ island, params }: { island: IslandMeta, 
                     <h2 className="font-sh-serif font-bold italic text-md mb-1">{island.subtitle}</h2>
                 </div>
                 <div className="flex gap-1">
-                    {island.tags.map((tag) => <Tag tag={tag} key={tag.id} searchParams={params}></Tag>)}
+                    {island.tags.map((tag) => <Tag tag={tag} key={tag.id} params={params}></Tag>)}
                     {/* {meta.date == undefined && <SpTag content="WIP"></SpTag>}
                     {!meta.is_original && <SpTag content="非原创"></SpTag>} */}
                 </div>

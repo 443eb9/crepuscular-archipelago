@@ -1,39 +1,40 @@
 "use client"
 
-import Text from "./text";
-import { useRouter } from "next/navigation";
-import { searchParamBitXor } from "@/data/search-param-util";
-import { TagData } from "@/data/model";
-import clsx from "clsx";
-import OutlinedButton from "./outlined-button";
-import { usePathname } from "next/navigation";
+import Text from "./text"
+import { TagData } from "@/data/model"
+import clsx from "clsx"
+import OutlinedButton from "./outlined-button"
+import { usePathname } from "next/navigation"
+import { QueryParams, queryParamsToSearchParams } from "@/data/search-param-util"
+import Link from "next/link"
 
 export default function Tag({
-    tag, hideAmount, searchParams
+    tag, hideAmount, params
 }: Readonly<
-    { tag: TagData, hideAmount?: boolean, searchParams: URLSearchParams }
+    { tag: TagData, hideAmount?: boolean, params: QueryParams }
 >) {
-    const router = useRouter()
-    const params = new URLSearchParams(searchParams)
     const pathname = usePathname()
-    const curTags = parseInt(params.get("tags") ?? "0")
-    const paramsAfterClick = searchParamBitXor(tag.id, "tags", searchParams)
+    const paramsAfterClick = {
+        ...params,
+        tags: params.tags ^ (1 << tag.id),
+    }
 
     return (
-        <OutlinedButton
-            onClick={() => router.replace(`${pathname}?${paramsAfterClick}`)}
-            className={clsx(`flex items-baseline gap-1 p-1`,
+        <Link href={`${pathname}?${queryParamsToSearchParams(paramsAfterClick).toString()}`}>
+            <OutlinedButton
+                className={clsx(`flex items-baseline gap-1 p-1`,
+                    {
+                        "bg-light-contrast dark:bg-dark-contrast text-dark-contrast dark:text-light-contrast":
+                            (params.tags >> tag.id & 1) == 1,
+                    }
+                )}
+            >
+                <Text className="text-sm">{tag.name}</Text>
                 {
-                    "bg-light-contrast dark:bg-dark-contrast text-dark-contrast dark:text-light-contrast":
-                        (curTags >> tag.id & 1) == 1,
+                    !hideAmount &&
+                    <Text className="font-neon text-sm">{tag.amount}</Text>
                 }
-            )}
-        >
-            <Text className="text-sm">{tag.name}</Text>
-            {
-                !hideAmount &&
-                <Text className="font-neon text-sm">{tag.amount}</Text>
-            }
-        </OutlinedButton>
+            </OutlinedButton>
+        </Link>
     )
 }

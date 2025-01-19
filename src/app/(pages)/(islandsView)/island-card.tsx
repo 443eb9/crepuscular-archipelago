@@ -1,16 +1,16 @@
 "use client"
 
-import OutlinedBox from "@/components/outlined-box";
-import { IslandMeta } from "@/data/model";
-import { useEffect, useRef, useState } from "react";
-import CardHeader from "./card-header";
-import clsx from "clsx";
-import CardBody from "./card-body";
-import Text from "@/components/text";
-import CardFooter from "./card-footer";
-import OutlinedButton from "@/components/outlined-button";
-import { QueryParams, queryParamsToSearchParams } from "@/data/utils";
-import Link from "next/link";
+import OutlinedBox from "@/components/outlined-box"
+import { IslandMeta } from "@/data/model"
+import { useEffect, useRef, useState } from "react"
+import CardHeader from "./card-header"
+import clsx from "clsx"
+import CardBody from "./card-body"
+import Text from "@/components/text"
+import CardFooter from "./card-footer"
+import OutlinedButton from "@/components/outlined-button"
+import Link from "next/link"
+import { QueryParams, queryParamsToSearchParams } from "@/data/search-param-util"
 
 export default function IslandCard({ island, content, params }: { island: IslandMeta, content?: string, params: QueryParams }) {
     const container = useRef<HTMLDivElement>(null)
@@ -21,9 +21,11 @@ export default function IslandCard({ island, content, params }: { island: Island
         setTimeout(() => {
             if (container.current && container.current.clientHeight > 100 && island.ty == "note") {
                 setExpandState(false)
+            } else {
+                setExpandState(undefined)
             }
         }, 100)
-    }, [])
+    }, [island.id])
 
     const CardMain = () => {
         return (
@@ -52,7 +54,7 @@ export default function IslandCard({ island, content, params }: { island: Island
                             }
                         </OutlinedButton>
                     </div>
-                    <CardFooter island={island} />
+                    <CardFooter island={island} params={params} />
                 </OutlinedBox>
             </div>
         )

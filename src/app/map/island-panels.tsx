@@ -1,24 +1,22 @@
 "use client"
 
-import OutlinedBox from "@/components/outlined-box";
-import Pagination from "../(pages)/(islandsView)/pagination";
-import BlogInfo from "../(pages)/updates/blog-info";
-import { TagData } from "@/data/model";
-import { QueryParams } from "@/data/utils";
-import Text from "@/components/text";
-import { useContext } from "react";
-import { visitingIslandContext } from "./islands-map";
-import { useSearchParams } from "next/navigation";
-import InlinedArticle from "./inlined-article";
-import NavButtons from "../(pages)/nav-buttons";
-import ThemeSwither from "@/components/theme-switcher";
+import OutlinedBox from "@/components/outlined-box"
+import Pagination from "../(pages)/(islandsView)/pagination"
+import BlogInfo from "../(pages)/updates/blog-info"
+import { TagData } from "@/data/model"
+import Text from "@/components/text"
+import { useContext } from "react"
+import { visitingIslandContext } from "./islands-map"
+import InlinedArticle from "./inlined-article"
+import NavButtons from "../(pages)/nav-buttons"
+import ThemeSwither from "@/components/theme-switcher"
+import { QueryParams } from "@/data/search-param-util"
 
 export default function IslandPanels({
-    totalPages, currentPage, queryParams, allTags
+    totalPages, currentPage, params, allTags
 }: {
-    totalPages: number, currentPage: number, queryParams: QueryParams, allTags: TagData[]
+    totalPages: number, currentPage: number, params: QueryParams, allTags: TagData[]
 }) {
-    const searchParams = new URLSearchParams(useSearchParams())
     const visitingIsland = useContext(visitingIslandContext)
 
     return (
@@ -36,7 +34,7 @@ export default function IslandPanels({
                 </OutlinedBox>
             </div>
             <OutlinedBox className="absolute right-2 top-2 w-72 backdrop-blur-md pointer-events-auto">
-                <BlogInfo queryParams={queryParams} allTags={allTags} />
+                <BlogInfo params={params} allTags={allTags} />
             </OutlinedBox>
             {
                 visitingIsland?.value &&
@@ -45,7 +43,7 @@ export default function IslandPanels({
                         <InlinedArticle
                             meta={visitingIsland.value.meta}
                             content={visitingIsland.value.content.content}
-                            params={searchParams}
+                            params={params}
                         />
                     </div>
                 </div>

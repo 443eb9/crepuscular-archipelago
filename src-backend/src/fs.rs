@@ -7,7 +7,7 @@ use sqlx::{query, sqlite::SqliteConnectOptions, SqlitePool};
 
 use crate::{
     env::{get_island_cache_root, get_island_storage_root},
-    model::{IslandMeta, IslandMetaTagged, IslandType, Project, TagData},
+    model::{IslandMeta, IslandMetaTagged, IslandType, TagData},
 };
 
 pub async fn init_cache() -> SqlitePool {

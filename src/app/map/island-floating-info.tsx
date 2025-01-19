@@ -1,18 +1,19 @@
 "use client"
 
-import { IslandMeta } from "@/data/model";
-import { useContext, useEffect, useState } from "react";
-import { GridSettings } from "./islands-grid";
-import { Vector2 } from "three";
-import { motion, useMotionValue } from "motion/react";
-import OutlinedBox from "@/components/outlined-box";
-import Text from "@/components/text";
-import IslandCard from "../(pages)/(islandsView)/island-card";
-import { fetchIsland } from "@/data/api";
-import { islandGridContext, visitingIslandContext } from "./islands-map";
-import clsx from "clsx";
+import { IslandMeta } from "@/data/model"
+import { useContext, useEffect, useState } from "react"
+import { GridSettings } from "./islands-grid"
+import { Vector2 } from "three"
+import { motion, useMotionValue } from "motion/react"
+import OutlinedBox from "@/components/outlined-box"
+import Text from "@/components/text"
+import IslandCard from "../(pages)/(islandsView)/island-card"
+import { fetchIsland } from "@/data/api"
+import { islandGridContext, visitingIslandContext } from "./islands-map"
+import clsx from "clsx"
+import { QueryParams } from "@/data/search-param-util"
 
-export default function IslandFloatingInfo({ regionId, island, center }: { regionId: number, island: IslandMeta, center: Vector2 }) {
+export default function IslandFloatingInfo({ regionId, island, center, params }: { regionId: number, island: IslandMeta, center: Vector2, params: QueryParams }) {
     const { canvasSize, canvasTransform, focusingRegionId } = useContext(islandGridContext)
     const x = useMotionValue(0)
     const y = useMotionValue(0)
@@ -101,7 +102,7 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
                                 }
                             }}
                         >
-                            <IslandCard island={island} content={islandContent} />
+                            <IslandCard island={island} content={islandContent} params={params} />
                         </div>
                         : <OutlinedBox className="p-2 flex items-center gap-2">
                             <Text className="font-bender font-bold text-2xl" noFont>#{island.id}</Text>

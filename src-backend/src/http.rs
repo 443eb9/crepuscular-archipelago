@@ -15,7 +15,6 @@ use chrono::{SecondsFormat, Timelike, Utc};
 use once_cell::sync::Lazy;
 
 use crate::{
-    fs::load_projects_list,
     islands::IslandMaps,
     memorize::{self, MemorizeCoolDown},
     model::{IslandMapQueryResponse, MemorizeForm, MemorizeFormMeta},
@@ -75,11 +74,6 @@ pub async fn get_islands_meta(
 #[get("/api/get/island/{id}")]
 pub async fn get_island(pool: Data<IslandDB>, id: Path<u32>) -> impl Responder {
     sql_query_request!(query_island_content, &pool, *id)
-}
-
-#[get("/api/get/projects")]
-pub async fn get_projects_list() -> impl Responder {
-    HttpResponse::Ok().json(load_projects_list())
 }
 
 #[get("/api/get/islandMap/{page}")]

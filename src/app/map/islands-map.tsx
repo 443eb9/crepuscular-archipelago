@@ -90,14 +90,14 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
                                 <IslandPanels
                                     currentPage={props.params.page}
                                     totalPages={Math.ceil(props.totalIslands / props.islandMapMeta.perPageRegions)}
-                                    queryParams={props.params}
+                                    params={props.params}
                                     allTags={props.allTags}
                                 />
                                 <IslandsGrid
                                     islands={props.islands}
                                     islandMapMeta={props.islandMapMeta}
                                     regionCenters={props.regionCenters}
-                                    currentPage={props.params.page}
+                                    params={props.params}
                                 />
                             </>
                             : <div className="">

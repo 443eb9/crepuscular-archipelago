@@ -2,12 +2,10 @@ import { IslandMeta } from "@/data/model"
 import { TbClockQuestion } from "react-icons/tb"
 import { FaClock } from "react-icons/fa6"
 import Tag from "@/components/tag"
-import { useSearchParams } from "next/navigation"
 import Text from "@/components/text"
+import { QueryParams } from "@/data/search-param-util"
 
-export default function CardFooter({ island }: { island: IslandMeta }) {
-    const searchParams = new URLSearchParams(useSearchParams())
-
+export default function CardFooter({ island, params }: { island: IslandMeta, params: QueryParams }) {
     return (
         <div>
             <div className="flex flex-col gap-2">
@@ -16,7 +14,7 @@ export default function CardFooter({ island }: { island: IslandMeta }) {
                         <div className="flex flex-wrap items-center gap-1">
                             {
                                 island.tags.map(tag => (
-                                    <Tag tag={tag} key={tag.id} searchParams={searchParams}></Tag>
+                                    <Tag tag={tag} key={tag.id} params={params}></Tag>
                                 ))
                             }
                             {/* {island.date == undefined && <SpTag content="WIP"></SpTag>}

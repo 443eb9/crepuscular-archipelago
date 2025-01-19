@@ -3,13 +3,13 @@ import { Metadata } from "next"
 import { fetchAllTags, fetchIsland, fetchIslandCount, fetchIslandsMeta } from "@/data/api"
 import BlogInfo from "./blog-info"
 import NetworkErrorable from "@/components/network-errorable"
-import { processQueryParams, queryParamsToSearchParams, RawSearchParams } from "@/data/utils"
 import ContentWrapper from "@/components/content-wrapper"
 import OutlinedBox from "@/components/outlined-box"
 import IslandCard from "../(islandsView)/island-card"
 import Pagination from "../(islandsView)/pagination"
 import Link from "next/link"
 import Text from "@/components/text"
+import { processQueryParams, RawSearchParams } from "@/data/search-param-util"
 
 export const metadata: Metadata = {
     title: "Updates - Crepuscular Archipelago",
@@ -17,7 +17,6 @@ export const metadata: Metadata = {
 
 export default async function Page(props: { searchParams: Promise<RawSearchParams> }) {
     const queryParams = processQueryParams(await props.searchParams)
-    const params = queryParamsToSearchParams(queryParams)
 
     const islands = await fetchIslandsMeta(queryParams.page, queryParams.len, queryParams.tags, queryParams.advf)
     const total = await fetchIslandCount(queryParams.tags, queryParams.advf)
@@ -28,7 +27,7 @@ export default async function Page(props: { searchParams: Promise<RawSearchParam
             <div className="flex flex-col gap-10 pr-2 md:pr-0">
                 <aside className="block md:hidden px-5">
                     <NetworkErrorable resp={allTags}>
-                        {data => <OutlinedBox><BlogInfo queryParams={queryParams} allTags={data} /></OutlinedBox>}
+                        {data => <OutlinedBox><BlogInfo params={queryParams} allTags={data} /></OutlinedBox>}
                     </NetworkErrorable>
                 </aside>
                 <ContentWrapper className="gap-10">
@@ -74,7 +73,7 @@ export default async function Page(props: { searchParams: Promise<RawSearchParam
                                 {data =>
                                     <>
                                         <OutlinedBox>
-                                            <BlogInfo queryParams={queryParams} allTags={data} />
+                                            <BlogInfo params={queryParams} allTags={data} />
                                         </OutlinedBox>
                                         <OutlinedBox className="p-2">
                                             <Text className="italic font-bender font-bold" noFont>

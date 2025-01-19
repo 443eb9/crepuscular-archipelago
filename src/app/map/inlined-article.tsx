@@ -10,8 +10,9 @@ import { useContext, useState } from "react";
 import { visitingIslandContext } from "./islands-map";
 import Link from "next/link";
 import Text from "@/components/text";
+import { QueryParams } from "@/data/search-param-util";
 
-export default function InlinedArticle({ meta, content, params }: { meta: IslandMeta, content: string, params: URLSearchParams }) {
+export default function InlinedArticle({ meta, content, params }: { meta: IslandMeta, content: string, params: QueryParams }) {
     const [headerExpanded, setHeaderExpanded] = useState(true)
     const visitingIsland = useContext(visitingIslandContext)
 

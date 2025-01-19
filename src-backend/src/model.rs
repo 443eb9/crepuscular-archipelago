@@ -166,13 +166,6 @@ pub struct MemorizeFormMeta {
     pub ip: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Project {
-    pub owner: String,
-    pub name: String,
-}
-
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct IslandMapQueryResponse {

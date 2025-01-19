@@ -1,37 +1,56 @@
 import { ReadonlyURLSearchParams } from "next/navigation"
 
-export function searchParamBitXor(bit: number, param: string, ro: ReadonlyURLSearchParams | URLSearchParams) {
-    const params = new URLSearchParams(ro)
-    const filter = parseInt(params.get(param) ?? "0")
-    const tags = filter ^ (1 << bit)
-    params.set(param, tags.toString())
-    return params
+export type RawSearchParams = {
+    id?: string,
+    page?: string,
+    len?: string,
+    tags?: string,
+    advf?: string,
 }
 
-export function searchParamBitSet(bit: number, value: boolean, param: string, ro: ReadonlyURLSearchParams | URLSearchParams) {
-    const params = new URLSearchParams(ro)
-    const filter = parseInt(params.get(param) ?? "0")
-    const tags = value ? filter | (1 << bit) : filter & (~(1 << bit))
-    params.set(param, tags.toString())
-    return params
+export type QueryParams = {
+    id?: number,
+    page: number,
+    len: number,
+    tags: number,
+    advf: number,
 }
 
-export function searchParamBitGet(bit: number, param: string, ro: ReadonlyURLSearchParams | URLSearchParams) {
-    return (parseInt(ro.get(param) ?? "0") & (1 << bit)) != 0
+const DefaultQueryParams: QueryParams = {
+    id: undefined,
+    page: 0,
+    len: 10,
+    tags: 0,
+    advf: 0,
 }
 
-export function searchParamReset(param: Array<string>, ro: ReadonlyURLSearchParams | URLSearchParams) {
-    const params = new URLSearchParams(ro)
-    param.forEach(v => params.delete(v))
-    return params
+function extractParam<T>(params: URLSearchParams, name: string, process?: (value: string) => T): T | undefined {
+    const elem = params.get(name)
+    return elem ? process ? process(elem) : elem as T : undefined
 }
 
-export function searchParamToString(params: URLSearchParams) {
-    const arr = Array.from(params)
-    if (arr.length == 0) {
-        return ""
-    } else {
-        const s = arr.map(([k, v]) => `${k}=${v}&`).reduce((acc, cur) => acc + cur)
-        return s.substring(0, s.length - 1)
-    }
+export function searchParamsToQueryParams(params: URLSearchParams): QueryParams {
+    const id = extractParam(params, "id", parseInt)
+    const page = extractParam(params, "page", parseInt) ?? DefaultQueryParams.page
+    const len = extractParam(params, "len", parseInt) ?? DefaultQueryParams.len
+    const tags = extractParam(params, "tags", parseInt) ?? DefaultQueryParams.tags
+    const advf = extractParam(params, "advf", parseInt) ?? DefaultQueryParams.advf
+    return { id, page, len, tags, advf }
+}
+
+export function processQueryParams(params: RawSearchParams): QueryParams {
+    const id = parseInt(params?.id ?? "0")
+    const page = parseInt(params?.page ?? "0")
+    const len = parseInt(params?.len ?? "10")
+    const tags = parseInt(params?.tags ?? "0")
+    const advf = parseInt(params?.advf ?? "0")
+    return { id, page, len, tags, advf }
+}
+
+export function queryParamsToSearchParams(params: QueryParams) {
+    const defaultValues = DefaultQueryParams as { [key: string]: any }
+
+    return new URLSearchParams(Object.entries(params).map(([k, v]) => {
+        return defaultValues[k] == v ? undefined : [k, v.toString()]
+    }).filter(x => x != undefined))
 }
