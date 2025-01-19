@@ -1,6 +1,6 @@
 mkdir output
 deno i
-# deno task build
+deno task build
 cargo build --release
 mv .next output
 mv target/release/backend output
