@@ -18,7 +18,7 @@ export default function MeInfo() {
                         <div className="">443eb9@gmail.com</div>
                     </div>
                     <div className="flex mt-2">
-                        <SocialMediaButton href={"https://github.com/443eb9"}><FiGithub className="text-4xl"></FiGithub></SocialMediaButton>
+                        <SocialMediaButton href={"https://github.com/443eb9"}><FiGithub className="text-lg"></FiGithub></SocialMediaButton>
                     </div>
                 </div>
             </div>
@@ -29,7 +29,7 @@ export default function MeInfo() {
 function SocialMediaButton({ children, href }: { children: React.ReactNode, href: Url }) {
     return (
         <Link href={href}>
-            <OutlinedButton className="w-16 h-16">
+            <OutlinedButton className="w-8 aspect-square">
                 {children}
             </OutlinedButton>
         </Link>
