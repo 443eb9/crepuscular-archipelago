@@ -106,7 +106,7 @@ pub async fn query_island_count_filtered(
 
 pub async fn query_island_meta(pool: &IslandDB, id: u32) -> Result<IslandMetaTagged, Error> {
     let (meta, tags) = join!(
-        sqlx::query_as(
+        sqlx::query_as::<_,IslandMeta>(
             "SELECT id, title, subtitle, desc, ty, date, banner, is_original, is_encrypted, is_deleted FROM islands
             WHERE id = ?"
         )
@@ -115,7 +115,7 @@ pub async fn query_island_meta(pool: &IslandDB, id: u32) -> Result<IslandMetaTag
         query_island_tags(pool, id)
     );
 
-    Ok(IslandMetaTagged::new(meta?, tags?))
+    Ok(IslandMetaTagged::new(meta?.apply_deleted(), tags?))
 }
 
 pub async fn query_islands_meta(
@@ -134,7 +134,7 @@ pub async fn query_islands_meta(
         .checked_sub((page + 1) * length - 1)
         .unwrap_or_default();
 
-    let metas = sqlx::query_as(
+    let metas = sqlx::query_as::<_,IslandMeta>(
         "
             SELECT id, title, subtitle, desc, ty, date, banner, is_original, is_encrypted, is_deleted FROM islands
             JOIN island_tags ON id = island_id
@@ -157,7 +157,7 @@ pub async fn query_islands_meta(
     .zip(metas)
     .try_fold(Vec::new(), |mut acc, (tags, meta)| match tags {
         Ok(tags) => {
-            acc.push(IslandMetaTagged::new(meta, tags));
+            acc.push(IslandMetaTagged::new(meta.apply_deleted(), tags));
             Ok(acc)
         }
         Err(err) => Err(err),
@@ -304,7 +304,7 @@ pub async fn query_islands_meta_filtered(
         .zip(metas)
         .try_fold(Vec::new(), |mut acc, (tags, meta)| match tags {
             Ok(tags) => {
-                acc.push(IslandMetaTagged::new(meta, tags));
+                acc.push(IslandMetaTagged::new(meta.apply_deleted(), tags));
                 Ok(acc)
             }
             Err(err) => Err(err),

@@ -13,6 +13,7 @@
     "@react-three/fiber": "^8.17.11",
     "@react-three/postprocessing": "^2.16.6",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@types/rss": "^0.0.32",
     "@types/three": "^0.171.0",
     "axios": "^1.7.9",
     "clsx": "^2.1.1",

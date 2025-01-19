@@ -52,6 +52,20 @@ impl Default for IslandMeta {
     }
 }
 
+impl IslandMeta {
+    pub fn apply_deleted(self) -> Self {
+        if self.is_deleted {
+            Self {
+                id: self.id,
+                is_deleted: true,
+                ..Default::default()
+            }
+        } else {
+            self
+        }
+    }
+}
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct IslandMetaTagged {

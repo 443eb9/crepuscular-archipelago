@@ -16,6 +16,14 @@ export default function IslandCard({ island, content, params, noLink }: { island
     const container = useRef<HTMLDivElement>(null)
     const [expandState, setExpandState] = useState<boolean | undefined>()
 
+    if (island.isDeleted) {
+        return (
+            <OutlinedBox className="border-dashed">
+                <Text className="font-bender font-bold text-2xl px-4 py-2" noFont>Access Denied</Text>
+            </OutlinedBox>
+        )
+    }
+
     useEffect(() => {
         // TODO Image loads slow, but this solution is not elegant
         setTimeout(() => {
