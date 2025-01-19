@@ -2,6 +2,7 @@
 
 target
 cache
+output
 
 # dependencies
 /node_modules
