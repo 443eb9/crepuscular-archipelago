@@ -1,0 +1,45 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# This workflow will install Deno then run `deno lint` and `deno test`.
+# For more information see: https://github.com/denoland/setup-deno
+
+name: Build Website
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Repo
+        uses: actions/checkout@v4
+
+      - name: Install NPM Packages
+        run: npm i
+
+      - name: Build NextJs Page
+        run: npm task build
+
+      - name: Build Rust Backend
+        run: cargo build --release
+
+      - name: Pack Output
+        run: mkdir output | mv .next output | mv target/release/backend | 7z a -tzip output.zip output
+
+      - name: Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package
+          path: output.zip
