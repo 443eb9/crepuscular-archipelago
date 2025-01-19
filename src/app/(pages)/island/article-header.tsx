@@ -5,6 +5,8 @@ import { TbClockQuestion } from "react-icons/tb"
 import Tag from "@/components/tag"
 import DiagLines from "@/components/decos/diag-lines"
 import { QueryParams } from "@/data/search-param-util"
+import SpTag from "@/components/sp-tag"
+import TagsContainer from "@/components/tags-container"
 
 export default function ArticleHeader({ island, params }: { island: IslandMeta, params: QueryParams }) {
     return (
@@ -12,7 +14,7 @@ export default function ArticleHeader({ island, params }: { island: IslandMeta, 
             <div className="flex flex-col gap-1 w-full">
                 <Link
                     href={`/updates?${params.toString()}`}
-                    className="font-argon font-bold bg-dark-contrast dark:bg-light-contrast p-1"
+                    className="font-argon font-bold p-1"
                 >
                     &lt; $ cd .._
                 </Link>
@@ -23,11 +25,7 @@ export default function ArticleHeader({ island, params }: { island: IslandMeta, 
                     <h1 className="font-sh-serif text-2xl font-bold mb-1">{island.title}</h1>
                     <h2 className="font-sh-serif font-bold italic text-md mb-1">{island.subtitle}</h2>
                 </div>
-                <div className="flex gap-1">
-                    {island.tags.map((tag) => <Tag tag={tag} key={tag.id} params={params} pathnameOverride="updates" />)}
-                    {/* {meta.date == undefined && <SpTag content="WIP"></SpTag>}
-                    {!meta.is_original && <SpTag content="非原创"></SpTag>} */}
-                </div>
+                <TagsContainer island={island} params={params} />
                 {
                     island.date == undefined &&
                     <div className="text-light-contrast bg-warn">

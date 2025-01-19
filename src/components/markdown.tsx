@@ -37,12 +37,12 @@ export default function Markdown({ body }: { body: string }) {
             {
                 mediaWidth &&
                 <ReactMarkdown
-                    className={"prose prose-sm md:prose-base prose-neutral dark:prose-invert max-w-none"}
+                    className="max-w-none"
                     rehypePlugins={[rehypeRaw, rehypeKatex]}
                     remarkPlugins={[remarkGfm, remarkMath]}
                     components={{
-                        h1(props) { return <Text {...props} elem="h1" className="text-[2em] my-[0.67em]" /> },
-                        h2(props) { return <Text {...props} elem="h2" className="text-[1.5em] my-[0.83em]" /> },
+                        h1(props) { return <Text {...props} elem="h1" className="text-[2em] my-[0.3em]" /> },
+                        h2(props) { return <Text {...props} elem="h2" className="text-[1.5em] my-[0.5em]" /> },
                         h3(props) { return <Text {...props} elem="h3" className="text-[1.17em] my-[1em]" /> },
                         h4(props) { return <Text {...props} elem="h4" className="text-[1em] my-[1.33em]" /> },
                         h5(props) { return <Text {...props} elem="h5" className="text-[.83em] my-[1.67em]" /> },
@@ -72,12 +72,14 @@ export default function Markdown({ body }: { body: string }) {
                             const match = /language-(\w+)/.exec(className || '')
                             return (
                                 match ? (
-                                    <Prism
-                                        language={match[1]}
-                                        style={markdownStyle as { [key: string]: React.CSSProperties }}
-                                    >
-                                        {String(children).replace(/\n$/, '')}
-                                    </Prism>
+                                    <div className="bg-dark-background">
+                                        <Prism
+                                            language={match[1]}
+                                            style={markdownStyle as { [key: string]: React.CSSProperties }}
+                                        >
+                                            {String(children).replace(/\n$/, '')}
+                                        </Prism>
+                                    </div>
                                 ) : (
                                     <code {...rest} className={className}>
                                         {children}
@@ -94,7 +96,7 @@ export default function Markdown({ body }: { body: string }) {
                         },
                         th(props) {
                             return (
-                                <th><Text {...props} className="text-center font-semibold py-1" /></th>
+                                <th><Text {...props} className="text-center font-semibold py-1 border-light-dark-neutral border-b-[0.75px] border-dashed" /></th>
                             )
                         },
                         td(props) {
@@ -104,19 +106,28 @@ export default function Markdown({ body }: { body: string }) {
                         },
                         table(props) {
                             return (
-                                <div className="overflow-x-auto flex flex-col py-2">
-                                    <table {...props} />
+                                <div className="overflow-x-auto flex flex-col my-2 border-light-dark-neutral border-[1.5px]">
+                                    <table {...props} className="border-collapse" />
                                 </div>
                             )
                         },
                         // @ts-ignore
                         math(props) {
-                            return (
-                                <span className="overflow-x-auto overflow-y-hidden">
-                                    {/* @ts-ignore */}
-                                    <math {...props} />
-                                </span>
-                            )
+                            if (props.display == "block") {
+                                return (
+                                    <div className="w-full overflow-x-auto overflow-y-hidden">
+                                        {/* @ts-ignore */}
+                                        <math {...props} />
+                                    </div>
+                                )
+                            } else {
+                                return (
+                                    <span>
+                                        {/* @ts-ignore */}
+                                        <math {...props} />
+                                    </span>
+                                )
+                            }
                         },
                         ul(props) {
                             return <ul {...props} className="mx-8"><Text children={props.children} /></ul>

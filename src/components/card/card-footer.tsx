@@ -4,23 +4,14 @@ import { FaClock } from "react-icons/fa6"
 import Tag from "@/components/tag"
 import Text from "@/components/text"
 import { QueryParams } from "@/data/search-param-util"
+import TagsContainer from "../tags-container"
 
 export default function CardFooter({ island, params }: { island: IslandMeta, params: QueryParams }) {
     return (
         <div>
             <div className="flex flex-col gap-2">
                 <div className="flex justify-between">
-                    <div className="">
-                        <div className="flex flex-wrap items-center gap-1">
-                            {
-                                island.tags.map(tag => (
-                                    <Tag tag={tag} key={tag.id} params={params}></Tag>
-                                ))
-                            }
-                            {/* {island.date == undefined && <SpTag content="WIP"></SpTag>}
-                        {!island.is_original && <SpTag content="非原创"></SpTag>} */}
-                        </div>
-                    </div>
+                    <TagsContainer island={island} params={params} />
                     {
                         island.date == undefined
                             ? <div className="flex items-center gap-1">
