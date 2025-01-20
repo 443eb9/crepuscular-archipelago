@@ -21,6 +21,15 @@ jobs:
         uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
+          
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.deno
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
       - name: Deno Build
         run: |
@@ -29,8 +38,15 @@ jobs:
       
       - name: Pwd
         run: pwd
+
+      - name: Ls
+        run: ls
+
+      - name: Ls .next
+        run: ls .next/
           
       - uses: actions/upload-artifact@v4
         with:
           name: NextJsBuild
           path: .next/
+          include-hidden-files: true
