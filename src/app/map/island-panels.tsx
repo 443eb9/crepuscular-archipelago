@@ -2,7 +2,7 @@
 
 import OutlinedBox from "@/components/outlined-box"
 import Pagination from "../../components/pagination"
-import BlogInfo from "../(pages)/updates/blog-info"
+import BlogInfo from "../../components/blog-info"
 import { TagData } from "@/data/model"
 import Text from "@/components/text"
 import { useContext } from "react"

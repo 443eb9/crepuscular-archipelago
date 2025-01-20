@@ -1,7 +1,6 @@
 import { IslandMeta } from "@/data/model"
 import { TbClockQuestion } from "react-icons/tb"
 import { FaClock } from "react-icons/fa6"
-import Tag from "@/components/tag"
 import Text from "@/components/text"
 import { QueryParams } from "@/data/search-param-util"
 import TagsContainer from "../tags-container"

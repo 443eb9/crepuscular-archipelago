@@ -15,9 +15,9 @@ export default function CardBody({ island, content }: { island: IslandMeta, cont
                 <Text elem="h2" className="italic text-md mb-1">{island.subtitle}</Text>
             </div>
             <div className="flex mb-2">
-                <div className="w-20 h-1 bg-light-contrast dark:bg-dark-contrast"></div>
-                <div className="w-4 h-1 bg-light-contrast dark:bg-dark-contrast ml-3"></div>
-                <div className="w-2 h-1 bg-light-contrast dark:bg-dark-contrast ml-3"></div>
+                <div className="w-20 h-1 bg-light-contrast dark:bg-dark-contrast" />
+                <div className="w-4 h-1 bg-light-contrast dark:bg-dark-contrast ml-3" />
+                <div className="w-2 h-1 bg-light-contrast dark:bg-dark-contrast ml-3" />
             </div>
             <Text
                 className="font-sh-sans text-ellipsis overflow-hidden line-clamp-6"

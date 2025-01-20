@@ -1,17 +1,17 @@
-import { IslandMeta, IslandType } from "@/data/model"
+import { IslandMeta } from "@/data/model"
 import { OSS } from "@/data/backend"
 import { RiMedal2Line } from "react-icons/ri"
 import OutlinedBox from "@/components/outlined-box"
-import Image from "next/image"
+import Image from "../image"
 
 export default function CardHeader({ island }: { island: IslandMeta }) {
     let header
     switch (island.ty) {
         case "achievement":
-            header = <AchievementCardHeader></AchievementCardHeader>
+            header = <AchievementCardHeader />
             break
         case "article":
-            header = <ArticleCardHeader island={island}></ArticleCardHeader>
+            header = <ArticleCardHeader island={island} />
             break
     }
 
@@ -37,7 +37,7 @@ function ArticleCardHeader({ island }: { island: IslandMeta }) {
                             aspectRatio: "10 / 3",
                         }}
                     >
-                        <Image src={`${OSS}/${island.id}/BANNER.png`} alt="Banner" fill />
+                        <Image src={`${OSS}/${island.id}/BANNER.png`} alt="Banner" scale={1} />
                     </OutlinedBox>
                 </div>
             }

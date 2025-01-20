@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import { Metadata } from "next"
 import { fetchAllTags, fetchIsland, fetchIslandCount, fetchIslandsMeta } from "@/data/api"
-import BlogInfo from "./blog-info"
+import BlogInfo from "../../../components/blog-info"
 import NetworkErrorable from "@/components/network-errorable"
 import ContentWrapper from "@/components/content-wrapper"
 import OutlinedBox from "@/components/outlined-box"

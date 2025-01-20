@@ -19,12 +19,12 @@ export default function IslandCard({ island, content, params, noLink }: { island
     useEffect(() => {
         // TODO Image loads slow, but this solution is not elegant
         setTimeout(() => {
-            if (container.current && container.current.clientHeight > 100 && island.ty == "note") {
+            if (container.current && container.current.clientHeight > 249 && island.ty == "note") {
                 setExpandState(false)
             } else {
                 setExpandState(undefined)
             }
-        }, 100)
+        }, 1000)
     }, [island.id])
 
     if (island.isDeleted) {
@@ -45,7 +45,7 @@ export default function IslandCard({ island, content, params, noLink }: { island
                 )}>
                     <div>
                         <CardHeader island={island} />
-                        <div className={expandState == false ? "max-h-[200px] overflow-y-clip" : ""} ref={container}>
+                        <div className="max-h-[250px] overflow-y-clip" ref={container}>
                             <CardBody island={island} content={content} />
                         </div>
                         <OutlinedButton
