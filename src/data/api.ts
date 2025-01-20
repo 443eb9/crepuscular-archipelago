@@ -1,6 +1,7 @@
 import axios, { AxiosError } from "axios"
 import { apiEndpoint } from "./backend"
-import { Bookmarks, Island, IslandCount, IslandMapMeta, IslandMapQueryResult, IslandMapRegionCenters, IslandMeta, LinkExchangeData, ProjectData, SteamPlayerSummaries, SteamRecentlyPlayedGames, TagData } from "./model"
+import { Island, IslandCount, IslandMapMeta, IslandMapQueryResult, IslandMapRegionCenters, IslandMeta, LinkExchangeData, TagData } from "./model"
+import { LinkExchangeCache } from "./dummy-data"
 
 export type Response<T> = {
     ok: true,
@@ -70,7 +71,12 @@ export function fetchIslandMapRegionCenters(page: number): Promise<Response<Isla
 }
 
 export async function fetchLinkExchange(): Promise<Response<LinkExchangeData[]>> {
-    return wrappedGet("https://raw.githubusercontent.com/443eb9/aetheric-cargo/main/partitions/friends.json")
+    if (process.env.NODE_ENV == "production") {
+        return wrappedGet("https://raw.githubusercontent.com/443eb9/aetheric-cargo/main/partitions/friends.json")
+    } else {
+        // Network issue
+        return { ok: true, data: LinkExchangeCache }
+    }
 }
 
 export async function fetchGithubProjectStat(owner: string, name: string): Promise<Response<any>> {

@@ -1,16 +1,4 @@
-import { AxiosResponse } from "axios"
-
 export type IslandType = "article" | "achievement" | "note"
-
-export type RequestResult<T> = T | string
-
-export function requestToResult<T>(req: AxiosResponse): RequestResult<T> {
-    if (req.status == 200) {
-        return req.data
-    } else {
-        return req.statusText
-    }
-}
 
 export type IslandMeta = {
     id: number,
@@ -58,9 +46,10 @@ export type MemorizeForm = {
     ip: string,
 }
 
-export type FriendSelfIntro = {
+export type FriendDialogData = {
     expression: string,
     content: string,
+    customHtml?: string,
 }
 
 export type LinkExchangeData = {
@@ -68,7 +57,7 @@ export type LinkExchangeData = {
     name: string,
     link: string,
     message: string,
-    selfIntro?: FriendSelfIntro[],
+    dialog?: FriendDialogData[],
 }
 
 export type ProjectData = {

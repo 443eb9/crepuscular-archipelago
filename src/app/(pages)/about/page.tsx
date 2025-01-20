@@ -1,7 +1,6 @@
 import ContentWrapper from "@/components/content-wrapper"
 import { Metadata } from "next"
 import Link from "next/link"
-import { Suspense } from "react"
 import MeInfo from "./me-info"
 import OutlinedBox from "@/components/outlined-box"
 import EndpointDottedSegment from "@/components/decos/endpoint-dotted-segment"
@@ -10,10 +9,11 @@ import LinkExchange from "./link-exchange"
 import Projects from "./projects"
 import GiscusSection from "@/components/giscus-section"
 import Text from "@/components/text"
-import { wrappedGet } from "@/data/api"
+import { fetchLinkExchange, wrappedGet } from "@/data/api"
 import NetworkErrorable from "@/components/network-errorable"
 import Markdown from "@/components/markdown"
 import { frontendEndpoint } from "@/data/backend"
+import { ProjectData } from "@/data/model"
 
 export const metadata: Metadata = {
     title: "About - Crepuscular Archipelago",
@@ -21,6 +21,8 @@ export const metadata: Metadata = {
 
 export default async function Page() {
     const selfIntro = await wrappedGet<string>(frontendEndpoint("/self-intro.md"))
+    const linkExchange = await fetchLinkExchange()
+    const projects = await wrappedGet<ProjectData[]>(frontendEndpoint("/projects.json"))
 
     return (
         <main>
@@ -44,15 +46,15 @@ export default async function Page() {
                     <Text className="font-sh-sans italic text-light-dark-neutral">
                         想加上自己的可以来<Link href={"https://github.com/443eb9/aetheric-cargo"}><u>这里</u></Link> ヾ(≧▽≦*)o
                     </Text>
-                    <Suspense>
-                        <LinkExchange></LinkExchange>
-                    </Suspense>
+                    <NetworkErrorable resp={linkExchange}>
+                        {data => <LinkExchange links={data} />}
+                    </NetworkErrorable>
                 </AboutSection>
                 <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
                 <AboutSection title="一些项目">
-                    <Suspense>
-                        <Projects></Projects>
-                    </Suspense>
+                    <NetworkErrorable resp={projects}>
+                        {data => <Projects projects={data} />}
+                    </NetworkErrorable>
                 </AboutSection>
                 <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
                 <AboutSection title="留言板">

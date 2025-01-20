@@ -18,7 +18,7 @@ export default function MeInfo() {
                         <div className="">443eb9@gmail.com</div>
                     </div>
                     <div className="flex mt-2">
-                        <SocialMediaButton href={"https://github.com/443eb9"}><FiGithub className="text-lg"></FiGithub></SocialMediaButton>
+                        <SocialMediaButton href={"https://github.com/443eb9"}><FiGithub className="text-lg" /></SocialMediaButton>
                     </div>
                 </div>
             </div>

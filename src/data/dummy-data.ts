@@ -1,104 +1,41 @@
-import { Bookmarks } from "./model"
+// This file is only used in development environment, and may not up-to-date.
+// Because of some network issue, I can't directly fetch data from raw.githubusercontent.com.
 
-export const BookmarksMock: Bookmarks[] = [
+export const LinkExchangeCache = [
     {
-        "category": "好看的Shader",
-        "content": [
+        "avatar": "https://raw.githubusercontent.com/443eb9/443eb9/main/avatar.webp",
+        "name": "Crepuscular Archipelago",
+        "link": "https://443eb9.dev",
+        "message": "我是我自己朋友没问题吧（逃",
+        "dialog": [
             {
-                "title": "Production Sky Rendering",
-                "link": "https://www.shadertoy.com/view/Ms2SD1",
-                "comment": "大气散射"
+                "expression": "https://raw.githubusercontent.com/443eb9/443eb9/main/avatar.webp",
+                "content": "你好哇，没想到吧这个头像是可以点的，恭喜你发现这个小彩蛋！"
             },
             {
-                "title": "Seascape",
-                "link": "https://www.shadertoy.com/view/slSXRW",
-                "comment": "海洋"
+                "expression": "https://raw.githubusercontent.com/443eb9/443eb9/main/avatar.webp",
+                "content": "其他人的头像也是可以点的，不妨看看他们说了什么吧。"
             },
             {
-                "title": "Resolution Independent Starfield",
-                "link": "https://www.shadertoy.com/view/tst3WS",
-                "comment": "看上去很真实的星空，甚至还有星团"
+                "expression": "https://raw.githubusercontent.com/443eb9/443eb9/main/avatar.webp",
+                "content": "当然了，前提是 ta 设置了这个对话内容。"
             },
             {
-                "title": "Voxel Edges",
-                "link": "https://www.shadertoy.com/view/4dfGzs",
-                "comment": "体素地图的边缘光，很炫酷"
-            },
-            {
-                "title": "The Universe Within",
-                "link": "https://www.shadertoy.com/view/lscczl",
-                "comment": "各个随机运动的点之间连线，如果像素化的话感觉也会很好看"
-            },
-            {
-                "title": "Main Sequence Star",
-                "link": "https://www.shadertoy.com/view/4dXGR4",
-                "comment": "一颗主序星，就是动感不是很多有点可惜"
-            },
-            {
-                "title": "Noise Contour",
-                "link": "https://www.shadertoy.com/view/MscSzf",
-                "comment": "风格化的描边，很有内味值得学习"
-            },
-            {
-                "title": "Pretty Hip",
-                "link": "https://www.shadertoy.com/view/XsBfRW",
-                "comment": "有点像舞台的那种背景，挺好看的"
-            },
-            {
-                "title": "[SH17C] Physically Based Shading",
-                "link": "https://www.shadertoy.com/view/4sSfzK",
-                "comment": "教程向的Shader，非常标准的PBR示例，甚至有UI可以互动"
+                "expression": "https://raw.githubusercontent.com/443eb9/443eb9/main/avatar.webp",
+                "content": "然而这不是唯一的一个彩蛋哦，欢迎你继续探索我的网站，玩的开心！"
             }
         ]
     },
     {
-        "category": "牛逼的技术",
-        "content": [
-            {
-                "title": "Massively Parallel A* Search on a GPU",
-                "link": "https://yichaozhou.com/publication/1501massive/",
-                "comment": "并行A*算法，快就完了"
-            },
-            {
-                "title": "Real-Time Polygonal-Light Shading with Linearly Transformed Cosines",
-                "link": "https://eheitzresearch.wordpress.com/415-2/",
-                "comment": "LTC，难死了（"
-            },
-            {
-                "title": "Jump Point Search",
-                "link": "https://runzhiwang.github.io/2019/06/21/jps/",
-                "comment": "跳点搜索算法，A*++，腾讯大佬写的万字长文，很详细"
-            }
-        ]
+        "avatar": "https://oss.lumither.com/blog/pictures/avatar.webp",
+        "name": "Lumitherの酒馆",
+        "link": "https://lumither.com",
+        "message": "一间位于时间夹缝中的旅馆，静候下一位旅者的到来..."
     },
     {
-        "category": "有意思的书",
-        "content": [
-            {
-                "title": "GPU Gems",
-                "link": "https://developer.nvidia.com/gpugems/gpugems",
-                "comment": "广且深，三套下来成功入门（tu）（bushi"
-            },
-            {
-                "title": "Real-time Rendering",
-                "link": "",
-                "comment": "实时渲染包推荐的"
-            },
-            {
-                "title": "Fundamentals of Computer Graphics",
-                "link": "",
-                "comment": "CG基础，可以康康"
-            },
-            {
-                "title": "概念设计的秘密：游戏美术基础与设计方法",
-                "link": "https://singlelogin.re/book/27422741/971288/%E6%A6%82%E5%BF%B5%E8%AE%BE%E8%AE%A1%E7%9A%84%E7%A7%98%E5%AF%86%E6%B8%B8%E6%88%8F%E7%BE%8E%E6%9C%AF%E5%9F%BA%E7%A1%80%E4%B8%8E%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%B3%95.html",
-                "comment": "影视飓风团队内的大佬推荐，先插个眼"
-            },
-            {
-                "title": "云边有个小卖部",
-                "link": "",
-                "comment": "初中看的，真的很好看，但是！别去看电影版（"
-            }
-        ]
+        "avatar": "https://blog-dogecdn.lynn6.cn/pic/fb2c42d74892b1e208c0be7af2be20b31627004540489.jpeg",
+        "name": "Lynn的小站",
+        "link": "https://blog.lynn6.cn",
+        "message": "林中抚琴曲委婉，群山听懂我悲欢。"
     }
 ]
