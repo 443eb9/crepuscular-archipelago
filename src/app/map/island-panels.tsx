@@ -11,6 +11,7 @@ import InlinedArticle from "./inlined-article"
 import NavButtons from "../(pages)/nav-buttons"
 import ThemeSwither from "@/components/theme-switcher"
 import { QueryParams } from "@/data/search-param-util"
+import ContentWrapper from "@/components/content-wrapper"
 
 export default function IslandPanels({
     totalPages, currentPage, params, allTags
@@ -38,14 +39,17 @@ export default function IslandPanels({
             </OutlinedBox>
             {
                 visitingIsland?.value &&
-                <div className="w-full h-full flex justify-center items-center pointer-events-auto">
-                    <div className="z-[100] w-[95%] h-[95%] pointer-events-auto bg-light-background dark:bg-dark-background">
-                        <InlinedArticle
-                            meta={visitingIsland.value.meta}
-                            content={visitingIsland.value.content.content}
-                            params={params}
-                        />
-                    </div>
+                <div className="absolute z-50 w-full h-full flex justify-center items-center pointer-events-auto">
+                    <div className="absolute -z-10 w-full h-full bg-black opacity-50" />
+                    <ContentWrapper containerClassName="overflow-y-auto h-[95%]" className="">
+                        <div className="bg-light-background dark:bg-dark-background">
+                            <InlinedArticle
+                                meta={visitingIsland.value.meta}
+                                content={visitingIsland.value.content.content}
+                                params={params}
+                            />
+                        </div>
+                    </ContentWrapper>
                 </div>
             }
             <div className="flex w-full justify-center">

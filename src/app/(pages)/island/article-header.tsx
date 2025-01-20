@@ -2,10 +2,8 @@ import { FaClock } from "react-icons/fa6"
 import { IslandMeta } from "@/data/model"
 import Link from "next/link"
 import { TbClockQuestion } from "react-icons/tb"
-import Tag from "@/components/tag"
 import DiagLines from "@/components/decos/diag-lines"
 import { QueryParams } from "@/data/search-param-util"
-import SpTag from "@/components/sp-tag"
 import TagsContainer from "@/components/tags-container"
 
 export default function ArticleHeader({ island, params }: { island: IslandMeta, params: QueryParams }) {
