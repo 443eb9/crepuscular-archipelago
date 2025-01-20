@@ -69,10 +69,6 @@ export function fetchIslandMapRegionCenters(page: number): Promise<Response<Isla
     return wrappedApiGet(`/get/islandMap/${page}/centers`)
 }
 
-export async function fetchBookmarks(): Promise<Response<Bookmarks[]>> {
-    return wrappedGet("https://raw.githubusercontent.com/443eb9/aetheric-cargo/main/partitions/bookmarks.json")
-}
-
 export async function fetchLinkExchange(): Promise<Response<LinkExchangeData[]>> {
     return wrappedGet("https://raw.githubusercontent.com/443eb9/aetheric-cargo/main/partitions/friends.json")
 }
