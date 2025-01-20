@@ -48,7 +48,7 @@ export default function InlinedArticle({ meta, content, params }: { meta: Island
                     </div>
                 </div>
             </OutlinedBox>
-            <OutlinedBox className="overflow-x-clip overflow-y-auto p-4 h-full">
+            <OutlinedBox className="overflow-y-auto p-4 flex flex-col h-full">
                 <Markdown body={content} />
             </OutlinedBox>
         </div>

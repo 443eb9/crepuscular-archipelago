@@ -5,7 +5,7 @@ export default function ArticleBody({ body }: { body: string }) {
     return (
         <div className="flex flex-col gap-5 w-full">
             <OutlinedBox className="px-5 py-8">
-                <Markdown body={body}></Markdown>
+                <Markdown body={body} />
             </OutlinedBox>
         </div>
     )

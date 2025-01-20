@@ -26,3 +26,14 @@ export type StatefulContext<T> = {
     value: T,
     setter: (value: T) => void,
 }
+
+export function findClassNameAmong(target: HTMLElement, className: string): boolean {
+    while (!target.classList.contains(className)) {
+        if (target.parentElement == null) {
+            return false
+        } else {
+            target = target.parentElement
+        }
+    }
+    return true
+}

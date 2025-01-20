@@ -7,6 +7,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import FriendDialog from "./friend-dialog"
+import { findClassNameAmong } from "@/data/utils"
 
 const SuppressBlur = "suppress-blur"
 
@@ -15,14 +16,8 @@ export default function LinkExchange({ links }: { links: LinkExchangeData[] }) {
 
     useEffect(() => {
         const blurHandler = (ev: MouseEvent) => {
-            let target = ev.target as HTMLElement
-            while (!target.classList.contains(SuppressBlur)) {
-                if (target.parentElement == null) {
-                    setCurDialog(undefined)
-                    break
-                } else {
-                    target = target.parentElement
-                }
+            if (!findClassNameAmong(ev.target as HTMLElement, SuppressBlur)) {
+                setCurDialog(undefined)
             }
         }
 

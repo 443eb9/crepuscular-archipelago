@@ -5,13 +5,16 @@ import Pagination from "../../components/pagination"
 import BlogInfo from "../../components/blog-info"
 import { TagData } from "@/data/model"
 import Text from "@/components/text"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { visitingIslandContext } from "./islands-map"
 import InlinedArticle from "./inlined-article"
 import NavButtons from "../(pages)/nav-buttons"
 import ThemeSwither from "@/components/theme-switcher"
 import { QueryParams } from "@/data/search-param-util"
 import ContentWrapper from "@/components/content-wrapper"
+import { findClassNameAmong } from "@/data/utils"
+
+const InlinedArticleSuppressBlur = "inlined-article-suppress-blur"
 
 export default function IslandPanels({
     totalPages, currentPage, params, allTags
@@ -19,6 +22,19 @@ export default function IslandPanels({
     totalPages: number, currentPage: number, params: QueryParams, allTags: TagData[]
 }) {
     const visitingIsland = useContext(visitingIslandContext)
+
+    useEffect(() => {
+        const blurHandler = (ev: MouseEvent) => {
+            if (!findClassNameAmong(ev.target as HTMLElement, InlinedArticleSuppressBlur)) {
+                visitingIsland?.setter(undefined)
+            }
+        }
+
+        document.addEventListener("mousedown", blurHandler)
+        return () => {
+            document.removeEventListener("mousedown", blurHandler)
+        }
+    }, [])
 
     return (
         <div className="absolute z-50 w-full h-full pointer-events-none">
@@ -41,7 +57,7 @@ export default function IslandPanels({
                 visitingIsland?.value &&
                 <div className="absolute z-50 w-full h-full flex justify-center items-center pointer-events-auto">
                     <div className="absolute -z-10 w-full h-full bg-black opacity-50" />
-                    <ContentWrapper containerClassName="overflow-y-auto h-[95%]" className="">
+                    <ContentWrapper containerClassName="overflow-y-auto h-[95%]" className={InlinedArticleSuppressBlur}>
                         <div className="bg-light-background dark:bg-dark-background">
                             <InlinedArticle
                                 meta={visitingIsland.value.meta}
