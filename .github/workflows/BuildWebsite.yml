@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   build:
+    name: Build Website
     runs-on: ubuntu-latest
 
     steps:
@@ -35,15 +36,6 @@ jobs:
         run: |
           deno i
           deno task build
-      
-      - name: Pwd
-        run: pwd
-
-      - name: Ls
-        run: ls
-
-      - name: Ls .next
-        run: ls .next/
           
       - uses: actions/upload-artifact@v4
         with:
