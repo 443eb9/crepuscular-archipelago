@@ -11,7 +11,7 @@ import RadioButtonGroup from "@/components/radio-button-group"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-export default function BlogInfo({ params, allTags }: { params: QueryParams, allTags: TagData[] }) {
+export default function IslandFilter({ params, allTags }: { params: QueryParams, allTags: TagData[] }) {
     const pathname = usePathname()
 
     return (
@@ -32,7 +32,7 @@ export default function BlogInfo({ params, allTags }: { params: QueryParams, all
                 <EndpointDottedSegment thickness={1} dotSize={5} style="dashed" className="my-2"></EndpointDottedSegment>
                 <Text className="font-bold text-lg">高级过滤</Text>
                 <div>
-                    <Link href={`/${pathname}?${queryParamsToSearchParams({ ...params, advf: params.advf ^ (1 << 1) }).toString()}`}>
+                    <Link href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: params.advf ^ (1 << 1) }).toString()}`}>
                         <Toggle enabled={(params.advf >> 1 & 1) == 1}>
                             <Text>反选</Text>
                         </Toggle>
@@ -44,7 +44,7 @@ export default function BlogInfo({ params, allTags }: { params: QueryParams, all
                             { name: "和", mask: (x: number) => x & ~(1 << 2) },
                             { name: "或", mask: (x: number) => x | (1 << 2) },
                         ].map(node =>
-                            <Link href={`/${pathname}?${queryParamsToSearchParams({ ...params, advf: node.mask(params.advf) }).toString()}`} key={node.name}>
+                            <Link href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: node.mask(params.advf) }).toString()}`} key={node.name}>
                                 <Text>{node.name}</Text>
                             </Link >
                         )}
@@ -52,7 +52,7 @@ export default function BlogInfo({ params, allTags }: { params: QueryParams, all
                     >
                     </RadioButtonGroup>
                 </div>
-                <Link href={`/${pathname}?${queryParamsToSearchParams({ ...params, tags: 0, advf: 0 }).toString()}`}>
+                <Link href={`${pathname}?${queryParamsToSearchParams({ ...params, tags: 0, advf: 0 }).toString()}`}>
                     <OutlinedButton className="w-full h-8 mt-2">
                         <Text>重置</Text>
                     </OutlinedButton>

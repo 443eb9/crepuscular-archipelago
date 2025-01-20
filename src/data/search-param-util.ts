@@ -1,5 +1,3 @@
-import { ReadonlyURLSearchParams } from "next/navigation"
-
 export type RawSearchParams = {
     id?: string,
     page?: string,
@@ -39,18 +37,21 @@ export function searchParamsToQueryParams(params: URLSearchParams): QueryParams 
 }
 
 export function processQueryParams(params: RawSearchParams): QueryParams {
-    const id = parseInt(params?.id ?? "0")
-    const page = parseInt(params?.page ?? "0")
-    const len = parseInt(params?.len ?? "10")
-    const tags = parseInt(params?.tags ?? "0")
-    const advf = parseInt(params?.advf ?? "0")
+    const id = params.id ? parseInt(params.id) : undefined
+    const page = parseInt(params.page ?? "0")
+    const len = parseInt(params.len ?? "10")
+    const tags = parseInt(params.tags ?? "0")
+    const advf = parseInt(params.advf ?? "0")
     return { id, page, len, tags, advf }
 }
 
 export function queryParamsToSearchParams(params: QueryParams) {
     const defaultValues = DefaultQueryParams as { [key: string]: any }
 
-    return new URLSearchParams(Object.entries(params).map(([k, v]) => {
-        return defaultValues[k] == v ? undefined : [k, v.toString()]
-    }).filter(x => x != undefined))
+    return new URLSearchParams(
+        Object
+            .entries(params)
+            .map(([k, v]) => defaultValues[k] == v ? undefined : [k, v.toString()])
+            .filter(x => x != undefined)
+    )
 }

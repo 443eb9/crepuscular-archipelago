@@ -2,7 +2,7 @@
 
 import OutlinedBox from "@/components/outlined-box"
 import Pagination from "../../components/pagination"
-import BlogInfo from "../../components/blog-info"
+import IslandFilter from "../../components/island-filter"
 import { TagData } from "@/data/model"
 import Text from "@/components/text"
 import { useContext, useEffect } from "react"
@@ -51,7 +51,7 @@ export default function IslandPanels({
                 </OutlinedBox>
             </div>
             <OutlinedBox className="absolute right-2 top-2 w-72 backdrop-blur-md pointer-events-auto">
-                <BlogInfo params={params} allTags={allTags} />
+                <IslandFilter params={params} allTags={allTags} />
             </OutlinedBox>
             {
                 visitingIsland?.value &&

@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import { Metadata } from "next"
 import { fetchAllTags, fetchIsland, fetchIslandCount, fetchIslandsMeta } from "@/data/api"
-import BlogInfo from "../../../components/blog-info"
+import IslandFilter from "../../../components/island-filter"
 import NetworkErrorable from "@/components/network-errorable"
 import ContentWrapper from "@/components/content-wrapper"
 import OutlinedBox from "@/components/outlined-box"
@@ -28,7 +28,7 @@ export default async function Page(props: { searchParams: Promise<RawSearchParam
             <div className="flex flex-col gap-10 pr-2 md:pr-0">
                 <aside className="block md:hidden px-5">
                     <NetworkErrorable resp={allTags}>
-                        {data => <OutlinedBox><BlogInfo params={queryParams} allTags={data} /></OutlinedBox>}
+                        {data => <OutlinedBox><IslandFilter params={queryParams} allTags={data} /></OutlinedBox>}
                     </NetworkErrorable>
                 </aside>
                 <ContentWrapper className="gap-10">
@@ -74,7 +74,7 @@ export default async function Page(props: { searchParams: Promise<RawSearchParam
                                 {data =>
                                     <>
                                         <OutlinedBox>
-                                            <BlogInfo params={queryParams} allTags={data} />
+                                            <IslandFilter params={queryParams} allTags={data} />
                                         </OutlinedBox>
                                         <OutlinedBox className="p-2">
                                             <Text className="italic font-bender font-bold" noFont>
