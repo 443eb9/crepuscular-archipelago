@@ -22,6 +22,7 @@ export default function IslandFloatingInfo({ regionId, island, center, params }:
     const visitingIsland = useContext(visitingIslandContext)
     const islandGrid = useContext(islandGridContext)
     const [islandContent, setIslandContent] = useState<string | undefined>()
+    const [updateFlag, setUpdateFlag] = useState(false)
 
     useEffect(() => {
         const updateHandler = async () => {
@@ -67,7 +68,18 @@ export default function IslandFloatingInfo({ regionId, island, center, params }:
             document.removeEventListener("mousedown", updateHandler)
             document.removeEventListener("wheel", updateHandler)
         }
-    }, [islandContent, island.id])
+    }, [islandContent, island.id, updateFlag])
+
+    useEffect(() => {
+        const resizeHandler = () => {
+            setUpdateFlag(!updateFlag)
+        }
+
+        window.addEventListener("resize", resizeHandler)
+        return () => {
+            window.removeEventListener("resize", resizeHandler)
+        }
+    }, [])
 
     return (
         <motion.div
