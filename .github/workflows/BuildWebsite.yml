@@ -1,0 +1,36 @@
+name: Build Website
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Deno Build
+        run: |
+          deno i
+          deno task build
+          
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NextJsBuild
+      
+          # A file, directory or wildcard pattern that describes what to upload
+          # Required.
+          path: .next
