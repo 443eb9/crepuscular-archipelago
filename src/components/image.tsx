@@ -25,6 +25,7 @@ export default function Image({ scale, containerProps, ...props }: { scale: numb
                     {...props}
                     width={containerWidth * scale}
                     height={0}
+                    placeholder="empty"
                 />
             }
         </div>

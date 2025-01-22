@@ -45,7 +45,7 @@ export default function IslandCard({ island, content, params, noLink }: { island
                 )}>
                     <div>
                         <CardHeader island={island} />
-                        <div className="max-h-[250px] overflow-y-clip" ref={container}>
+                        <div className={clsx("overflow-y-clip", { "max-h-[250px]": !expandState })} ref={container}>
                             <CardBody island={island} content={content} />
                         </div>
                         <OutlinedButton
