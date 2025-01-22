@@ -17,11 +17,11 @@ async fn main() {
 
     log::info!("Initial run begin.");
     for job in jobs.iter_mut() {
-        let _ = job.run_logged().await;
+        let _ = job.wrapped_run().await;
     }
     log::info!("Initial run end.");
 
     EventLoop::new()
-        .schedule(jobs, |sc| sc.every(10u32.minutes()))
+        .schedule(jobs, |sc| sc.every(15u32.minutes()))
         .start();
 }

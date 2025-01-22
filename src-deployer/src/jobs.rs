@@ -4,17 +4,22 @@ use std::{
     io::Cursor,
     ops::{Deref, DerefMut},
     process::{Child, Command},
+    time::{Duration, Instant},
 };
 
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use clokwerk::{Scheduler, SyncJob};
-use futures_lite::{future::block_on, StreamExt};
+use futures_lite::{
+    future::{block_on, poll_once},
+    FutureExt, StreamExt,
+};
 use reqwest::{
     header::{HeaderMap, HeaderName, HeaderValue},
     Client, StatusCode,
 };
 use serde::Deserialize;
+use tokio::{runtime::Handle, time::timeout};
 use zip::ZipArchive;
 
 pub struct EventLoop {
@@ -34,7 +39,7 @@ impl EventLoop {
         config: impl Fn(&mut Scheduler<Utc>) -> &mut SyncJob<Utc>,
     ) -> Self {
         config(&mut self.scheduler).run(move || {
-            let _ = block_on(job.run_logged());
+            let _ = block_on(job.wrapped_run());
         });
         self
     }
@@ -50,9 +55,18 @@ impl EventLoop {
 pub trait Job: Send + Sync {
     async fn run(&mut self) -> Result<(), Box<dyn Error>>;
 
-    async fn run_logged(&mut self) -> Result<(), Box<dyn Error>> {
+    async fn wrapped_run(&mut self) -> Result<(), Box<dyn Error>> {
         let start = self.log_start();
-        let result = self.run().await;
+
+        let result = if let Some(max_run_time) = self.timeout() {
+            match timeout(max_run_time, self.run()).await {
+                Ok(done) => done,
+                Err(timeout) => Err(timeout.into()),
+            }
+        } else {
+            self.run().await
+        };
+
         if let Err(err) = &result {
             self.log_err(err.as_ref());
         }
@@ -60,6 +74,8 @@ pub trait Job: Send + Sync {
 
         result
     }
+
+    fn timeout(&self) -> Option<Duration>;
 
     fn log_start(&self) -> DateTime<Utc> {
         log::info!(
@@ -108,10 +124,14 @@ impl Job for ChainedJobs {
 
         for (index, job) in self.iter_mut().enumerate() {
             log::info!("Chained job running {}/{}", index, total);
-            job.run_logged().await?;
+            job.wrapped_run().await?;
         }
 
         Ok(())
+    }
+
+    fn timeout(&self) -> Option<Duration> {
+        None
     }
 }
 
@@ -229,6 +249,10 @@ impl Job for ArtifactFetcher {
 
         Ok(())
     }
+
+    fn timeout(&self) -> Option<Duration> {
+        Some(Duration::from_secs(600))
+    }
 }
 
 #[derive(Default)]
@@ -259,6 +283,10 @@ impl Job for FrontendRunner {
 
         Ok(())
     }
+
+    fn timeout(&self) -> Option<Duration> {
+        Some(Duration::from_secs(90))
+    }
 }
 
 #[derive(Default)]
@@ -282,5 +310,9 @@ impl Job for BackendRunner {
         self.process.replace(process);
 
         Ok(())
+    }
+
+    fn timeout(&self) -> Option<Duration> {
+        Some(Duration::from_secs(120))
     }
 }
