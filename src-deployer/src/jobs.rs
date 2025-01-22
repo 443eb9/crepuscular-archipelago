@@ -179,6 +179,12 @@ impl ArtifactFetcher {
 
 #[async_trait]
 impl Job for ArtifactFetcher {
+    #[cfg(debug_assertions)]
+    async fn run(&mut self) -> Result<(), Box<dyn Error>> {
+        Ok(())
+    }
+
+    #[cfg(not(debug_assertions))]
     async fn run(&mut self) -> Result<(), Box<dyn Error>> {
         log::info!("Checking local commit hash.");
         let local_commit = read_to_string(".next/commit");
@@ -243,8 +249,13 @@ impl Job for FrontendRunner {
             old_npm.kill()?;
         }
 
-        Command::new("deno").arg("i").output()?;
-        let npm = Command::new("deno").args(["task", "start"]).spawn()?;
+        #[cfg(windows)]
+        const NPM: &str = "npm.cmd";
+        #[cfg(not(windows))]
+        const NPM: &str = "npm";
+
+        Command::new(NPM).args(["i", "--verbose"]).output()?;
+        let npm = Command::new(NPM).args(["run", "start"]).spawn()?;
         self.npm.replace(npm);
 
         Ok(())
