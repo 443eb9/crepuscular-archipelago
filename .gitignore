@@ -3,6 +3,7 @@
 target
 cache
 output
+.env
 
 # dependencies
 /node_modules
