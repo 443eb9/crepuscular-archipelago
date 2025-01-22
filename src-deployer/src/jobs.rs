@@ -30,16 +30,10 @@ impl EventLoop {
 
     pub fn schedule(
         mut self,
-        mut runner: impl Job + Send + Sync + 'static,
+        mut job: impl Job + Send + Sync + 'static,
         config: impl Fn(&mut Scheduler<Utc>) -> &mut SyncJob<Utc>,
     ) -> Self {
-        config(&mut self.scheduler).run(move || {
-            let start = runner.log_start();
-            if let Err(err) = block_on(runner.run()) {
-                runner.log_err(err);
-            }
-            runner.log_end(start);
-        });
+        config(&mut self.scheduler).run(move || block_on(job.run_logged()));
         self
     }
 
@@ -53,6 +47,14 @@ impl EventLoop {
 #[async_trait]
 pub trait Job: Send + Sync {
     async fn run(&mut self) -> Result<(), Box<dyn Error>>;
+
+    async fn run_logged(&mut self) {
+        let start = self.log_start();
+        if let Err(err) = self.run().await {
+            self.log_err(err);
+        }
+        self.log_end(start);
+    }
 
     fn log_start(&self) -> DateTime<Utc> {
         log::info!(
@@ -101,11 +103,7 @@ impl Job for ChainedJobs {
 
         for (index, job) in self.iter_mut().enumerate() {
             log::info!("Chained job running {}/{}", index, total);
-            if let Err(err) = job.run().await {
-                job.log_err(err);
-                log::error!("Chained job error on {}/{}.", index, total);
-                break;
-            }
+            job.run_logged().await;
         }
 
         Ok(())
