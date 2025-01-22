@@ -1,6 +1,6 @@
 use std::{
     error::Error,
-    fs::{create_dir_all, remove_dir_all},
+    fs::{create_dir_all, read_to_string, remove_dir_all, write},
     io::Cursor,
     ops::{Deref, DerefMut},
     process::{Child, Command},
@@ -33,7 +33,9 @@ impl EventLoop {
         mut job: impl Job + Send + Sync + 'static,
         config: impl Fn(&mut Scheduler<Utc>) -> &mut SyncJob<Utc>,
     ) -> Self {
-        config(&mut self.scheduler).run(move || block_on(job.run_logged()));
+        config(&mut self.scheduler).run(move || {
+            let _ = block_on(job.run_logged());
+        });
         self
     }
 
@@ -48,12 +50,15 @@ impl EventLoop {
 pub trait Job: Send + Sync {
     async fn run(&mut self) -> Result<(), Box<dyn Error>>;
 
-    async fn run_logged(&mut self) {
+    async fn run_logged(&mut self) -> Result<(), Box<dyn Error>> {
         let start = self.log_start();
-        if let Err(err) = self.run().await {
-            self.log_err(err);
+        let result = self.run().await;
+        if let Err(err) = &result {
+            self.log_err(err.as_ref());
         }
         self.log_end(start);
+
+        result
     }
 
     fn log_start(&self) -> DateTime<Utc> {
@@ -64,7 +69,7 @@ pub trait Job: Send + Sync {
         Utc::now()
     }
 
-    fn log_err(&self, err: Box<dyn Error>) {
+    fn log_err(&self, err: &dyn Error) {
         log::error!("Job {} error: {}", std::any::type_name_of_val(self), err);
     }
 
@@ -103,7 +108,7 @@ impl Job for ChainedJobs {
 
         for (index, job) in self.iter_mut().enumerate() {
             log::info!("Chained job running {}/{}", index, total);
-            job.run_logged().await;
+            job.run_logged().await?;
         }
 
         Ok(())
@@ -158,57 +163,44 @@ pub struct ArtifactList {
 
 #[derive(Deserialize)]
 pub struct Artifact {
+    pub workflow_run: WorkflowRun,
     pub archive_download_url: String,
 }
 
 #[derive(Deserialize)]
-pub struct Branch {
-    pub name: String,
-    pub commit: Commit,
-}
-
-#[derive(Deserialize)]
-pub struct Commit {
-    pub sha: String,
+pub struct WorkflowRun {
+    pub head_sha: String,
 }
 
 impl ArtifactFetcher {
     const ARTIFACTS_API_URL: &str =
         "https://api.github.com/repos/443eb9/crepuscular-archipelago/actions/artifacts";
-    const BRANCHES_API_URL: &str =
-        " https://api.github.com/repos/443eb9/crepuscular-archipelago/branches";
+}
 
-    pub async fn is_out_of_date(&self) -> Result<bool, Box<dyn Error>> {
+#[async_trait]
+impl Job for ArtifactFetcher {
+    async fn run(&mut self) -> Result<(), Box<dyn Error>> {
         log::info!("Checking local commit hash.");
-        let git_output = Command::new("git").args(["rev-parse", "HEAD"]).output()?;
-        let cur_commit = String::from_utf8(git_output.stdout)?;
-
-        let branches_resp = self.client.get(Self::BRANCHES_API_URL).send().await?;
-        resp_check_ok!(branches_resp);
-        let branches = branches_resp.json::<Vec<Branch>>().await?;
-        let main_branch = branches.iter().find(|b| &b.name == "main").unwrap();
-        log::info!(
-            "Local commit: {}, remote commit: {}",
-            cur_commit.trim(),
-            main_branch.commit.sha
-        );
-
-        Ok(cur_commit.trim() != main_branch.commit.sha)
-    }
-
-    pub async fn update_local_files(&self) -> Result<(), Box<dyn Error>> {
-        log::info!("Updating local repo.");
-        Command::new("git").arg("pull").output()?;
+        let local_commit = read_to_string(".next/commit");
 
         let artifact_list_resp = self.client.get(Self::ARTIFACTS_API_URL).send().await?;
         resp_check_ok!(artifact_list_resp);
 
         let artifacts = artifact_list_resp.json::<ArtifactList>().await?;
         let latest = artifacts.artifacts.first().unwrap();
+
         log::info!(
-            "Fetched latest artifact download url {}",
-            latest.archive_download_url
+            "Local commit: {:?}, remote commit: {}",
+            local_commit.as_ref().ok(),
+            latest.workflow_run.head_sha,
         );
+
+        if local_commit.is_ok_and(|c| c == latest.workflow_run.head_sha) {
+            return Err("Already up-to-date. Skipping".into());
+        }
+
+        log::info!("Updating local repo.");
+        Command::new("git").arg("pull").output()?;
 
         let artifact_resp = self.client.get(&latest.archive_download_url).send().await?;
         resp_check_ok!(artifact_resp);
@@ -232,18 +224,8 @@ impl ArtifactFetcher {
         log::info!("Start unpacking artifact.");
         let _ = remove_dir_all(".next"); // Can fail
         create_dir_all(".next")?;
+        write(".next/commit", &latest.workflow_run.head_sha)?;
         ZipArchive::new(Cursor::new(artifact))?.extract(".next")?;
-
-        Ok(())
-    }
-}
-
-#[async_trait]
-impl Job for ArtifactFetcher {
-    async fn run(&mut self) -> Result<(), Box<dyn Error>> {
-        if self.is_out_of_date().await? {
-            self.update_local_files().await?;
-        }
 
         Ok(())
     }

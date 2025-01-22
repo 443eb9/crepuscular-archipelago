@@ -1,7 +1,7 @@
 use clokwerk::TimeUnits;
 use env_logger::Env;
 
-use crate::jobs::{ArtifactFetcher, BackendRunner, ChainedJobs, EventLoop, FrontendRunner, Job};
+use crate::jobs::{ArtifactFetcher, BackendRunner, ChainedJobs, EventLoop, FrontendRunner};
 
 mod jobs;
 
@@ -15,7 +15,11 @@ async fn main() {
     jobs.push(Box::new(FrontendRunner::default()));
     jobs.push(Box::new(BackendRunner::default()));
 
-    let _ = jobs.run().await;
+    log::info!("Initial run begin.");
+    for job in jobs.iter_mut() {
+        let _ = job.run_logged().await;
+    }
+    log::info!("Initial run end.");
 
     EventLoop::new()
         .schedule(jobs, |sc| sc.every(10u32.minutes()))
