@@ -44,6 +44,7 @@ impl EventLoop {
     pub fn start(mut self) {
         loop {
             self.scheduler.run_pending();
+            std::thread::sleep(Duration::from_secs(5));
         }
     }
 }
