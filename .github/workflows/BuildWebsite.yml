@@ -39,7 +39,7 @@ jobs:
       - name: Npm Build
         run: |
           npm i
-          npm task build
+          npm run build
 
       - uses: actions/upload-artifact@v4
         with:
