@@ -41,5 +41,4 @@ jobs:
         with:
           name: NextJsBuild
           path: .next/
-          compression-level: 9
           include-hidden-files: true

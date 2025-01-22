@@ -4,22 +4,19 @@ use std::{
     io::Cursor,
     ops::{Deref, DerefMut},
     process::{Child, Command},
-    time::{Duration, Instant},
+    time::Duration,
 };
 
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use clokwerk::{Scheduler, SyncJob};
-use futures_lite::{
-    future::{block_on, poll_once},
-    FutureExt, StreamExt,
-};
+use futures_lite::{future::block_on, StreamExt};
 use reqwest::{
     header::{HeaderMap, HeaderName, HeaderValue},
     Client, StatusCode,
 };
 use serde::Deserialize;
-use tokio::{runtime::Handle, time::timeout};
+use tokio::time::timeout;
 use zip::ZipArchive;
 
 pub struct EventLoop {
