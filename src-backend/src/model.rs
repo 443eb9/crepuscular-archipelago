@@ -1,6 +1,6 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
-use sqlx::{prelude::Type, FromRow, Row};
+use sqlx::{prelude::Type, FromRow};
 
 use crate::islands::IslandMapQuery;
 
@@ -111,73 +111,6 @@ pub struct Island {
 #[serde(rename_all = "camelCase")]
 pub struct IslandCount {
     pub count: u32,
-}
-
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct IslandSearchResults {
-    pub results: Vec<IslandSearchResult>,
-}
-
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct IslandSearchResult {
-    pub score: f32,
-    pub id: u32,
-    pub preview: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct MemorizeForm {
-    pub stu_id: String,
-    pub name: String,
-
-    pub wechat: String,
-    pub qq: String,
-    pub phone: String,
-    pub email: String,
-
-    pub desc: String,
-    pub hobby: String,
-    pub position: String,
-    pub ftr_major: String,
-
-    pub message: String,
-    pub ip: String,
-}
-
-impl<'a, R: Row> FromRow<'a, R> for MemorizeForm
-where
-    &'a std::primitive::str: sqlx::ColumnIndex<R>,
-    String: Type<<R as Row>::Database>,
-    String: sqlx::Decode<'a, <R as Row>::Database>,
-    u32: Type<<R as Row>::Database>,
-    u32: sqlx::Decode<'a, <R as Row>::Database>,
-{
-    fn from_row(row: &'a R) -> Result<Self, sqlx::Error> {
-        Ok(Self {
-            stu_id: row.try_get::<u32, _>("stu_id")?.to_string(),
-            name: row.try_get("name")?,
-            wechat: row.try_get("wechat")?,
-            qq: row.try_get("qq")?,
-            phone: row.try_get("phone")?,
-            email: row.try_get("email")?,
-            desc: row.try_get("desc")?,
-            hobby: row.try_get("hobby")?,
-            position: row.try_get("position")?,
-            ftr_major: row.try_get("ftr_major")?,
-            message: row.try_get("message")?,
-            ip: String::new(),
-        })
-    }
-}
-
-#[derive(Debug, Serialize, FromRow)]
-#[serde(rename_all = "camelCase")]
-pub struct MemorizeFormMeta {
-    pub time: String,
-    pub ip: String,
 }
 
 #[derive(Serialize)]

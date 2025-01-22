@@ -2,27 +2,14 @@ use std::{convert::Infallible, sync::Mutex};
 
 use actix_web::{
     get,
-    http::{
-        header::{ContentDisposition, ContentType},
-        StatusCode,
-    },
-    post,
-    web::{Data, Json, Path},
+    http::header::{ContentDisposition, ContentType},
+    web::{Data, Path},
     HttpResponse, Responder,
 };
 use async_stream::stream;
-use chrono::{SecondsFormat, Timelike, Utc};
-use once_cell::sync::Lazy;
+use chrono::{Timelike, Utc};
 
-use crate::{
-    islands::IslandMaps,
-    memorize::{self, MemorizeCoolDown},
-    model::{IslandMapQueryResponse, MemorizeForm, MemorizeFormMeta},
-    sql::*,
-};
-
-static COOL_DOWN: Mutex<Lazy<MemorizeCoolDown>> =
-    Mutex::new(Lazy::new(|| MemorizeCoolDown::default()));
+use crate::{islands::IslandMaps, model::IslandMapQueryResponse, sql::*};
 
 macro_rules! sql_query_request {
     ($query: ident, $($param: expr),+) => {
@@ -130,70 +117,6 @@ pub async fn get_island_at(
     }
 }
 
-#[post("/api/post/memorize")]
-pub async fn submit_memorize(
-    pool: Data<MemorizeDB>,
-    form: Json<MemorizeForm>,
-) -> (impl Responder, StatusCode) {
-    let meta = MemorizeFormMeta {
-        time: Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true),
-        ip: form.ip.clone(),
-    };
-
-    let Ok(mut cool_down) = COOL_DOWN.lock() else {
-        return (
-            HttpResponse::Ok().json("有其他人正在提交，请稍后再试。"),
-            StatusCode::BAD_REQUEST,
-        );
-    };
-
-    let cd = cool_down.get(&meta.ip);
-    log::info!("{:?} {:?} {}", &form, &meta, cd);
-
-    if cd < 600 {
-        return (
-            HttpResponse::Ok().json(format!(
-                "请不要在10分钟内多次提交。{} {}",
-                meta.ip,
-                600 - cd
-            )),
-            StatusCode::BAD_REQUEST,
-        );
-    }
-
-    if form.stu_id.parse::<u32>().is_err() {
-        return (
-            HttpResponse::BadRequest().json("无效学号"),
-            StatusCode::BAD_REQUEST,
-        );
-    };
-
-    if form.wechat.is_empty()
-        && form.qq.is_empty()
-        && form.phone.is_empty()
-        && form.email.is_empty()
-    {
-        return (
-            HttpResponse::BadRequest().json("请至少留一种联系方式"),
-            StatusCode::BAD_REQUEST,
-        );
-    }
-
-    match insert_memorize_form(&pool, &form, &meta).await {
-        Ok(_) => {
-            cool_down.add(meta.ip.clone());
-            (
-                HttpResponse::Ok().json(format!("成功记录 {} {} {}", meta.time, meta.ip, cd)),
-                StatusCode::OK,
-            )
-        }
-        Err(err) => (
-            HttpResponse::BadRequest().json(err.to_string()),
-            StatusCode::BAD_REQUEST,
-        ),
-    }
-}
-
 #[get("/api/get/memorizeDb")]
 pub async fn download_memorize_db() -> impl Responder {
     let root = std::env::var("ISLAND_STORAGE_ROOT").unwrap();
@@ -203,18 +126,6 @@ pub async fn download_memorize_db() -> impl Responder {
         .insert_header(ContentDisposition::attachment("memorize.sqlite3"))
         .streaming(stream!(
             yield Ok::<_, Infallible>(actix_web::web::Bytes::from(db))
-        ))
-}
-
-#[get("/api/get/memorizeCsv")]
-pub async fn download_memorize_csv(pool: Data<MemorizeDB>) -> impl Responder {
-    let data = query_all_memorize(&pool).await.unwrap();
-    let csv = memorize::generate_csv(data);
-    HttpResponse::Ok()
-        .content_type(ContentType::plaintext())
-        .insert_header(ContentDisposition::attachment("memorize.csv"))
-        .streaming(stream!(
-            yield Ok::<_, Infallible>(actix_web::web::Bytes::from(csv.into_bytes()))
         ))
 }
 

@@ -1,20 +1,13 @@
 use futures::{future::join_all, join};
-use sqlx::{sqlite::SqliteQueryResult, Error, SqlitePool};
+use sqlx::{Error, SqlitePool};
 
 use crate::{
     filter::{AdvancedFilter, TagsFilter},
-    model::{
-        Island, IslandCount, IslandMeta, IslandMetaTagged, MemorizeForm, MemorizeFormMeta, TagData,
-    },
+    model::{Island, IslandCount, IslandMeta, IslandMetaTagged, TagData},
 };
 
 #[derive(Clone)]
 pub struct IslandDB {
-    pub db: SqlitePool,
-}
-
-#[derive(Clone)]
-pub struct MemorizeDB {
     pub db: SqlitePool,
 }
 
@@ -322,53 +315,4 @@ async fn query_island_tags(pool: &IslandDB, id: u32) -> Result<Vec<TagData>, Err
     .bind(id)
     .fetch_all(&pool.db)
     .await?)
-}
-
-pub async fn insert_memorize_form(
-    pool: &MemorizeDB,
-    form: &MemorizeForm,
-    meta: &MemorizeFormMeta,
-) -> Result<SqliteQueryResult, Error> {
-    sqlx::query(
-        "INSERT INTO memorize (stu_id, name, wechat, qq, phone, email, desc, hobby, position, ftr_major, message)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        "
-        )
-        .bind(&form.stu_id)
-        .bind(&form.name)
-        .bind(&form.wechat)
-        .bind(&form.qq)
-        .bind(&form.phone)
-        .bind(&form.email)
-        .bind(&form.desc)
-        .bind(&form.hobby)
-        .bind(&form.position)
-        .bind(&form.ftr_major)
-        .bind(&form.message)
-        .execute(&pool.db)
-        .await?;
-
-    sqlx::query("INSERT INTO memorize_meta (time, ip) VALUES (?, ?)")
-        .bind(&meta.time)
-        .bind(&meta.ip)
-        .execute(&pool.db)
-        .await
-}
-
-pub async fn query_all_memorize(
-    pool: &MemorizeDB,
-) -> Result<Vec<(MemorizeForm, MemorizeFormMeta)>, Error> {
-    let form: Vec<MemorizeForm> = sqlx::query_as(
-        "SELECT stu_id, name, wechat, qq, phone, email, desc, hobby, position, ftr_major, message
-        FROM memorize
-        ",
-    )
-    .fetch_all(&pool.db)
-    .await?;
-
-    let meta: Vec<MemorizeFormMeta> = sqlx::query_as("SELECT ip, time FROM memorize_meta")
-        .fetch_all(&pool.db)
-        .await?;
-
-    Ok(form.into_iter().zip(meta).collect())
 }
