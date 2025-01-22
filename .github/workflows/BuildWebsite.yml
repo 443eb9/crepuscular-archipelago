@@ -18,31 +18,28 @@ jobs:
       - name: Setup Repo
         uses: actions/checkout@v4
 
-      # - name: Setup Deno
-      #   uses: denoland/setup-deno@v2
-      #   with:
-      #     deno-version: v2.x
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
 
-      # - uses: actions/cache@v4
-      #   with:
-      #     path: |
-      #       ~/.deno
-      #       ${{ github.workspace }}/.next/cache
-      #     key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.deno
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
-      # - name: Deno Build
-      #   run: |
-      #     deno i
-      #     deno task build
-      - name: Npm Build
+      - name: Deno Build
         run: |
-          npm i
-          npm run build
+          deno i
+          deno task build
 
       - uses: actions/upload-artifact@v4
         with:
           name: NextJsBuild
           path: .next/
+          compression-level: 9
           include-hidden-files: true

@@ -12,8 +12,8 @@ async fn main() {
 
     let mut jobs = ChainedJobs::default();
     jobs.push(Box::new(ArtifactFetcher::default()));
-    jobs.push(Box::new(FrontendRunner::default()));
     jobs.push(Box::new(BackendRunner::default()));
+    jobs.push(Box::new(FrontendRunner::default()));
 
     log::info!("Initial run begin.");
     for job in jobs.iter_mut() {
