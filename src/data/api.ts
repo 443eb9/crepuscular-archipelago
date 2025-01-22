@@ -11,15 +11,12 @@ export type Response<T> = {
     err: string,
 }
 
-const axiosInstance = axios.create()
-
 export async function wrappedGet<T>(url: string): Promise<Response<T>> {
-    return await axiosInstance
-        .get(url)
-        .then(data => {
+    return await fetch(url, { cache: "no-cache" })
+        .then(async data => {
             return {
                 ok: true as true,
-                data: data.data as T
+                data: (await data.json()) as T
             }
         })
         .catch((reason: AxiosError) => {
