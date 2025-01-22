@@ -1,11 +1,11 @@
+import { resolveLygia } from "@/data/lygia"
 import { Transform } from "@/data/utils"
 import { Size } from "@react-three/fiber"
 import { Effect } from "postprocessing"
 import { forwardRef, useMemo } from "react"
 import { Color, Texture, Uniform, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget } from "three"
-import resolveLygia from "../../data/lygia"
 
-const fragment = `
+const fragment = resolveLygia(`
     #include "lygia/generative/fbm.glsl"
 
     struct InfiniteGrid {
@@ -152,7 +152,7 @@ const fragment = `
         vec2 pixel = (uv * 2.0 - 1.0) * 0.5 * params.canvasSize * params.scale + params.translation;
         outputColor = vec4(getPixelColor(pixel), 1.0);
     }
-`
+`)
 
 export type InfiniteGridParams = {
     backgroundColor: Color,
@@ -220,7 +220,7 @@ class InfiniteGridImpl extends Effect {
     params: InfiniteGridParams
 
     constructor(params: InfiniteGridParams) {
-        super("InfiniteGridEffect", resolveLygia(fragment), {
+        super("InfiniteGridEffect", fragment, {
             uniforms: new Map([["params", new Uniform(paramToUniforms(params))]])
         })
 

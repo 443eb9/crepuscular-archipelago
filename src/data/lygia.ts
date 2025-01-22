@@ -8,7 +8,7 @@ function getFile(url: string) {
         return "";
 }
 
-function resolveLygia(lines: string | string[]) {
+export function resolveLygia(lines: string | string[]) {
     if (!Array.isArray(lines)) {
         lines = lines.split(/\r?\n/);
     }
@@ -29,7 +29,7 @@ function resolveLygia(lines: string | string[]) {
     return src;
 }
 
-async function resolveLygiaAsync(lines: string | string[]) {
+export async function resolveLygiaAsync(lines: string | string[]) {
     if (!Array.isArray(lines))
         lines = lines.split(/\r?\n/);
 
@@ -49,4 +49,3 @@ async function resolveLygiaAsync(lines: string | string[]) {
 
     return response.join("\n");
 }
-export { resolveLygia as default };

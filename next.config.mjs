@@ -16,6 +16,8 @@ const nextConfig = {
                 hostname: "media.steampowered.com",
             },
         ],
+        // TODO remove this once memory usage reduces.
+        unoptimized: true,
     },
 };
 
