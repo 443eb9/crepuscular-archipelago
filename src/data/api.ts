@@ -1,4 +1,3 @@
-import axios, { AxiosError } from "axios"
 import { apiEndpoint } from "./backend"
 import { Island, IslandCount, IslandMapMeta, IslandMapQueryResult, IslandMapRegionCenters, IslandMeta, LinkExchangeData, TagData } from "./model"
 import { LinkExchangeCache } from "./dummy-data"
@@ -13,16 +12,32 @@ export type Response<T> = {
 
 export async function wrappedGet<T>(url: string): Promise<Response<T>> {
     return await fetch(url, { cache: "no-cache" })
-        .then(async data => {
+        .then(async resp => {
+            const body = await resp.text()
+
+            if (!resp.ok) {
+                return {
+                    ok: false as false,
+                    err: body,
+                }
+            }
+
+            let data;
+            try {
+                data = JSON.parse(body)
+            } catch {
+                data = body
+            }
+
             return {
                 ok: true as true,
-                data: (await data.json()) as T
+                data,
             }
         })
-        .catch((reason: AxiosError) => {
+        .catch(err => {
             return {
-                ok: false,
-                err: `${url} ${reason.message}`
+                ok: false as false,
+                err: err.toString(),
             }
         })
 }
