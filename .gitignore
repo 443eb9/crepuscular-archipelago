@@ -2,8 +2,8 @@
 
 target
 cache
-output
 .env
+log
 
 # dependencies
 /node_modules

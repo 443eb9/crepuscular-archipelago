@@ -1,6 +1,6 @@
 use std::{
     error::Error,
-    fs::{create_dir_all, read_to_string, remove_dir_all, write},
+    fs::{create_dir_all, read_to_string, remove_dir_all, write, File},
     io::Cursor,
     ops::{Deref, DerefMut},
     process::{Child, Command},
@@ -179,12 +179,6 @@ impl ArtifactFetcher {
 
 #[async_trait]
 impl Job for ArtifactFetcher {
-    #[cfg(debug_assertions)]
-    async fn run(&mut self) -> Result<(), Box<dyn Error>> {
-        Ok(())
-    }
-
-    #[cfg(not(debug_assertions))]
     async fn run(&mut self) -> Result<(), Box<dyn Error>> {
         log::info!("Checking local commit hash.");
         let local_commit = read_to_string(".next/commit");
@@ -255,7 +249,12 @@ impl Job for FrontendRunner {
         const NPM: &str = "npm";
 
         Command::new(NPM).args(["i", "--verbose"]).output()?;
-        let npm = Command::new(NPM).args(["run", "start"]).spawn()?;
+        let _ = create_dir_all("log");
+        let npm = Command::new(NPM)
+            .args(["run", "start"])
+            .stdout(File::create("log/frontend-stdout.log")?)
+            .stderr(File::create("log/frontend-stderr.log")?)
+            .spawn()?;
         self.npm.replace(npm);
 
         Ok(())
@@ -274,8 +273,11 @@ impl Job for BackendRunner {
             old_process.kill()?;
         }
 
+        let _ = create_dir_all("log");
         let process = Command::new("cargo")
             .args(["run", "--bin", "backend", "--release"])
+            .stdout(File::create("log/backend-stdout.log")?)
+            .stderr(File::create("log/backend-stderr.log")?)
             .spawn()?;
         self.process.replace(process);
 

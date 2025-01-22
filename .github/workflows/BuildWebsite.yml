@@ -23,11 +23,20 @@ jobs:
         with:
           deno-version: v2.x
 
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.deno
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+
       - name: Deno Build
         run: |
           deno i
           deno task build
-          
+
       - uses: actions/upload-artifact@v4
         with:
           name: NextJsBuild
