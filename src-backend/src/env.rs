@@ -5,5 +5,5 @@ pub fn get_island_storage_root() -> PathBuf {
 }
 
 pub fn get_island_cache_root() -> PathBuf {
-    get_island_storage_root().join("cache")
+    "cache".into()
 }
