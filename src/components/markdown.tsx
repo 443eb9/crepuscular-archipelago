@@ -27,9 +27,9 @@ export default function Markdown({ body }: { body: string }) {
                 img(props) { return <Image scale={0.5} src={props.src ?? ""} alt={props.src ?? ""} /> },
                 video(props) {
                     return (
-                        <div className="flex justify-center">
+                        <span className="flex justify-center">
                             <video {...props} />
-                        </div>
+                        </span>
                     )
                 },
                 code(props) {

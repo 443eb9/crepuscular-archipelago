@@ -14,7 +14,7 @@ export default function Image({ scale, containerProps, ...props }: { scale: numb
     }, [])
 
     return (
-        <div
+        <span
             {...containerProps}
             ref={containerRef}
             className={`flex justify-center ${containerProps?.className}`}
@@ -28,6 +28,6 @@ export default function Image({ scale, containerProps, ...props }: { scale: numb
                     placeholder="empty"
                 />
             }
-        </div>
+        </span>
     )
 }
