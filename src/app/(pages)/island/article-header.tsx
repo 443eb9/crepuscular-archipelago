@@ -6,16 +6,19 @@ import DiagLines from "@/components/decos/diag-lines"
 import { QueryParams } from "@/data/search-param-util"
 import TagsContainer from "@/components/tags-container"
 
-export default function ArticleHeader({ island, params }: { island: IslandMeta, params: QueryParams }) {
+export default function ArticleHeader({ island, params, noGoBack }: { island: IslandMeta, params: QueryParams, noGoBack?: boolean }) {
     return (
         <div className="flex justify-between p-5 w-full">
             <div className="flex flex-col gap-1 w-full">
-                <Link
-                    href={`/updates?${params.toString()}`}
-                    className="font-argon font-bold p-1"
-                >
-                    &lt; $ cd .._
-                </Link>
+                {
+                    !noGoBack &&
+                    <Link
+                        href={`/updates?${params.toString()}`}
+                        className="font-argon font-bold p-1"
+                    >
+                        &lt; $ cd .._
+                    </Link>
+                }
                 <h1 className="w-24 font-bender text-lg font-bold px-2
                 bg-light-contrast dark:bg-dark-contrast
                 text-dark-contrast dark:text-light-contrast">{`# ${island.id}`}</h1>

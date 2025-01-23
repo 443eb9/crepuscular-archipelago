@@ -20,7 +20,7 @@ export default function InlinedArticle({ meta, content, params }: { meta: Island
         <div className="w-full h-full flex flex-col gap-2">
             <OutlinedBox className="flex flex-col">
                 <div className="flex grow">
-                    {headerExpanded && <ArticleHeader island={meta} params={params} />}
+                    {headerExpanded && <ArticleHeader island={meta} params={params} noGoBack />}
                 </div>
                 <div className="flex justify-between">
                     {
