@@ -35,44 +35,52 @@ export default function IslandCard({ island, content, params, noLink }: { island
         )
     }
 
-    const CardMain = () => {
-        return (
-            <div className="relative pointer-events-auto">
-                <OutlinedBox className={clsx(
-                    "flex flex-col justify-between p-4 shadow-md gap-2",
-                    { "border-dashed": island.date == undefined || island.isDeleted },
-                    { "min-h-[200px]": !island.isDeleted }
-                )}>
-                    <div>
-                        <CardHeader island={island} />
-                        <div className={clsx("overflow-y-clip", { "max-h-[250px]": !expandState })} ref={container}>
-                            <CardBody island={island} content={content} />
-                        </div>
-                        <OutlinedButton
-                            className={clsx(
-                                "mt-2 w-full h-10 border-2 border-light-contrast dark:border-dark-contrast",
-                                { "hidden": expandState == undefined }
-                            )}
-                            onClick={() => setExpandState(!expandState)}
-                        >
-                            {
-                                expandState
-                                    ? <Text className="">折叠</Text>
-                                    : <Text className="">展开</Text>
-                            }
-                        </OutlinedButton>
-                    </div>
-                    <CardFooter island={island} params={params} />
-                </OutlinedBox>
-            </div>
-        )
+    const LinkWrapper = () => {
+        switch (island.ty) {
+            case "article":
+                if (!noLink) {
+                    return (
+                        <Link
+                            className="absolute w-full h-full"
+                            href={`/island?id=${island.id}&${queryParamsToSearchParams(params)}`}
+                        />
+                    )
+                }
+            case "achievement":
+            case "note":
+                return <></>
+        }
     }
 
-    switch (island.ty) {
-        case "article":
-            if (!noLink) { return <Link href={`/island?id=${island.id}&${queryParamsToSearchParams(params)}`}><CardMain /></Link> }
-        case "achievement":
-        case "note":
-            return <CardMain />
-    }
+    return (
+        <div className="relative pointer-events-auto">
+            <OutlinedBox className={clsx(
+                "flex flex-col justify-between p-4 shadow-md gap-2",
+                { "border-dashed": island.date == undefined || island.isDeleted },
+                { "min-h-[200px]": !island.isDeleted }
+            )}>
+                <div>
+                    <CardHeader island={island} />
+                    <div className={clsx("relative overflow-y-clip", { "max-h-[250px]": !expandState })} ref={container}>
+                        {!noLink && <LinkWrapper />}
+                        <CardBody island={island} content={content} />
+                    </div>
+                    <OutlinedButton
+                        className={clsx(
+                            "mt-2 w-full h-10 border-2 border-light-contrast dark:border-dark-contrast",
+                            { "hidden": expandState == undefined }
+                        )}
+                        onClick={() => setExpandState(!expandState)}
+                    >
+                        {
+                            expandState
+                                ? <Text className="">折叠</Text>
+                                : <Text className="">展开</Text>
+                        }
+                    </OutlinedButton>
+                </div>
+                <CardFooter island={island} params={params} />
+            </OutlinedBox>
+        </div>
+    )
 }
