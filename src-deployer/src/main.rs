@@ -22,6 +22,6 @@ async fn main() {
     log::info!("Initial run end.");
 
     EventLoop::new()
-        .schedule(jobs, |sc| sc.every(15u32.minutes()))
+        .schedule(jobs, |sc| sc.every(5u32.minutes()))
         .start();
 }
