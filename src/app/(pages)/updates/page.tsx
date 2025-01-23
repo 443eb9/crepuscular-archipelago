@@ -10,7 +10,7 @@ import Pagination from "../../../components/pagination"
 import Link from "next/link"
 import Text from "@/components/text"
 import { processQueryParams, RawSearchParams } from "@/data/search-param-util"
-import { frontendEndpoint } from "@/data/backend"
+import { frontendEndpoint } from "@/data/endpoints"
 
 export const metadata: Metadata = {
     title: "Updates - Crepuscular Archipelago",

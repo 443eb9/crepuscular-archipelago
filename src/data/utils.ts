@@ -1,5 +1,5 @@
 import { Vector2 } from "three";
-import { OSS } from "./backend"
+import { OSS } from "./endpoints"
 
 export function formatDate(date: string | undefined) {
     if (!date) {

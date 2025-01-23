@@ -1,5 +1,5 @@
 import { IslandMeta } from "@/data/model"
-import { OSS } from "@/data/backend"
+import { OSS } from "@/data/endpoints"
 import { RiMedal2Line } from "react-icons/ri"
 import OutlinedBox from "@/components/outlined-box"
 import Image from "../image"

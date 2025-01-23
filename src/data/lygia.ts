@@ -40,7 +40,7 @@ export async function resolveLygiaAsync(lines: string | string[]) {
             if (line_trim.startsWith('#include "lygia')) {
                 let include_url = line_trim.substring(15);
                 include_url = "https://lygia.xyz" + include_url.replace(/\"|\;|\s/g, "");
-                return fetch(include_url).then((res) => res.text());
+                return fetch(include_url, { cache: "no-cache" }).then((res) => res.text());
             }
             else
                 return line;

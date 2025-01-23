@@ -3,8 +3,8 @@ import NetworkErrorable from "@/components/network-errorable"
 import { Metadata } from "next"
 import Shelf from "./shelf"
 import ShaderPreview from "./shader-preview"
-import { wrappedGet } from "@/data/api"
-import { frontendEndpoint } from "@/data/backend"
+import { wrappedFetch } from "@/data/api"
+import { frontendEndpoint } from "@/data/endpoints"
 import { Bookmarks } from "@/data/model"
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 }
 
 export default async function Page() {
-    const bookmarks = await wrappedGet<Bookmarks[]>(frontendEndpoint("/bookmarks.json"))
+    const bookmarks = await wrappedFetch<Bookmarks[]>(frontendEndpoint("/bookmarks.json"), "GET")
 
     return (
         <main>

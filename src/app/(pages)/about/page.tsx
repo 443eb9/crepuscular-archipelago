@@ -9,10 +9,10 @@ import LinkExchange from "./link-exchange"
 import Projects from "./projects"
 import GiscusSection from "@/components/giscus-section"
 import Text from "@/components/text"
-import { fetchLinkExchange, wrappedGet } from "@/data/api"
+import { fetchLinkExchange, wrappedFetch } from "@/data/api"
 import NetworkErrorable from "@/components/network-errorable"
 import Markdown from "@/components/markdown"
-import { frontendEndpoint } from "@/data/backend"
+import { frontendEndpoint } from "@/data/endpoints"
 import { ProjectData } from "@/data/model"
 
 export const metadata: Metadata = {
@@ -20,9 +20,9 @@ export const metadata: Metadata = {
 }
 
 export default async function Page() {
-    const selfIntro = await wrappedGet<string>(frontendEndpoint("/self-intro.md"))
+    const selfIntro = await wrappedFetch<string>(frontendEndpoint("/self-intro.md"), "GET")
     const linkExchange = await fetchLinkExchange()
-    const projects = await wrappedGet<ProjectData[]>(frontendEndpoint("/projects.json"))
+    const projects = await wrappedFetch<ProjectData[]>(frontendEndpoint("/projects.json"), "GET")
 
     return (
         <main>

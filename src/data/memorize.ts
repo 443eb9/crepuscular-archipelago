@@ -1,6 +1,6 @@
 import axios from "axios"
 import { MemorizeForm } from "./model"
-import { apiEndpoint } from "./backend"
+import { apiEndpoint } from "./endpoints"
 
 export async function submitMemorize(form: FormData) {
     const payload: MemorizeForm = {

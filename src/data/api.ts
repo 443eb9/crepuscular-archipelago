@@ -1,4 +1,4 @@
-import { apiEndpoint } from "./backend"
+import { apiEndpoint } from "./endpoints"
 import { Island, IslandCount, IslandMapMeta, IslandMapQueryResult, IslandMapRegionCenters, IslandMeta, LinkExchangeData, TagData } from "./model"
 import { LinkExchangeCache } from "./dummy-data"
 
@@ -10,8 +10,8 @@ export type Response<T> = {
     err: string,
 }
 
-export async function wrappedGet<T>(url: string): Promise<Response<T>> {
-    return await fetch(url, { cache: "no-cache" })
+export async function wrappedFetch<T>(url: string, method: "GET" | "POST", body?: BodyInit): Promise<Response<T>> {
+    return await fetch(url, { cache: "no-cache", body, method })
         .then(async resp => {
             const body = await resp.text()
 
@@ -43,7 +43,11 @@ export async function wrappedGet<T>(url: string): Promise<Response<T>> {
 }
 
 export async function wrappedApiGet<T>(endpoint: string): Promise<Response<T>> {
-    return wrappedGet(apiEndpoint(endpoint))
+    return wrappedFetch(apiEndpoint(endpoint), "GET")
+}
+
+export async function wrappedApiPost<T>(endpoint: string, body: Object): Promise<Response<T>> {
+    return wrappedFetch(apiEndpoint(endpoint), "POST", JSON.stringify(body))
 }
 
 export async function fetchAllTags(): Promise<Response<TagData[]>> {
@@ -84,7 +88,7 @@ export function fetchIslandMapRegionCenters(page: number): Promise<Response<Isla
 
 export async function fetchLinkExchange(): Promise<Response<LinkExchangeData[]>> {
     if (process.env.NODE_ENV == "production") {
-        return wrappedGet("https://raw.githubusercontent.com/443eb9/aetheric-cargo/main/partitions/friends.json")
+        return wrappedFetch("https://raw.githubusercontent.com/443eb9/aetheric-cargo/main/partitions/friends.json", "GET")
     } else {
         // Network issue
         return { ok: true, data: LinkExchangeCache }
@@ -92,5 +96,5 @@ export async function fetchLinkExchange(): Promise<Response<LinkExchangeData[]>>
 }
 
 export async function fetchGithubProjectStat(owner: string, name: string): Promise<Response<any>> {
-    return wrappedGet(`https://api.github.com/repos/${owner}/${name}`)
+    return wrappedFetch(`https://api.github.com/repos/${owner}/${name}`, "GET")
 }
