@@ -14,7 +14,7 @@ export default function ArticleContainer({ meta, content, params }: { meta: Isla
     return (
         <div className="flex flex-col gap-10 w-full">
             <OutlinedBox><ArticleHeader island={meta} params={params} /></OutlinedBox>
-            <ArticleBody body={content} />
+            <ArticleBody island={meta} body={content} />
             <ArticleFooter giscus params={params} />
         </div>
     )

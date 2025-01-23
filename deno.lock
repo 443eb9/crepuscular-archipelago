@@ -12,6 +12,7 @@
     "npm:@types/three@0.171": "0.171.0",
     "npm:axios@^1.7.9": "1.7.9",
     "npm:clsx@^2.1.1": "2.1.1",
+    "npm:crypto-js@^4.2.0": "4.2.0",
     "npm:eslint-config-next@15.1.4": "15.1.4_eslint@9.17.0_typescript@5.7.3_@typescript-eslint+parser@8.19.1__eslint@9.17.0__typescript@5.7.3_eslint-plugin-import@2.31.0__eslint@9.17.0",
     "npm:eslint@9": "9.17.0",
     "npm:motion@^11.16.2": "11.16.2_react@18.3.1_react-dom@18.3.1__react@18.3.1",
@@ -808,6 +809,9 @@
         "shebang-command",
         "which"
       ]
+    },
+    "crypto-js@4.2.0": {
+      "integrity": "sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q=="
     },
     "cssesc@3.0.0": {
       "integrity": "sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg=="
@@ -3706,6 +3710,7 @@
         "npm:@types/three@0.171",
         "npm:axios@^1.7.9",
         "npm:clsx@^2.1.1",
+        "npm:crypto-js@^4.2.0",
         "npm:eslint-config-next@15.1.4",
         "npm:eslint@9",
         "npm:motion@^11.16.2",

@@ -15,6 +15,7 @@ mod sql;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    dotenvy::dotenv().unwrap();
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
     let islands_db = IslandDB {

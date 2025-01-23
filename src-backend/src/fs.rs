@@ -1,5 +1,10 @@
 use std::collections::HashMap;
 
+use aes_gcm::{
+    aead::{Aead, Nonce},
+    Aes256Gcm, Key, KeyInit,
+};
+use base64::{prelude::BASE64_STANDARD, Engine};
 use chrono::DateTime;
 use serde::Deserialize;
 use serde_json::Value;
@@ -106,6 +111,15 @@ pub async fn init_cache() -> SqlitePool {
 }
 
 fn load_and_cache_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData>) {
+    let encryption_key =
+        std::env::var("ENCRYPTION_KEY").expect("Missing ENCRYPTION_KEY in environment variable.");
+    let encryption_key = Key::<Aes256Gcm>::from_slice(&encryption_key.as_bytes());
+    let encrypt_nonce = std::env::var("ENCRYPTION_NONCE")
+        .expect("Missing ENCRYPTION_NONCE in environment variable.");
+    let encrypt_nonce = Nonce::<Aes256Gcm>::from_slice(&encrypt_nonce.as_bytes());
+
+    let cipher = Aes256Gcm::new(encryption_key);
+
     let dir = std::fs::read_dir(get_island_storage_root().join("islands")).unwrap();
     let mut all_tags = HashMap::<String, u32>::default();
     let mut islands = Vec::new();
@@ -154,11 +168,16 @@ fn load_and_cache_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData
 
         let (island, tags) =
             front_matter_parse(&lines[front_matter_boundary[0] + 1..front_matter_boundary[1]]);
-        let body = lines[front_matter_boundary[1] + 1..]
+        let mut body = lines[front_matter_boundary[1] + 1..]
             .iter()
             .map(|s| s.chars().chain(['\n']))
             .flatten()
             .collect::<String>();
+
+        if island.is_encrypted {
+            body = BASE64_STANDARD.encode(cipher.encrypt(encrypt_nonce, body.as_bytes()).unwrap());
+        }
+
         islands.push((IslandMeta { id, ..island }, tags.clone(), body));
 
         for tag in &tags {
