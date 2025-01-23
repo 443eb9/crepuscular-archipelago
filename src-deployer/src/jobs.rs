@@ -4,6 +4,10 @@ use std::{
     io::Cursor,
     ops::{Deref, DerefMut},
     process::{Child, Command},
+    sync::{
+        atomic::{AtomicU32, Ordering},
+        Arc,
+    },
     time::Duration,
 };
 
@@ -218,25 +222,48 @@ impl Job for ArtifactFetcher {
         }
 
         log::info!("Updating local repo.");
-        Command::new("git").arg("pull").output()?;
+        Command::new("git").arg("pull").spawn()?.wait()?;
+        Command::new("git")
+            .args(["checkout", "main"])
+            .current_dir("src-media")
+            .spawn()?
+            .wait()?;
+        Command::new("git")
+            .arg("pull")
+            .current_dir("src-media")
+            .spawn()?
+            .wait()?;
 
         let artifact_resp = self.client.get(&latest.archive_download_url).send().await?;
         resp_check_ok!(artifact_resp);
 
         log::info!("Start downloading artifact.");
-        let total_size = artifact_resp.content_length().unwrap_or_default() as usize;
-        let mut artifact = Vec::with_capacity(total_size);
+        let total_size = artifact_resp.content_length().unwrap_or_default() as u32;
+        let mut artifact = Vec::with_capacity(total_size as usize);
         let mut stream = artifact_resp.bytes_stream();
-        while let Some(bytes) = stream.next().await {
-            artifact.extend(bytes?);
-            if total_size != 0 {
+        let progress = Arc::new(AtomicU32::new(0));
+
+        let progress_clone = progress.clone();
+        std::thread::spawn(move || {
+            let total = total_size as u32;
+            loop {
+                let cur = progress_clone.load(Ordering::SeqCst);
+                if cur == total {
+                    break;
+                }
                 log::info!(
                     "Retrieved: {}/{} bytes. {}%",
-                    artifact.len(),
+                    cur,
                     total_size,
-                    (artifact.len() as f32 / total_size as f32 * 10000.0).round() / 100.0
-                )
+                    (cur as f32 / total as f32 * 10000.0).round() / 100.0
+                );
+                std::thread::sleep(Duration::from_secs_f32(0.5));
             }
+        });
+
+        while let Some(bytes) = stream.next().await {
+            artifact.extend(bytes?);
+            progress.store(artifact.len() as u32, Ordering::SeqCst);
         }
 
         log::info!("Start unpacking artifact.");
