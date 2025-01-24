@@ -4,6 +4,7 @@ target
 cache
 .env
 log
+pixiv-weekly.*
 
 # dependencies
 /node_modules
