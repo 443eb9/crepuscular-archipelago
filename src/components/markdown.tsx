@@ -23,7 +23,7 @@ export default function Markdown({ body }: { body: string }) {
                 h4(props) { return <Text {...props} elem="h4" className="text-[1em] my-[1.33em]" /> },
                 h5(props) { return <Text {...props} elem="h5" className="text-[.83em] my-[1.67em]" /> },
                 h6(props) { return <Text {...props} elem="h6" className="text-[.67em] my-[2.33em]" /> },
-                p(props) { return <Text elem="p" className="py-1" {...props} /> },
+                p(props) { return <Text {...props} elem="p" className="py-1 text-wrap break-words" /> },
                 img(props) { return <Image scale={0.5} src={props.src ?? ""} alt={props.src ?? ""} /> },
                 video(props) {
                     return (

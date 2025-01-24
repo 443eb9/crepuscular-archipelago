@@ -63,44 +63,38 @@ export default function ArticleBody({ island, body }: { island: IslandMeta, body
         setCipher({ ...cipher, iv: input.value })
     }
 
+    const InputField = ({ title, id, submit }: { title: string, id: string, submit: () => void }) => {
+        return (
+            <div className="flex flex-col md:flex-row items-center justify-between gap-2">
+                <Text>{title}</Text>
+                <div className="flex flex-grow w-full md:w-auto gap-2">
+                    <Input
+                        id={id}
+                        className="md:flex-grow"
+                        onEnterDown={submit}
+                        style={{ width: "calc(100% - 40px)" }}
+                    />
+                    <OutlinedButton
+                        className="w-8 h-8"
+                        onClick={submit}
+                    >
+                        <IoCheckmarkSharp className="text-2xl" />
+                    </OutlinedButton>
+                </div>
+            </div>
+        )
+    }
+
     const EncryptionHandler = () => <OutlinedBox className="p-4 flex flex-col gap-2">
         <Text>该文章被加密，你需要持有正确的密钥才可解析出正确内容</Text>
-        <div className="flex justify-around">
-            <Text>{cipher?.key ? `本地保存的密钥为：${cipher.key}` : "本地未保存任何密钥"}</Text>
-            <Text>{cipher?.iv ? `本地保存的初始向量为：${cipher.iv}` : "本地未保存任何初始向量"}</Text>
+        <div className="flex flex-col md:flex-row justify-around">
+            <Text className="break-words">{cipher?.key ? `本地保存的密钥为：${cipher.key}` : "本地未保存任何密钥"}</Text>
+            <Text className="break-words">{cipher?.iv ? `本地保存的初始向量为：${cipher.iv}` : "本地未保存任何初始向量"}</Text>
         </div>
-        <div className="flex items-center justify-between gap-2">
-            <Text>（新）密钥</Text>
-            <Input
-                id="cipher-key-input"
-                className="flex flex-grow"
-                onEnterDown={handleKeyChange}
-            />
-            <OutlinedButton
-                className="w-8 h-8"
-                onClick={handleKeyChange}
-            >
-                <IoCheckmarkSharp className="text-2xl" />
-            </OutlinedButton>
+        <div className="flex flex-col gap-2">
+            <InputField title="（新）密钥" id="cipher-key-input" submit={handleKeyChange} />
+            <InputField title="（新）初始向量" id="cipher-iv-input" submit={handleKeyChange} />
         </div>
-        <div className="flex items-center justify-between gap-2">
-            <Text>（新）初始向量</Text>
-            <Input
-                id="cipher-iv-input"
-                className="flex flex-grow"
-                onEnterDown={handleIvChange}
-            />
-            <OutlinedButton
-                className="w-8 h-8"
-                onClick={handleIvChange}
-            >
-                <IoCheckmarkSharp className="text-2xl" />
-            </OutlinedButton>
-        </div>
-        {
-            cipher?.key && cipher.iv &&
-            <Text>已使用本地保存的密钥与初始向量对文章进行解密，如果没有报错并且出现正常的内容，则说明密钥与初始向量正确，解密成功</Text>
-        }
         {
             decryptErr &&
             <Text>解密时发生错误：{decryptErr}</Text>

@@ -114,8 +114,8 @@ fn load_and_cache_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData
     let encryption_key =
         std::env::var("ENCRYPTION_KEY").expect("Missing ENCRYPTION_KEY in environment variable.");
     let encryption_key = Key::<Aes256Gcm>::from_slice(&encryption_key.as_bytes());
-    let encrypt_nonce = std::env::var("ENCRYPTION_NONCE")
-        .expect("Missing ENCRYPTION_NONCE in environment variable.");
+    let encrypt_nonce = std::env::var("ENCRYPTION_IV")
+        .expect("Missing ENCRYPTION_IV in environment variable.");
     let encrypt_nonce = Nonce::<Aes256Gcm>::from_slice(&encrypt_nonce.as_bytes());
 
     let cipher = Aes256Gcm::new(encryption_key);
