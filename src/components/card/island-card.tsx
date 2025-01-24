@@ -7,8 +7,8 @@ import clsx from "clsx"
 import CardBody from "./card-body"
 import Text from "@/components/text"
 import CardFooter from "./card-footer"
-import Link from "next/link"
 import { QueryParams, queryParamsToSearchParams } from "@/data/search-param-util"
+import LinkNoPrefetch from "../link-no-prefetch"
 
 export default function IslandCard({ island, content, params, noLink }: { island: IslandMeta, content?: string, params: QueryParams, noLink?: boolean }) {
     if (island.isDeleted) {
@@ -24,7 +24,7 @@ export default function IslandCard({ island, content, params, noLink }: { island
             case "article":
                 if (!noLink) {
                     return (
-                        <Link
+                        <LinkNoPrefetch
                             className="absolute w-full h-full"
                             href={`/island?id=${island.id}&${queryParamsToSearchParams(params)}`}
                         />

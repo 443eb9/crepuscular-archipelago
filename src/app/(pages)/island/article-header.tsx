@@ -1,10 +1,10 @@
 import { FaClock } from "react-icons/fa6"
 import { IslandMeta } from "@/data/model"
-import Link from "next/link"
 import { TbClockQuestion } from "react-icons/tb"
 import DiagLines from "@/components/decos/diag-lines"
 import { QueryParams } from "@/data/search-param-util"
 import TagsContainer from "@/components/tags-container"
+import LinkNoPrefetch from "@/components/link-no-prefetch"
 
 export default function ArticleHeader({ island, params, noGoBack }: { island: IslandMeta, params: QueryParams, noGoBack?: boolean }) {
     return (
@@ -12,12 +12,12 @@ export default function ArticleHeader({ island, params, noGoBack }: { island: Is
             <div className="flex flex-col gap-1 w-full">
                 {
                     !noGoBack &&
-                    <Link
+                    <LinkNoPrefetch
                         href={`/updates?${params.toString()}`}
                         className="font-argon font-bold p-1"
                     >
                         &lt; $ cd .._
-                    </Link>
+                    </LinkNoPrefetch>
                 }
                 <h1 className="w-24 font-bender text-lg font-bold px-2
                 bg-light-contrast dark:bg-dark-contrast

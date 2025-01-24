@@ -1,11 +1,9 @@
 import ContentWrapper from "@/components/content-wrapper"
 import { Metadata } from "next"
-import Link from "next/link"
 import MeInfo from "./me-info"
 import OutlinedBox from "@/components/outlined-box"
 import EndpointDottedSegment from "@/components/decos/endpoint-dotted-segment"
 import AboutSection from "./about-section"
-import LinkExchange from "./link-exchange"
 import Projects from "./projects"
 import GiscusSection from "@/components/giscus-section"
 import Text from "@/components/text"
@@ -14,6 +12,8 @@ import NetworkErrorable from "@/components/network-errorable"
 import Markdown from "@/components/markdown"
 import { frontendEndpoint } from "@/data/endpoints"
 import { ProjectData } from "@/data/model"
+import LinkNoPrefetch from "@/components/link-no-prefetch"
+import LinkExchange from "./link-exchange"
 
 export const metadata: Metadata = {
     title: "About - Crepuscular Archipelago",
@@ -44,7 +44,7 @@ export default async function Page() {
                 <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
                 <AboutSection title="友链">
                     <Text className="font-sh-sans italic text-light-dark-neutral">
-                        想加上自己的可以来<Link href={"https://github.com/443eb9/aetheric-cargo"}><u>这里</u></Link> ヾ(≧▽≦*)o
+                        想加上自己的可以来<LinkNoPrefetch href={"https://github.com/443eb9/aetheric-cargo"}><u>这里</u></LinkNoPrefetch> ヾ(≧▽≦*)o
                     </Text>
                     <NetworkErrorable resp={linkExchange}>
                         {data => <LinkExchange links={data} />}

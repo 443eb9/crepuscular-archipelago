@@ -7,10 +7,10 @@ import ContentWrapper from "@/components/content-wrapper"
 import OutlinedBox from "@/components/outlined-box"
 import IslandCard from "../../../components/card/island-card"
 import Pagination from "../../../components/pagination"
-import Link from "next/link"
 import Text from "@/components/text"
 import { processQueryParams, RawSearchParams } from "@/data/search-param-util"
 import { frontendEndpoint } from "@/data/endpoints"
+import LinkNoPrefetch from "@/components/link-no-prefetch"
 
 export const metadata: Metadata = {
     title: "Updates - Crepuscular Archipelago",
@@ -78,7 +78,7 @@ export default async function Page(props: { searchParams: Promise<RawSearchParam
                                         </OutlinedBox>
                                         <OutlinedBox className="p-2">
                                             <Text className="italic font-bender font-bold" noFont>
-                                                RSS Feed: <Link href={frontendEndpoint("/rss")} className="underline">https://443eb9.dev/rss</Link>
+                                                RSS Feed: <LinkNoPrefetch href={frontendEndpoint("/rss")} className="underline">https://443eb9.dev/rss</LinkNoPrefetch>
                                             </Text>
                                         </OutlinedBox>
                                     </>

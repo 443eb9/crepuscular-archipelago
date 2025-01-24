@@ -1,3 +1,4 @@
+import LinkNoPrefetch from "@/components/link-no-prefetch"
 import OutlinedButton from "@/components/outlined-button"
 import Text from "@/components/text"
 import Link, { LinkProps } from "next/link"
@@ -5,11 +6,11 @@ import Link, { LinkProps } from "next/link"
 export default function NavButtons({ containerClassName, className }: { containerClassName?: string, className?: string }) {
     function NavButton({ title, ...props }: { title: string } & LinkProps) {
         return (
-            <Link {...props} className={`font-sh-serif font-bold ${className}`}>
+            <LinkNoPrefetch {...props} className={`font-sh-serif font-bold ${className}`}>
                 <OutlinedButton className="w-full h-full">
                     <Text elem="h2">{title}</Text>
                 </OutlinedButton>
-            </Link>
+            </LinkNoPrefetch>
         )
     }
 

@@ -4,8 +4,8 @@ import OutlinedButton from "@/components/outlined-button"
 import Text from "@/components/text"
 import { QueryParams, queryParamsToSearchParams } from "@/data/search-param-util"
 import clsx from "clsx"
-import Link from "next/link"
 import { usePathname } from "next/navigation"
+import LinkNoPrefetch from "./link-no-prefetch"
 
 export default function Pagination({ total, current, buttonSize, params }: { total: number, current: number, buttonSize: number, params: QueryParams }) {
     const pathname = usePathname()
@@ -14,7 +14,7 @@ export default function Pagination({ total, current, buttonSize, params }: { tot
         <>
             {
                 Array.from(Array(total).keys()).map(page =>
-                    <Link key={page} href={`${pathname}?${queryParamsToSearchParams({ ...params, page })}`}>
+                    <LinkNoPrefetch key={page} href={`${pathname}?${queryParamsToSearchParams({ ...params, page })}`}>
                         <OutlinedButton
                             key={page}
                             className={clsx(
@@ -33,7 +33,7 @@ export default function Pagination({ total, current, buttonSize, params }: { tot
                                 {page}
                             </Text>
                         </OutlinedButton>
-                    </Link>
+                    </LinkNoPrefetch>
                 )
             }
         </>

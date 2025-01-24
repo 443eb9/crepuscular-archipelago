@@ -8,8 +8,8 @@ import OutlinedButton from "@/components/outlined-button"
 import { TagData } from "@/data/model"
 import Toggle from "@/components/toggle"
 import RadioButtonGroup from "@/components/radio-button-group"
-import Link from "next/link"
 import { usePathname } from "next/navigation"
+import LinkNoPrefetch from "./link-no-prefetch"
 
 export default function IslandFilter({ params, allTags }: { params: QueryParams, allTags: TagData[] }) {
     const pathname = usePathname()
@@ -32,11 +32,11 @@ export default function IslandFilter({ params, allTags }: { params: QueryParams,
                 <EndpointDottedSegment thickness={1} dotSize={5} style="dashed" className="my-2"></EndpointDottedSegment>
                 <Text className="font-bold text-lg">高级过滤</Text>
                 <div>
-                    <Link href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: params.advf ^ (1 << 1) }).toString()}`}>
+                    <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: params.advf ^ (1 << 1) }).toString()}`}>
                         <Toggle enabled={(params.advf >> 1 & 1) == 1}>
                             <Text>反选</Text>
                         </Toggle>
-                    </Link>
+                    </LinkNoPrefetch>
                     <Text className="font-bold">逻辑模式</Text>
                     <RadioButtonGroup
                         className="flex justify-around"
@@ -44,19 +44,19 @@ export default function IslandFilter({ params, allTags }: { params: QueryParams,
                             { name: "和", mask: (x: number) => x & ~(1 << 2) },
                             { name: "或", mask: (x: number) => x | (1 << 2) },
                         ].map(node =>
-                            <Link href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: node.mask(params.advf) }).toString()}`} key={node.name}>
+                            <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: node.mask(params.advf) }).toString()}`} key={node.name}>
                                 <Text>{node.name}</Text>
-                            </Link >
+                            </LinkNoPrefetch>
                         )}
                         enabled={params.advf >> 2 & 1}
                     >
                     </RadioButtonGroup>
                 </div>
-                <Link href={`${pathname}?${queryParamsToSearchParams({ ...params, tags: 0, advf: 0 }).toString()}`}>
+                <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, tags: 0, advf: 0 }).toString()}`}>
                     <OutlinedButton className="w-full h-8 mt-2">
                         <Text>重置</Text>
                     </OutlinedButton>
-                </Link>
+                </LinkNoPrefetch>
             </div>
         </div>
     )
