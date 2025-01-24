@@ -118,3 +118,9 @@ export type IslandMapMeta = {
 }
 
 export type IslandMapRegionCenters = [number, number][]
+
+export type ArtworkMeta = {
+    name: string,
+    author: string,
+    src: string,
+}

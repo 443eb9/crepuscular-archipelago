@@ -879,6 +879,7 @@ dependencies = [
  "clokwerk",
  "dotenvy",
  "env_logger",
+ "file-format",
  "futures-lite",
  "log",
  "reqwest",
@@ -1069,6 +1070,12 @@ checksum = "1e6853b52649d4ac5c0bd02320cddc5ba956bdb407c4b75a2c6b75bf51500f8c"
 dependencies = [
  "simd-adler32",
 ]
+
+[[package]]
+name = "file-format"
+version = "0.26.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e7ef3d5e8ae27277c8285ac43ed153158178ef0f79567f32024ca8140a0c7cd8"
 
 [[package]]
 name = "flate2"

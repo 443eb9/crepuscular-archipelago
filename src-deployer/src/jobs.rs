@@ -4,24 +4,23 @@ use std::{
     io::Cursor,
     ops::{Deref, DerefMut},
     process::{Child, Command},
-    sync::{
-        atomic::{AtomicU32, Ordering},
-        Arc,
-    },
     time::Duration,
 };
 
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use clokwerk::{Scheduler, SyncJob};
-use futures_lite::{future::block_on, StreamExt};
+use file_format::{FileFormat, Kind};
+use futures_lite::future::block_on;
 use reqwest::{
     header::{HeaderMap, HeaderName, HeaderValue},
     Client, StatusCode,
 };
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use tokio::time::timeout;
 use zip::ZipArchive;
+
+use crate::utils::retrieve_bytes_logged;
 
 pub struct EventLoop {
     scheduler: Scheduler<Utc>,
@@ -153,11 +152,8 @@ impl Default for ArtifactFetcher {
     fn default() -> Self {
         let api_key = std::env::var("GITHUB_TOKEN").unwrap();
         let client = Client::builder()
+        .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246")
             .default_headers(HeaderMap::from_iter([
-                (
-                    HeaderName::from_static("user-agent"),
-                    HeaderValue::from_static("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246"),
-                ),
                 (
                     HeaderName::from_static("accept"),
                     HeaderValue::from_static("application/vnd.github+json"),
@@ -238,33 +234,7 @@ impl Job for ArtifactFetcher {
         resp_check_ok!(artifact_resp);
 
         log::info!("Start downloading artifact.");
-        let total_size = artifact_resp.content_length().unwrap_or_default() as u32;
-        let mut artifact = Vec::with_capacity(total_size as usize);
-        let mut stream = artifact_resp.bytes_stream();
-        let progress = Arc::new(AtomicU32::new(0));
-
-        let progress_clone = progress.clone();
-        std::thread::spawn(move || {
-            let total = total_size as u32;
-            loop {
-                let cur = progress_clone.load(Ordering::SeqCst);
-                if cur == total {
-                    break;
-                }
-                log::info!(
-                    "Retrieved: {}/{} bytes. {}%",
-                    cur,
-                    total_size,
-                    (cur as f32 / total as f32 * 10000.0).round() / 100.0
-                );
-                std::thread::sleep(Duration::from_secs_f32(0.5));
-            }
-        });
-
-        while let Some(bytes) = stream.next().await {
-            artifact.extend(bytes?);
-            progress.store(artifact.len() as u32, Ordering::SeqCst);
-        }
+        let artifact = retrieve_bytes_logged(artifact_resp).await?;
 
         log::info!("Start unpacking artifact.");
         let _ = remove_dir_all(".next"); // Can fail
@@ -277,6 +247,155 @@ impl Job for ArtifactFetcher {
 
     fn timeout(&self) -> Option<Duration> {
         Some(Duration::from_secs(600))
+    }
+}
+
+pub struct PixivIllustFetcher {
+    client: Client,
+}
+
+impl Default for PixivIllustFetcher {
+    fn default() -> Self {
+        let client = Client::builder()
+            .user_agent(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0",
+            )
+            .default_headers(HeaderMap::from_iter([(
+                HeaderName::from_static("referer"),
+                HeaderValue::from_static("https://www.pixiv.net/"),
+            )]))
+            .build()
+            .unwrap();
+
+        Self { client }
+    }
+}
+
+impl PixivIllustFetcher {
+    const PIXIV_RANKING_PAGE: &str = "https://www.pixiv.net/ranking.php?mode=weekly&content=illust";
+}
+
+#[async_trait]
+impl Job for PixivIllustFetcher {
+    async fn run(&mut self) -> Result<(), Box<dyn Error>> {
+        log::info!("Start fetching ranking list");
+        let ranking_page_resp = self.client.get(Self::PIXIV_RANKING_PAGE).send().await?;
+        resp_check_ok!(ranking_page_resp);
+        let ranking_page = ranking_page_resp.text().await?;
+
+        const DATA_ID_START_PAT: &str = "data-id=\"";
+        const DATA_ID_END_PAT: &str = "\"";
+        let first_artwork_id_pos = ranking_page.find(DATA_ID_START_PAT).ok_or_else(|| {
+            format!(
+                "Unable to find the id of first valid artwork in page. {}",
+                ranking_page
+            )
+        })? + DATA_ID_START_PAT.len();
+        let end_first_artwork_id_pos = ranking_page[first_artwork_id_pos..]
+            .find(DATA_ID_END_PAT)
+            .ok_or_else(|| {
+            format!(
+                "Unable to find the end position of id of first valid artwork in page. {}",
+                ranking_page
+            )
+        })? + first_artwork_id_pos;
+
+        let first_artwork_id = u32::from_str_radix(
+            &ranking_page[first_artwork_id_pos..end_first_artwork_id_pos],
+            10,
+        )?;
+        log::info!("Found artwork. Id: {}", first_artwork_id);
+
+        let artwork_page_url = format!("https://www.pixiv.net/artworks/{}", first_artwork_id);
+        let artwork_page_page_resp = self.client.get(&artwork_page_url).send().await?;
+        resp_check_ok!(artwork_page_page_resp);
+        let artwork_page = artwork_page_page_resp.text().await?;
+        const ORIGINAL_ARTWORK_LINK_START_PAT: &str = "https://i.pximg.net/img-original/img/";
+        const ORIGINAL_ARTWORK_LINK_END_PAT: &str = "\"";
+        let original_artwork_link_pos = artwork_page
+            .find(ORIGINAL_ARTWORK_LINK_START_PAT)
+            .ok_or_else(|| {
+                format!(
+                    "Unable to find link to original artwork in page. {}",
+                    artwork_page
+                )
+            })?;
+        let end_original_artwork_link_pos = artwork_page[original_artwork_link_pos..]
+            .find(ORIGINAL_ARTWORK_LINK_END_PAT)
+            .ok_or_else(|| {
+                format!(
+                    "Unable to find end of link to original artwork in page. {}",
+                    artwork_page
+                )
+            })?
+            + original_artwork_link_pos;
+        let original_artwork_link =
+            &artwork_page[original_artwork_link_pos..end_original_artwork_link_pos];
+        log::info!(
+            "Found link to the original artwork image: {}",
+            original_artwork_link
+        );
+
+        const TITLE_START_PAT: &str = "<title>";
+        const TITLE_END_PAT: &str = " - pixiv";
+        let title_pos = artwork_page
+            .find(TITLE_START_PAT)
+            .ok_or_else(|| format!("Unable to find title pos in page. {}", artwork_page))?
+            + TITLE_START_PAT.len();
+        let end_title_pos = artwork_page[title_pos..]
+            .find(TITLE_END_PAT)
+            .ok_or_else(|| format!("Unable to find end of title pos in page. {}", artwork_page))?
+            + title_pos;
+        let split_title = artwork_page[title_pos..end_title_pos]
+            .split(" - ")
+            .collect::<Vec<_>>();
+        if split_title.len() != 2 {
+            return Err(format!(
+                "Unable to parse title: {}",
+                &artwork_page[title_pos..end_title_pos]
+            )
+            .into());
+        }
+
+        let original_artwork_resp = self.client.get(original_artwork_link).send().await?;
+        resp_check_ok!(original_artwork_resp);
+
+        log::info!("Start downloading artwork.");
+        let original_artwork = retrieve_bytes_logged(original_artwork_resp).await?;
+        let artwork_format = FileFormat::from_bytes(&original_artwork);
+        if artwork_format.kind() != Kind::Image {
+            return Err(
+                format!("Unexpected artwork format: {}", artwork_format.extension()).into(),
+            );
+        }
+
+        log::info!("Start saving artwork to disk.");
+        write(
+            format!("public/images/pixiv-weekly.{}", artwork_format.extension()),
+            original_artwork,
+        )?;
+
+        #[derive(Serialize)]
+        struct ArtworkMeta {
+            name: String,
+            author: String,
+            src: String,
+        }
+
+        write(
+            "public/pixiv-weekly.json",
+            serde_json::to_string(&ArtworkMeta {
+                name: split_title[0].to_string(),
+                author: split_title[1].to_string(),
+                src: artwork_page_url,
+            })?,
+        )?;
+
+        Ok(())
+    }
+
+    fn timeout(&self) -> Option<Duration> {
+        Some(Duration::from_secs_f32(30.0))
     }
 }
 
