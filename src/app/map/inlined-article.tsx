@@ -7,10 +7,10 @@ import OutlinedButton from "@/components/outlined-button";
 import { IoArrowForwardOutline, IoChevronDownOutline, IoChevronUpOutline, IoCloseOutline } from "react-icons/io5";
 import { useContext, useState } from "react";
 import { visitingIslandContext } from "./islands-map";
-import Link from "next/link";
 import Text from "@/components/text";
 import { QueryParams } from "@/data/search-param-util";
 import ArticleBody from "../(pages)/island/article-body";
+import LinkNoPrefetch from "@/components/link-no-prefetch";
 
 export default function InlinedArticle({ meta, content, params }: { meta: IslandMeta, content: string, params: QueryParams }) {
     const [headerExpanded, setHeaderExpanded] = useState(true)
@@ -32,12 +32,12 @@ export default function InlinedArticle({ meta, content, params }: { meta: Island
                     }
                     <div className="flex gap-2 m-2">
                         <OutlinedButton>
-                            <Link
+                            <LinkNoPrefetch
                                 href={`/island?id=${meta.id}&${params}`}
                                 target="_blank"
                             >
                                 <IoArrowForwardOutline size={32} />
-                            </Link>
+                            </LinkNoPrefetch>
                         </OutlinedButton>
                         <OutlinedButton onClick={() => visitingIsland?.setter(undefined)}>
                             <IoCloseOutline size={32} />
@@ -49,7 +49,7 @@ export default function InlinedArticle({ meta, content, params }: { meta: Island
                 </div>
             </OutlinedBox>
             <div className="h-full overflow-y-auto">
-                <ArticleBody island={meta} body={content}/>
+                <ArticleBody island={meta} body={content} />
             </div>
         </div>
     )

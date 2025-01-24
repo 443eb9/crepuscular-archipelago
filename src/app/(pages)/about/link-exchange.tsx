@@ -4,10 +4,10 @@ import EmphasizedBox from "@/components/decos/emphasized-box"
 import Text from "@/components/text"
 import { LinkExchangeData } from "@/data/model"
 import Image from "next/image"
-import Link from "next/link"
 import { useEffect, useState } from "react"
 import FriendDialog from "./friend-dialog"
 import { findClassNameAmong } from "@/data/utils"
+import LinkNoPrefetch from "@/components/link-no-prefetch"
 
 const SuppressBlur = "suppress-blur"
 
@@ -51,10 +51,10 @@ export default function LinkExchange({ links }: { links: LinkExchangeData[] }) {
                                             </div>
                                         }
                                     </div>
-                                    <Link target="_blank" href={link.link} className="flex flex-col h-full" style={{ maxWidth: "calc(100% - 80px)" }}>
+                                    <LinkNoPrefetch target="_blank" href={link.link} className="flex flex-col h-full" style={{ maxWidth: "calc(100% - 80px)" }}>
                                         <Text className="text-small">{link.name}</Text>
                                         <Text className="text-light-dark-neutral text-small">{link.message}</Text>
-                                    </Link>
+                                    </LinkNoPrefetch>
                                 </div>
                                 <Text className="mr-4 italic font-bold text-4xl font-bender text-light-dark-neutral" noFont>
                                     #{i}

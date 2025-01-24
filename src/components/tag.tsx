@@ -6,7 +6,7 @@ import clsx from "clsx"
 import OutlinedButton from "./outlined-button"
 import { usePathname } from "next/navigation"
 import { QueryParams, queryParamsToSearchParams } from "@/data/search-param-util"
-import Link from "next/link"
+import LinkNoPrefetch from "./link-no-prefetch"
 
 export default function Tag({
     tag, hideAmount, params, pathnameOverride
@@ -20,7 +20,7 @@ export default function Tag({
     }
 
     return (
-        <Link href={`${pathname}?${queryParamsToSearchParams(paramsAfterClick).toString()}`}>
+        <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams(paramsAfterClick).toString()}`}>
             <OutlinedButton
                 className={clsx(`flex items-baseline gap-1 p-1`,
                     {
@@ -35,6 +35,6 @@ export default function Tag({
                     <Text className="font-neon text-sm">{tag.amount}</Text>
                 }
             </OutlinedButton>
-        </Link>
+        </LinkNoPrefetch>
     )
 }

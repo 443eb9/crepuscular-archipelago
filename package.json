@@ -15,7 +15,6 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/rss": "^0.0.32",
     "@types/three": "^0.171.0",
-    "axios": "^1.7.9",
     "clsx": "^2.1.1",
     "motion": "^11.16.2",
     "next-themes": "^0.4.4",

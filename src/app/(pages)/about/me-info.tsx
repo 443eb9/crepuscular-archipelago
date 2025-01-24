@@ -1,9 +1,9 @@
 import { FiGithub } from "react-icons/fi"
 import { IoMailOutline } from "react-icons/io5"
-import Link from "next/link"
 import { Url } from "next/dist/shared/lib/router/router"
 import OutlinedBox from "@/components/outlined-box"
 import OutlinedButton from "@/components/outlined-button"
+import LinkNoPrefetch from "@/components/link-no-prefetch"
 
 export default function MeInfo() {
     return (
@@ -28,10 +28,10 @@ export default function MeInfo() {
 
 function SocialMediaButton({ children, href }: { children: React.ReactNode, href: Url }) {
     return (
-        <Link href={href}>
+        <LinkNoPrefetch href={href}>
             <OutlinedButton className="w-8 aspect-square">
                 {children}
             </OutlinedButton>
-        </Link>
+        </LinkNoPrefetch>
     )
 }

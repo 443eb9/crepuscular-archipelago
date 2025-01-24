@@ -1,10 +1,10 @@
 "use client"
 
 import { BookmarkData } from "@/data/model"
-import Link from "next/link"
 import { useState } from "react"
 import clsx from "clsx"
 import OutlinedButton from "@/components/outlined-button"
+import LinkNoPrefetch from "@/components/link-no-prefetch"
 
 export default function ShaderPreview({ bookmarks }: { bookmarks: BookmarkData[] }) {
     const [isEnabled, setEnabled] = useState(false)
@@ -28,7 +28,7 @@ export default function ShaderPreview({ bookmarks }: { bookmarks: BookmarkData[]
                 {
                     bookmarks.map((shader, i) =>
                         <div key={i} className="relative">
-                            <Link href={shader.link} className="absolute text-2xl ml-2 font-bender font-bold mix-blend-difference" target="_blank">#{i}</Link>
+                            <LinkNoPrefetch href={shader.link} className="absolute text-2xl ml-2 font-bender font-bold mix-blend-difference" target="_blank">#{i}</LinkNoPrefetch>
                             <iframe
                                 allowFullScreen
                                 className="w-full h-60"

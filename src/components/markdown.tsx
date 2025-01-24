@@ -5,10 +5,10 @@ import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 import { Prism } from "react-syntax-highlighter"
 import Text from "./text"
-import Link from "next/link"
 import markdownStyle from "./markdown-style"
 import "./markdown.css"
 import Image from "./image"
+import LinkNoPrefetch from "./link-no-prefetch"
 
 export default function Markdown({ body }: { body: string }) {
     return (
@@ -101,7 +101,7 @@ export default function Markdown({ body }: { body: string }) {
                     return <li {...props}><Text children={props.children} /></li>
                 },
                 a(props) {
-                    return <Link {...props} href={props.href ?? ""} target="_blank" className="underline" />
+                    return <LinkNoPrefetch {...props} href={props.href ?? ""} target="_blank" className="underline" />
                 },
             }}>
             {body}
