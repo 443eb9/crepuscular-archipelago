@@ -13,6 +13,7 @@ export default function BadAppleEntrance({ enter }: { enter: () => void }) {
         <CanvasRelatedPanel
             posX={x / GridSettings.cellSize}
             posY={y / GridSettings.cellSize}
+            followScale
             className="z-20"
             noBg
         >
