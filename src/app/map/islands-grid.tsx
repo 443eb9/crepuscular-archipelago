@@ -1,14 +1,16 @@
 "use client"
 
-import { IslandMapMeta, IslandMapRegionCenters, IslandMeta } from "@/data/model"
-import BgCanvas from "./bg-canvas"
-import { useContext, useEffect, useState } from "react"
-import { Vector2, Vector3 } from "three"
-import { fetchIslandAt } from "@/data/api"
-import IslandFloatingInfo from "./island-floating-info"
-import Text from "@/components/text"
-import { islandGridContext } from "./islands-map"
+import { IslandMapMeta, IslandMeta } from "@/data/model"
+import { useContext, useEffect, useRef, useState } from "react"
+import { Color, NearestFilter, Texture, TextureLoader, Vector2, Vector3 } from "three"
+import { fetchIslandAt, islandMapUrl } from "@/data/api"
+import { canvasStateContext, islandGridContext } from "./islands-map"
 import { QueryParams } from "@/data/search-param-util"
+import { Canvas, useThree } from "@react-three/fiber"
+import { InfiniteGrid } from "./(canvas)/infinite-grid"
+import { useTheme } from "next-themes"
+import { MouseTracker } from "./(canvas)/mouse-tracker"
+import { EffectComposer } from "@react-three/postprocessing"
 
 export const GridSettings = {
     cellSize: 40,
@@ -23,12 +25,21 @@ export const GridSettings = {
 }
 
 export default function IslandsGrid({
-    islands, islandMapMeta, regionCenters, params
+    islands, islandMapMeta, params
 }: {
-    islands: IslandMeta[], islandMapMeta: IslandMapMeta, regionCenters: IslandMapRegionCenters, params: QueryParams
+    islands: IslandMeta[], islandMapMeta: IslandMapMeta, params: QueryParams
 }) {
-    const [ready, setReady] = useState(false)
     const islandGrid = useContext(islandGridContext)
+    const resolverRef = useRef<HTMLDivElement>(null)
+    const [colors, setColors] = useState<{
+        contrastColor: Color,
+        neutralColor: Color,
+        backgroundColor: Color,
+    } | undefined>()
+    const [noise, setNoise] = useState<Texture | undefined>()
+    const [updateFlag, setUpdateFlag] = useState(false)
+    const canvasStatContext = useContext(canvasStateContext)
+    const { resolvedTheme } = useTheme()
 
     function cursorCanvasPos() {
         const canvas = new Vector2(islandGrid.canvasSize.width, islandGrid.canvasSize.height)
@@ -62,83 +73,159 @@ export default function IslandsGrid({
         }
     }, [])
 
+    useEffect(() => {
+        // TODO not elegant, although works
+        setTimeout(() => {
+            if (resolverRef.current) {
+                const style = window.getComputedStyle(resolverRef.current)
+                setColors({
+                    contrastColor: new Color(style.borderLeftColor),
+                    neutralColor: new Color(style.backgroundColor),
+                    backgroundColor: new Color(style.borderRightColor),
+                })
+            }
+        }, 100)
+    }, [resolvedTheme])
+
+    useEffect(() => {
+        const resizeHandler = () => {
+            setUpdateFlag(!updateFlag)
+        }
+
+        window.addEventListener("resize", resizeHandler)
+        return () => {
+            window.removeEventListener("resize", resizeHandler)
+        }
+    }, [updateFlag])
+
+    useEffect(() => {
+        const noise = new TextureLoader().load(islandMapUrl(params.page))
+        noise.magFilter = NearestFilter
+        noise.minFilter = NearestFilter
+        setNoise(noise)
+    }, [params.page])
+
+    const ColorResolver = () => {
+        return (
+            <div
+                ref={resolverRef}
+                className="bg-light-contrast dark:bg-dark-contrast border-l-light-dark-neutral border-r-light-background dark:border-r-dark-background"
+            />
+        )
+    }
+
+    const CanvasStateTracker = () => {
+        const three = useThree()
+        useEffect(() => {
+            if (islandGrid.cursor != three.pointer || islandGrid.canvasSize != three.size) {
+                islandGrid.cursor = three.pointer
+                islandGrid.canvasSize = three.size
+
+                setUpdateFlag(!updateFlag)
+                canvasStatContext?.setter("ready")
+            }
+        }, [])
+
+        return <></>
+    }
+
+    if (!colors || !noise) {
+        return <ColorResolver />
+    }
+
     // +0.01 Avoid float point precision issue
     const maxValidNoiseValue = (islands.length - 1 + 0.01) / islandMapMeta.perPageRegions
 
     return (
-        <div className="overflow-hidden w-[100vw] h-[100vh]">
-            <div
-                className="w-[100vw] h-[100vh] absolute z-[10000] flex flex-col justify-center items-center"
-                style={{
-                    display: ready ? "none" : undefined,
-                }}
-            >
-                <Text className="font-bender font-bold text-[80px] italic" noFont>Loading Canvas...</Text>
-                <Text className="font-bold text-[20px]" noFont>屏幕会突然变白一下，请注意护眼！</Text>
-            </div>
-            <div className="absolute z-10 w-[100vw] h-[100vh] overflow-hidden pointer-events-none">
-                {
-                    ready &&
-                    islands.map((island, index) => {
-                        const center = regionCenters[index]
-                        return (
-                            <IslandFloatingInfo
-                                key={index}
-                                regionId={index}
-                                island={island}
-                                center={new Vector2(center[0], center[1])}
-                                params={params}
-                            />
-                        )
-                    })
-                }
-            </div>
-            <BgCanvas
-                mapPage={params.page}
-                maxValidNoiseValue={maxValidNoiseValue}
-                onContextMenu={ev => ev.preventDefault()}
-                onMouseDown={ev => {
-                    if (ev.button != 2) { return }
+        <div
+            className="absolute w-[100vw] h-[100vh] cursor-none"
+            onContextMenu={ev => ev.preventDefault()}
+            onMouseDown={ev => {
+                if (ev.button != 2) { return }
 
-                    islandGrid.drag.onDrag = true
+                islandGrid.drag.onDrag = true
 
-                    const initial = cursorCanvasPos()
-                    islandGrid.drag.cursor.x = initial.x
-                    islandGrid.drag.cursor.y = initial.y
+                const initial = cursorCanvasPos()
+                islandGrid.drag.cursor.x = initial.x
+                islandGrid.drag.cursor.y = initial.y
 
-                    islandGrid.drag.canvas.x = islandGrid.canvasTransform.translation.x
-                    islandGrid.drag.canvas.y = islandGrid.canvasTransform.translation.y
-                }}
-                onWheel={ev => {
-                    const oldScale = islandGrid.canvasTransform.scale
-                    const newScale = Math.max(Math.min(oldScale + ev.deltaY * 0.0008, 2), 0.5)
-                    islandGrid.canvasTransform.scale = newScale
-                }}
-                onClick={async ev => {
-                    if (ev.button != 0) { return }
+                islandGrid.drag.canvas.x = islandGrid.canvasTransform.translation.x
+                islandGrid.drag.canvas.y = islandGrid.canvasTransform.translation.y
+            }}
+            onMouseUp={ev => {
+                if (ev.button != 2) { return }
 
-                    const cursor = islandGrid.cursor.clone()
-                        .multiplyScalar(0.5)
-                        .multiply(new Vector2(islandGrid.canvasSize.width, islandGrid.canvasSize.height))
-                    const px = cursor
-                        .multiplyScalar(islandGrid.canvasTransform.scale)
-                        .add(islandGrid.canvasTransform.translation.clone())
-                    const grid = px.divideScalar(GridSettings.cellSize).floor()
-                    const query = await fetchIslandAt(params.page, grid.x, grid.y - 1)
-                    let result: { regionId: number | null; noiseValue: number }
-                    if (query.ok && query.data.result && query.data.result.noiseValue < maxValidNoiseValue) {
-                        result = { ...query.data.result }
-                    } else {
-                        result = {
-                            regionId: null,
-                            noiseValue: 1.0,
-                        }
+                islandGrid.drag.onDrag = false
+            }}
+            onWheel={ev => {
+                const oldScale = islandGrid.canvasTransform.scale
+                const newScale = Math.max(Math.min(oldScale + ev.deltaY * 0.0008, 2), 0.5)
+                islandGrid.canvasTransform.scale = newScale
+            }}
+            onClick={async ev => {
+                if (ev.button != 0) { return }
+
+                const cursor = islandGrid.cursor.clone()
+                    .multiplyScalar(0.5)
+                    .multiply(new Vector2(islandGrid.canvasSize.width, islandGrid.canvasSize.height))
+                const px = cursor
+                    .multiplyScalar(islandGrid.canvasTransform.scale)
+                    .add(islandGrid.canvasTransform.translation.clone())
+                const grid = px.divideScalar(GridSettings.cellSize).floor()
+                const query = await fetchIslandAt(params.page, grid.x, grid.y - 1)
+                let result: { regionId: number | null; noiseValue: number }
+                if (query.ok && query.data.result && query.data.result.noiseValue < maxValidNoiseValue) {
+                    result = { ...query.data.result }
+                } else {
+                    result = {
+                        regionId: null,
+                        noiseValue: 1.0,
                     }
-                    islandGrid.focusingRegionId.value = result.regionId
-                    islandGrid.focusingRegionValue.value = result.noiseValue
-                }}
-                onReady={() => setReady(true)}
-            />
+                }
+                islandGrid.focusingRegionId.value = result.regionId
+                islandGrid.focusingRegionValue.value = result.noiseValue
+            }}
+        >
+            <ColorResolver />
+            <Canvas>
+                <CanvasStateTracker />
+                <EffectComposer>
+                    <InfiniteGrid
+                        params={{
+                            backgroundColor: colors.backgroundColor,
+                            lineColor: new Color(0.1, 0.1, 0.1),
+                            fillColor: colors.neutralColor,
+                            unfocusColor: new Color("#888888"),
+                            outlineColor: new Color("#42d3ff"),
+                            waveColor: new Color("#296ed6"),
+                            cellSize: GridSettings.cellSize,
+                            thickness: GridSettings.lineThickness,
+                            dash: GridSettings.dash,
+                            focusingValue: islandGrid.focusingRegionValue,
+                            noise,
+                            transform: islandGrid.canvasTransform,
+                            canvasSize: islandGrid.canvasSize,
+                            focusOutlineThickness: GridSettings.focusOutlineThickness,
+                            focusOutlineDist: GridSettings.focusOutlineDist,
+                            waveDir: GridSettings.waveDir,
+                            waveDensity: GridSettings.waveDensity,
+                            waveIntensity: GridSettings.waveIntensity,
+                            waveScale: GridSettings.waveScale,
+                            maxValidNoiseValue: maxValidNoiseValue,
+                        }}
+                    />
+                    <MouseTracker
+                        params={{
+                            color: colors.neutralColor,
+                            thickness: GridSettings.lineThickness,
+                            blockSize: GridSettings.cellSize,
+                            transform: islandGrid.canvasTransform,
+                            cursorPos: islandGrid.cursor,
+                            canvasSize: islandGrid.canvasSize,
+                        }}
+                    />
+                </EffectComposer>
+            </Canvas>
         </div>
     )
 }

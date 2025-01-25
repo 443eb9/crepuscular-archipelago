@@ -21,7 +21,6 @@ export default function PixivBackground() {
     useEffect(() => {
         async function fetch() {
             const resp = await wrappedFetch<ArtworkMeta>(frontendEndpoint("/pixiv-weekly.json"), "GET")
-            console.log(resp)
             if (resp.ok) {
                 setMeta(resp.data)
             }

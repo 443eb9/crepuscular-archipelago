@@ -57,8 +57,13 @@ export const islandGridContext = createContext<IslandGridContext>({
     },
 })
 
+export type CanvasState = "ready" | "pending"
+
+export const canvasStateContext = createContext<Required<StatefulContext<CanvasState>> | undefined>(undefined)
+
 export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta: IslandMapMeta, regionCenters: IslandMapRegionCenters, totalIslands: number, allTags: TagData[], params: QueryParams }) {
     const [visitingIsland, setVisitingIsland] = useState<VisitingIsland | undefined>(undefined)
+    const [canvasState, setCanvasState] = useState<CanvasState>("pending")
     const islandGrid = useContext(islandGridContext)
 
     const [lowResolution, setLowResolution] = useState<boolean | undefined>(false)
@@ -84,32 +89,35 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
     return (
         <islandGridContext.Provider value={islandGrid}>
             <visitingIslandContext.Provider value={{ value: visitingIsland, setter: setVisitingIsland }}>
-                <div className="w-[100vw] h-[100vh]">
-                    {
-                        lowResolution != true
-                            ? <>
-                                <IslandPanels
-                                    currentPage={props.params.page}
-                                    totalPages={Math.ceil(props.totalIslands / props.islandMapMeta.perPageRegions)}
-                                    params={props.params}
-                                    allTags={props.allTags}
-                                />
-                                <IslandsGrid
-                                    islands={props.islands}
-                                    islandMapMeta={props.islandMapMeta}
-                                    regionCenters={props.regionCenters}
-                                    params={props.params}
-                                />
-                            </>
-                            : <div className="">
-                                <Text>分辨率过低，可能无法正常显示内容</Text>
-                                <div className="flex items-center">
-                                    <Text>你可以使用更大的屏幕浏览，或者</Text>
-                                    <OutlinedButton onClick={() => setLowResolution(undefined)}>强制渲染</OutlinedButton>
+                <canvasStateContext.Provider value={{ value: canvasState, setter: setCanvasState }}>
+                    <div className="w-[100vw] h-[100vh]">
+                        {
+                            lowResolution != true
+                                ? <>
+                                    <IslandPanels
+                                        currentPage={props.params.page}
+                                        totalPages={Math.ceil(props.totalIslands / props.islandMapMeta.perPageRegions)}
+                                        params={props.params}
+                                        allTags={props.allTags}
+                                        regionCenters={props.regionCenters}
+                                        islands={props.islands}
+                                    />
+                                    <IslandsGrid
+                                        islands={props.islands}
+                                        islandMapMeta={props.islandMapMeta}
+                                        params={props.params}
+                                    />
+                                </>
+                                : <div className="">
+                                    <Text>分辨率过低，可能无法正常显示内容</Text>
+                                    <div className="flex items-center">
+                                        <Text>你可以使用更大的屏幕浏览，或者</Text>
+                                        <OutlinedButton onClick={() => setLowResolution(undefined)}>强制渲染</OutlinedButton>
+                                    </div>
                                 </div>
-                            </div>
-                    }
-                </div>
+                        }
+                    </div>
+                </canvasStateContext.Provider>
             </visitingIslandContext.Provider>
         </islandGridContext.Provider>
     )
