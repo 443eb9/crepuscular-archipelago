@@ -3,7 +3,7 @@ import { Transform } from "@/data/utils"
 import { Size } from "@react-three/fiber"
 import { Effect } from "postprocessing"
 import { forwardRef, useMemo } from "react"
-import { Color, Texture, Uniform, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget } from "three"
+import { Color, Texture, Uniform, Vector2, Vector3, VideoTexture, WebGLRenderer, WebGLRenderTarget } from "three"
 
 const fragment = `
     #include "lygia/generative/fbm.glsl"
@@ -41,7 +41,7 @@ const fragment = `
     const int UNFOCUSED_ISLAND = 1;
     const int FOCUSED_ISLAND = 2;
 
-    float sampleIslandNoise(vec2 coord) {
+    float sampleNoise(vec2 coord) {
         vec2 uv = coord / vec2(textureSize(params.noise, 0));
         uv.y = 1.0 - uv.y;
         if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
@@ -51,7 +51,7 @@ const fragment = `
     }
 
     int isIsland(vec2 coord) {
-        float noise = sampleIslandNoise(coord);
+        float noise = sampleNoise(coord);
         
         if (noise < 1.0 && noise < params.maxValidNoiseValue) {
             if (abs(noise - params.focusingValue) < 0.01) {
@@ -123,6 +123,7 @@ const fragment = `
         // Grid borders
         if (lined && dashed) {
             color = params.lineColor;
+            return color;
         }
         
 #ifdef MODE_ISLANDS
@@ -133,7 +134,7 @@ const fragment = `
             if (params.focusingValue < 1.0) {
                 color *= params.unfocusColor;
             }
-        } else if (!lined || !dashed) {
+        } else {
             applyColor(thisState, color);
         }
         
@@ -141,6 +142,14 @@ const fragment = `
         int outlineState = outline(pixel);
         if (outlineState != NOT_ISLAND) {
             color = params.outlineColor;
+        }
+#elif defined(MODE_NOISE)
+        float noise = sampleNoise(grid);
+        color = mix(params.backgroundColor, params.fillColor, noise);
+#elif defined(MODE_BINARY_NOISE)
+        float noise = sampleNoise(grid);
+        if (noise > params.maxValidNoiseValue) {
+            color = params.fillColor;
         }
 #endif
 
@@ -168,7 +177,7 @@ export type MainGridParams = {
     focusingValue: { value: number },
     maxValidNoiseValue: number,
     cellSize: number,
-    noise: Texture,
+    noise: Texture | VideoTexture,
     canvasSize: Size,
     focusOutlineThickness: number,
     focusOutlineDist: number,
@@ -185,7 +194,7 @@ export type InfiniteGridUniforms = {
     translation: Vector2,
     focusingValue: number,
     maxValidNoiseValue: number,
-    noise: Texture,
+    noise: Texture | VideoTexture,
 
     lineColor: Color,
     fillColor: Color,
@@ -218,12 +227,12 @@ function paramToUniforms(params: MainGridParams): InfiniteGridUniforms {
     }
 }
 
-function gridModeToDef(mode: GridMode) {
+function gridModeToDef(mode: GridMode): string[] {
     switch (mode) {
-        case "islands": return "MODE_ISLANDS"
-        case "binary-noise": return "MODE_BINARY_NOISE"
-        case "noise": return "MODE_NOISE"
-        case "game-of-life": return "MODE_GAME_OF_LIFE"
+        case "islands": return ["MODE_ISLANDS"]
+        case "binary-noise": return ["MODE_BINARY_NOISE", "UV_Y_INV"]
+        case "noise": return ["MODE_NOISE", "UV_Y_INV"]
+        case "game-of-life": return ["MODE_GAME_OF_LIFE"]
     }
 }
 
@@ -233,7 +242,7 @@ class MainGridImpl extends Effect {
     constructor(params: MainGridParams) {
         super("MainGridEffect", resolveLygia(fragment), {
             uniforms: new Map([["params", new Uniform(paramToUniforms(params))]]),
-            defines: new Map([[gridModeToDef(params.mode), ""]])
+            defines: new Map(gridModeToDef(params.mode).map(def => [def, ""]))
         })
 
         this.params = params

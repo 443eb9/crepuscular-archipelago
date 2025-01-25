@@ -1,13 +1,13 @@
 "use client"
 
 import { IslandMapMeta, IslandMeta } from "@/data/model"
-import { useContext, useEffect, useRef, useState } from "react"
-import { Color, NearestFilter, Texture, TextureLoader, Vector2, Vector3 } from "three"
+import { RefObject, useContext, useEffect, useRef, useState } from "react"
+import { Color, NearestFilter, Texture, TextureLoader, Vector2, Vector3, VideoTexture } from "three"
 import { fetchIslandAt, islandMapUrl } from "@/data/api"
 import { canvasStateContext, islandGridContext } from "./islands-map"
 import { QueryParams } from "@/data/search-param-util"
 import { Canvas, useThree } from "@react-three/fiber"
-import { MainGrid } from "./(canvas)/main-grid"
+import { GridMode, MainGrid } from "./(canvas)/main-grid"
 import { useTheme } from "next-themes"
 import { MouseTracker } from "./(canvas)/mouse-tracker"
 import { EffectComposer } from "@react-three/postprocessing"
@@ -24,19 +24,22 @@ export const GridSettings = {
     waveScale: 20,
 }
 
+export type CanvasMode = { mode: "islands" } | { mode: "bad-apple", video: RefObject<HTMLVideoElement> }
+
 export default function MainCanvas({
-    islands, islandMapMeta, params
+    islands, islandMapMeta, params, canvasMode, maxValidNoiseValueOverride
 }: {
-    islands: IslandMeta[], islandMapMeta: IslandMapMeta, params: QueryParams
+    islands: IslandMeta[], islandMapMeta: IslandMapMeta, params: QueryParams, canvasMode: CanvasMode, maxValidNoiseValueOverride?: number
 }) {
     const islandGrid = useContext(islandGridContext)
     const resolverRef = useRef<HTMLDivElement>(null)
+
     const [colors, setColors] = useState<{
         contrastColor: Color,
         neutralColor: Color,
         backgroundColor: Color,
     } | undefined>()
-    const [noise, setNoise] = useState<Texture | undefined>()
+    const [noise, setNoise] = useState<Texture | VideoTexture | undefined>()
     const [updateFlag, setUpdateFlag] = useState(false)
     const canvasState = useContext(canvasStateContext)
     const { resolvedTheme } = useTheme()
@@ -99,11 +102,22 @@ export default function MainCanvas({
     }, [updateFlag])
 
     useEffect(() => {
-        const noise = new TextureLoader().load(islandMapUrl(params.page))
-        noise.magFilter = NearestFilter
-        noise.minFilter = NearestFilter
-        setNoise(noise)
-    }, [params.page])
+        switch (canvasMode.mode) {
+            case "islands":
+                const islandsNoise = new TextureLoader().load(islandMapUrl(params.page))
+                islandsNoise.magFilter = NearestFilter
+                islandsNoise.minFilter = NearestFilter
+                setNoise(islandsNoise)
+                break
+            case "bad-apple":
+                if (!canvasMode.video.current) { return }
+                const badApple = new VideoTexture(canvasMode.video.current)
+                badApple.magFilter = NearestFilter
+                badApple.minFilter = NearestFilter
+                canvasMode.video.current.play()
+                setNoise(badApple)
+        }
+    }, [params.page, canvasMode.mode])
 
     const ColorResolver = () => {
         return (
@@ -122,19 +136,23 @@ export default function MainCanvas({
                 islandGrid.canvasSize = three.size
 
                 setUpdateFlag(!updateFlag)
-                canvasState?.setter("islands")
+                canvasState?.setter("ready")
             }
         }, [])
 
         return <></>
     }
 
-    if (!colors || !noise) {
-        return <ColorResolver />
+    function getGridMode(): GridMode {
+        switch (canvasMode.mode) {
+            case "islands": return "islands"
+            case "bad-apple": return "binary-noise"
+        }
     }
 
     // +0.01 Avoid float point precision issue
-    const maxValidNoiseValue = (islands.length - 1 + 0.01) / islandMapMeta.perPageRegions
+    const maxValidNoiseValue = maxValidNoiseValueOverride ?? (islands.length - 1 + 0.01) / islandMapMeta.perPageRegions
+    const gridMode = getGridMode()
 
     return (
         <div
@@ -191,7 +209,7 @@ export default function MainCanvas({
                 <CanvasStateTracker />
                 <EffectComposer>
                     {
-                        canvasState?.value
+                        colors && noise
                             ? <MainGrid
                                 params={{
                                     backgroundColor: colors.backgroundColor,
@@ -214,21 +232,26 @@ export default function MainCanvas({
                                     waveIntensity: GridSettings.waveIntensity,
                                     waveScale: GridSettings.waveScale,
                                     maxValidNoiseValue: maxValidNoiseValue,
-                                    mode: canvasState?.value,
+                                    mode: gridMode,
                                 }}
                             />
                             : <></>
                     }
-                    <MouseTracker
-                        params={{
-                            color: colors.neutralColor,
-                            thickness: GridSettings.lineThickness,
-                            blockSize: GridSettings.cellSize,
-                            transform: islandGrid.canvasTransform,
-                            cursorPos: islandGrid.cursor,
-                            canvasSize: islandGrid.canvasSize,
-                        }}
-                    />
+                    {
+                        colors
+                            ?
+                            <MouseTracker
+                                params={{
+                                    color: colors.neutralColor,
+                                    thickness: GridSettings.lineThickness,
+                                    blockSize: GridSettings.cellSize,
+                                    transform: islandGrid.canvasTransform,
+                                    cursorPos: islandGrid.cursor,
+                                    canvasSize: islandGrid.canvasSize,
+                                }}
+                            />
+                            : <></>
+                    }
                 </EffectComposer>
             </Canvas>
         </div>

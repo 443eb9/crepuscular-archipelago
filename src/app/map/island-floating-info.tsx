@@ -2,9 +2,8 @@
 
 import { IslandMeta } from "@/data/model"
 import { useContext, useEffect, useState } from "react"
-import { GridSettings } from "./main-canvas"
 import { Vector2 } from "three"
-import { motion, useMotionValue } from "motion/react"
+import { useMotionValue } from "motion/react"
 import OutlinedBox from "@/components/outlined-box"
 import Text from "@/components/text"
 import IslandCard from "../../components/card/island-card"
@@ -12,9 +11,10 @@ import { fetchIsland } from "@/data/api"
 import { islandGridContext, visitingIslandContext } from "./islands-map"
 import clsx from "clsx"
 import { QueryParams } from "@/data/search-param-util"
+import CanvasRelatedPanel from "./canvas-related-panel"
 
 export default function IslandFloatingInfo({ regionId, island, center, params }: { regionId: number, island: IslandMeta, center: Vector2, params: QueryParams }) {
-    const { canvasSize, canvasTransform, focusingRegionId } = useContext(islandGridContext)
+    const { focusingRegionId } = useContext(islandGridContext)
     const x = useMotionValue(0)
     const y = useMotionValue(0)
     const [state, setState] = useState<"focused" | "unfocused" | "none">("none")
@@ -22,25 +22,9 @@ export default function IslandFloatingInfo({ regionId, island, center, params }:
     const visitingIsland = useContext(visitingIslandContext)
     const islandGrid = useContext(islandGridContext)
     const [islandContent, setIslandContent] = useState<string | undefined>()
-    const [updateFlag, setUpdateFlag] = useState(false)
 
     useEffect(() => {
-        const updateHandler = async () => {
-            const translation = canvasTransform.translation.clone()
-            const scale = canvasTransform.scale
-            const size = new Vector2(canvasSize.width, canvasSize.height)
-
-            const uv = center.clone()
-                .multiplyScalar(GridSettings.cellSize)
-                .sub(translation)
-                .divide(size)
-                .divideScalar(0.5 * scale)
-                .addScalar(1)
-                .multiplyScalar(0.5)
-            const pixel = new Vector2(uv.x, 1 - uv.y).multiply(size)
-            x.set(pixel.x)
-            y.set(pixel.y)
-
+        async function update() {
             if (focusingRegionId.value == null) {
                 setState("none")
             } else if (focusingRegionId.value == regionId) {
@@ -57,32 +41,18 @@ export default function IslandFloatingInfo({ regionId, island, center, params }:
             }
         }
 
-        updateHandler()
+        update()
 
-        document.addEventListener("mousemove", updateHandler)
-        document.addEventListener("mousedown", updateHandler)
-        document.addEventListener("wheel", updateHandler)
-
+        document.addEventListener("mousedown", update)
         return () => {
-            document.removeEventListener("mousemove", updateHandler)
-            document.removeEventListener("mousedown", updateHandler)
-            document.removeEventListener("wheel", updateHandler)
+            document.removeEventListener("mousedown", update)
         }
-    }, [islandContent, island.id, updateFlag])
-
-    useEffect(() => {
-        const resizeHandler = () => {
-            setUpdateFlag(!updateFlag)
-        }
-
-        window.addEventListener("resize", resizeHandler)
-        return () => {
-            window.removeEventListener("resize", resizeHandler)
-        }
-    }, [])
+    }, [islandContent, island.id, focusingRegionId.value])
 
     return (
-        <motion.div
+        <CanvasRelatedPanel
+            posX={center.x}
+            posY={center.y}
             className="absolute bg-light-background dark:bg-dark-background"
             style={{
                 x,
@@ -121,6 +91,6 @@ export default function IslandFloatingInfo({ regionId, island, center, params }:
                             <Text className="font-sh-sans">{island.title}</Text>
                         </OutlinedBox>
             }
-        </motion.div>
+        </CanvasRelatedPanel>
     )
 }

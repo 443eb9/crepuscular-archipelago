@@ -6,7 +6,7 @@ import IslandFilter from "../../components/island-filter"
 import { IslandMapRegionCenters, IslandMeta, TagData } from "@/data/model"
 import Text from "@/components/text"
 import { useContext, useEffect } from "react"
-import { canvasStateContext, visitingIslandContext } from "./islands-map"
+import { visitingIslandContext } from "./islands-map"
 import InlinedArticle from "./inlined-article"
 import NavButtons from "../(pages)/nav-buttons"
 import ThemeSwither from "@/components/theme-switcher"
@@ -15,16 +15,17 @@ import ContentWrapper from "@/components/content-wrapper"
 import { findClassNameAmong } from "@/data/utils"
 import IslandFloatingInfo from "./island-floating-info"
 import { Vector2 } from "three"
+import CoordIndicator from "./coord-indicator"
+import { CanvasMode } from "./main-canvas"
 
 const InlinedArticleSuppressBlur = "inlined-article-suppress-blur"
 
 export default function IslandPanels({
-    totalPages, currentPage, params, allTags, islands, regionCenters
+    totalPages, currentPage, params, allTags, islands, regionCenters, mode
 }: {
-    totalPages: number, currentPage: number, params: QueryParams, allTags: TagData[], islands: IslandMeta[], regionCenters: IslandMapRegionCenters,
+    totalPages: number, currentPage: number, params: QueryParams, allTags: TagData[], islands: IslandMeta[], regionCenters: IslandMapRegionCenters, mode: CanvasMode
 }) {
     const visitingIsland = useContext(visitingIslandContext)
-    const canvasState = useContext(canvasStateContext)
 
     useEffect(() => {
         const blurHandler = (ev: MouseEvent) => {
@@ -43,8 +44,7 @@ export default function IslandPanels({
         <div className="absolute z-50 w-[100vw] h-[100vh] pointer-events-none">
             <div className="absolute w-[100vw] h-[100vh] overflow-hidden">
                 {
-                    canvasState?.value == "islands" &&
-                    islands.map((island, index) => {
+                    mode.mode == "islands" && islands.map((island, index) => {
                         const center = regionCenters[index]
                         return (
                             <IslandFloatingInfo
@@ -92,6 +92,9 @@ export default function IslandPanels({
                 <OutlinedBox className="absolute p-1 top-2 backdrop-blur-md pointer-events-auto">
                     <NavButtons className="w-16 h-12 p-1" />
                 </OutlinedBox>
+            </div>
+            <div className="absolute left-0 bottom-0">
+                <CoordIndicator />
             </div>
         </div>
     )
