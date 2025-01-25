@@ -2,7 +2,7 @@
 
 import { IslandMeta } from "@/data/model"
 import { useContext, useEffect, useState } from "react"
-import { GridSettings } from "./islands-grid"
+import { GridSettings } from "./main-canvas"
 import { Vector2 } from "three"
 import { motion, useMotionValue } from "motion/react"
 import OutlinedBox from "@/components/outlined-box"

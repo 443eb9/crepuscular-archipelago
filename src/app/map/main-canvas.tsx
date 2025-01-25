@@ -7,7 +7,7 @@ import { fetchIslandAt, islandMapUrl } from "@/data/api"
 import { canvasStateContext, islandGridContext } from "./islands-map"
 import { QueryParams } from "@/data/search-param-util"
 import { Canvas, useThree } from "@react-three/fiber"
-import { InfiniteGrid } from "./(canvas)/infinite-grid"
+import { MainGrid } from "./(canvas)/main-grid"
 import { useTheme } from "next-themes"
 import { MouseTracker } from "./(canvas)/mouse-tracker"
 import { EffectComposer } from "@react-three/postprocessing"
@@ -24,7 +24,7 @@ export const GridSettings = {
     waveScale: 20,
 }
 
-export default function IslandsGrid({
+export default function MainCanvas({
     islands, islandMapMeta, params
 }: {
     islands: IslandMeta[], islandMapMeta: IslandMapMeta, params: QueryParams
@@ -38,7 +38,7 @@ export default function IslandsGrid({
     } | undefined>()
     const [noise, setNoise] = useState<Texture | undefined>()
     const [updateFlag, setUpdateFlag] = useState(false)
-    const canvasStatContext = useContext(canvasStateContext)
+    const canvasState = useContext(canvasStateContext)
     const { resolvedTheme } = useTheme()
 
     function cursorCanvasPos() {
@@ -122,7 +122,7 @@ export default function IslandsGrid({
                 islandGrid.canvasSize = three.size
 
                 setUpdateFlag(!updateFlag)
-                canvasStatContext?.setter("ready")
+                canvasState?.setter("islands")
             }
         }, [])
 
@@ -190,30 +190,35 @@ export default function IslandsGrid({
             <Canvas>
                 <CanvasStateTracker />
                 <EffectComposer>
-                    <InfiniteGrid
-                        params={{
-                            backgroundColor: colors.backgroundColor,
-                            lineColor: new Color(0.1, 0.1, 0.1),
-                            fillColor: colors.neutralColor,
-                            unfocusColor: new Color("#888888"),
-                            outlineColor: new Color("#42d3ff"),
-                            waveColor: new Color("#296ed6"),
-                            cellSize: GridSettings.cellSize,
-                            thickness: GridSettings.lineThickness,
-                            dash: GridSettings.dash,
-                            focusingValue: islandGrid.focusingRegionValue,
-                            noise,
-                            transform: islandGrid.canvasTransform,
-                            canvasSize: islandGrid.canvasSize,
-                            focusOutlineThickness: GridSettings.focusOutlineThickness,
-                            focusOutlineDist: GridSettings.focusOutlineDist,
-                            waveDir: GridSettings.waveDir,
-                            waveDensity: GridSettings.waveDensity,
-                            waveIntensity: GridSettings.waveIntensity,
-                            waveScale: GridSettings.waveScale,
-                            maxValidNoiseValue: maxValidNoiseValue,
-                        }}
-                    />
+                    {
+                        canvasState?.value
+                            ? <MainGrid
+                                params={{
+                                    backgroundColor: colors.backgroundColor,
+                                    lineColor: new Color(0.1, 0.1, 0.1),
+                                    fillColor: colors.neutralColor,
+                                    unfocusColor: new Color("#888888"),
+                                    outlineColor: new Color("#42d3ff"),
+                                    waveColor: new Color("#296ed6"),
+                                    cellSize: GridSettings.cellSize,
+                                    thickness: GridSettings.lineThickness,
+                                    dash: GridSettings.dash,
+                                    focusingValue: islandGrid.focusingRegionValue,
+                                    noise,
+                                    transform: islandGrid.canvasTransform,
+                                    canvasSize: islandGrid.canvasSize,
+                                    focusOutlineThickness: GridSettings.focusOutlineThickness,
+                                    focusOutlineDist: GridSettings.focusOutlineDist,
+                                    waveDir: GridSettings.waveDir,
+                                    waveDensity: GridSettings.waveDensity,
+                                    waveIntensity: GridSettings.waveIntensity,
+                                    waveScale: GridSettings.waveScale,
+                                    maxValidNoiseValue: maxValidNoiseValue,
+                                    mode: canvasState?.value,
+                                }}
+                            />
+                            : <></>
+                    }
                     <MouseTracker
                         params={{
                             color: colors.neutralColor,

@@ -2,7 +2,7 @@
 
 import { Island, IslandMapMeta, IslandMapRegionCenters, IslandMeta, TagData } from "@/data/model"
 import IslandPanels from "./island-panels"
-import IslandsGrid from "./islands-grid"
+import MainCanvas from "./main-canvas"
 import { StatefulContext, Transform } from "@/data/utils"
 import { createContext, useContext, useEffect, useState } from "react"
 import { Vector2 } from "three"
@@ -10,6 +10,7 @@ import { Size } from "@react-three/fiber"
 import Text from "@/components/text"
 import OutlinedButton from "@/components/outlined-button"
 import { QueryParams } from "@/data/search-param-util"
+import { GridMode } from "./(canvas)/main-grid"
 
 type VisitingIsland = { meta: IslandMeta, content: Island }
 
@@ -57,13 +58,11 @@ export const islandGridContext = createContext<IslandGridContext>({
     },
 })
 
-export type CanvasState = "ready" | "pending"
-
-export const canvasStateContext = createContext<Required<StatefulContext<CanvasState>> | undefined>(undefined)
+export const canvasStateContext = createContext<StatefulContext<GridMode | undefined> | undefined>(undefined)
 
 export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta: IslandMapMeta, regionCenters: IslandMapRegionCenters, totalIslands: number, allTags: TagData[], params: QueryParams }) {
     const [visitingIsland, setVisitingIsland] = useState<VisitingIsland | undefined>(undefined)
-    const [canvasState, setCanvasState] = useState<CanvasState>("pending")
+    const [canvasState, setCanvasState] = useState<GridMode | undefined>(undefined)
     const islandGrid = useContext(islandGridContext)
 
     const [lowResolution, setLowResolution] = useState<boolean | undefined>(false)
@@ -102,7 +101,7 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
                                         regionCenters={props.regionCenters}
                                         islands={props.islands}
                                     />
-                                    <IslandsGrid
+                                    <MainCanvas
                                         islands={props.islands}
                                         islandMapMeta={props.islandMapMeta}
                                         params={props.params}

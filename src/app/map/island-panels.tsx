@@ -43,7 +43,7 @@ export default function IslandPanels({
         <div className="absolute z-50 w-[100vw] h-[100vh] pointer-events-none">
             <div className="absolute w-[100vw] h-[100vh] overflow-hidden">
                 {
-                    canvasState?.value == "ready" &&
+                    canvasState?.value == "islands" &&
                     islands.map((island, index) => {
                         const center = regionCenters[index]
                         return (
