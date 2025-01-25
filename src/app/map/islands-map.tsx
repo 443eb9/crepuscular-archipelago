@@ -93,6 +93,12 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
         }
     }, [])
 
+    useEffect(() => {
+        if (videoRef.current) {
+            videoRef.current.volume = 0.5
+        }
+    }, [canvasMode])
+
     return (
         <islandGridContext.Provider value={islandGrid}>
             <visitingIslandContext.Provider value={{ value: visitingIsland, setter: setVisitingIsland }}>
