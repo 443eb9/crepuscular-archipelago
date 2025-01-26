@@ -1,4 +1,4 @@
-use clokwerk::{Interval, TimeUnits};
+use clokwerk::TimeUnits;
 use env_logger::Env;
 
 use crate::jobs::{
@@ -29,6 +29,6 @@ async fn main() {
 
     EventLoop::new()
         .schedule(jobs, |sc| sc.every(5u32.minutes()))
-        .schedule(pixiv, |sc| sc.every(Interval::Monday))
+        .schedule(pixiv, |sc| sc.every(1u32.day()))
         .start();
 }
