@@ -2,7 +2,7 @@
 
 import { IslandMapMeta, IslandMeta } from "@/data/model"
 import { RefObject, useContext, useEffect, useRef, useState } from "react"
-import { Color, NearestFilter, Texture, TextureLoader, Vector2, Vector3, VideoTexture } from "three"
+import { Color, NearestFilter, Texture, TextureLoader, Vector2, Vector3, VideoTexture, WebGLRenderTarget } from "three"
 import { fetchIslandAt, islandMapUrl } from "@/data/api"
 import { canvasStateContext, islandGridContext } from "./islands-map"
 import { QueryParams } from "@/data/search-param-util"
@@ -11,6 +11,7 @@ import { GridMode, MainGrid } from "./(canvas)/main-grid"
 import { useTheme } from "next-themes"
 import { MouseTracker } from "./(canvas)/mouse-tracker"
 import { EffectComposer } from "@react-three/postprocessing"
+import { GameOfLife, GameOfLifeParams } from "./(canvas)/game-of-life"
 
 export const GridSettings = {
     cellSize: 40,
@@ -24,7 +25,10 @@ export const GridSettings = {
     waveScale: 20,
 }
 
-export type CanvasMode = { mode: "islands" } | { mode: "bad-apple", video: RefObject<HTMLVideoElement> }
+export type CanvasMode = { mode: "islands" | "game-of-life" } | { mode: "bad-apple", video: RefObject<HTMLVideoElement> }
+
+// React runs twice useEffect when using strict mode in development environment. Fk you react.
+const GofClockState = { started: false }
 
 export default function MainCanvas({
     islands, islandMapMeta, params, canvasMode, maxValidNoiseValueOverride
@@ -39,10 +43,17 @@ export default function MainCanvas({
         neutralColor: Color,
         backgroundColor: Color,
     } | undefined>()
-    const [noise, setNoise] = useState<Texture | VideoTexture | undefined>()
+    const [noise, setNoise] = useState<{ value: Texture } | undefined>()
     const [updateFlag, setUpdateFlag] = useState(false)
     const canvasState = useContext(canvasStateContext)
     const { resolvedTheme } = useTheme()
+    const gofParams = useRef<GameOfLifeParams>({
+        texA: new WebGLRenderTarget(10, 10, { minFilter: NearestFilter, magFilter: NearestFilter }),
+        texB: new WebGLRenderTarget(20, 20, { minFilter: NearestFilter, magFilter: NearestFilter }),
+        simulating: false,
+        directionFlagAToB: false,
+        togglePixelAlive: new Vector2(-10, -10),
+    })
 
     function cursorCanvasPos() {
         const canvas = new Vector2(islandGrid.canvasSize.width, islandGrid.canvasSize.height)
@@ -107,7 +118,7 @@ export default function MainCanvas({
                 const islandsNoise = new TextureLoader().load(islandMapUrl(params.page))
                 islandsNoise.magFilter = NearestFilter
                 islandsNoise.minFilter = NearestFilter
-                setNoise(islandsNoise)
+                setNoise({ value: islandsNoise })
                 break
             case "bad-apple":
                 if (!canvasMode.video.current) { return }
@@ -115,7 +126,11 @@ export default function MainCanvas({
                 badApple.magFilter = NearestFilter
                 badApple.minFilter = NearestFilter
                 canvasMode.video.current.play()
-                setNoise(badApple)
+                setNoise({ value: badApple })
+                break
+            case "game-of-life":
+                setNoise({ value: gofParams.current.texB.texture })
+                break
         }
     }, [params.page, canvasMode.mode])
 
@@ -143,10 +158,33 @@ export default function MainCanvas({
         return <></>
     }
 
+    const GameOfLifeDriver = () => {
+        const { invalidate, gl } = useThree()
+        useEffect(() => {
+            function clock() {
+                const params = gofParams.current
+                gl.setRenderTarget(params.directionFlagAToB ? params.texB : params.texA)
+                if (noise) {
+                    noise.value = (params.directionFlagAToB ? params.texB : params.texA).texture
+                }
+                params.directionFlagAToB = !params.directionFlagAToB
+                invalidate()
+                setTimeout(clock, 1000)
+            }
+
+            if (GofClockState.started) { return }
+
+            GofClockState.started = true
+            clock()
+        }, [])
+        return <></>
+    }
+
     function getGridMode(): GridMode {
         switch (canvasMode.mode) {
             case "islands": return "islands"
             case "bad-apple": return "binary-noise"
+            case "game-of-life": return "noise"
         }
     }
 
@@ -156,7 +194,8 @@ export default function MainCanvas({
 
     return (
         <div
-            className="absolute w-[100vw] h-[100vh] cursor-none"
+            // className="absolute w-[100vw] h-[100vh] cursor-none"
+            className="absolute w-[100vw] h-[100vh]"
             onContextMenu={ev => ev.preventDefault()}
             onMouseDown={ev => {
                 if (ev.button != 2) { return }
@@ -190,18 +229,31 @@ export default function MainCanvas({
                     .multiplyScalar(islandGrid.canvasTransform.scale)
                     .add(islandGrid.canvasTransform.translation.clone())
                 const grid = px.divideScalar(GridSettings.cellSize).floor()
-                const query = await fetchIslandAt(params.page, grid.x, grid.y - 1)
-                let result: { regionId: number | null; noiseValue: number }
-                if (query.ok && query.data.result && query.data.result.noiseValue < maxValidNoiseValue) {
-                    result = { ...query.data.result }
-                } else {
-                    result = {
-                        regionId: null,
-                        noiseValue: 1.0,
-                    }
+                const calibratedPos = new Vector2(grid.x, grid.y - 1)
+
+                switch (canvasMode.mode) {
+                    case "islands":
+                        const query = await fetchIslandAt(params.page, calibratedPos.x, calibratedPos.y)
+
+                        let result: { regionId: number | null; noiseValue: number }
+                        if (query.ok && query.data.result && query.data.result.noiseValue < maxValidNoiseValue) {
+                            result = { ...query.data.result }
+                        } else {
+                            result = {
+                                regionId: null,
+                                noiseValue: 1.0,
+                            }
+                        }
+                        islandGrid.focusingRegionId.value = result.regionId
+                        islandGrid.focusingRegionValue.value = result.noiseValue
+                        break
+                    case "game-of-life":
+                        gofParams.current.togglePixelAlive.x = calibratedPos.x
+                        gofParams.current.togglePixelAlive.y = calibratedPos.y
+                        break
+                    case "bad-apple":
+                        break
                 }
-                islandGrid.focusingRegionId.value = result.regionId
-                islandGrid.focusingRegionValue.value = result.noiseValue
             }}
         >
             <ColorResolver />
@@ -239,8 +291,7 @@ export default function MainCanvas({
                     }
                     {
                         colors
-                            ?
-                            <MouseTracker
+                            ? <MouseTracker
                                 params={{
                                     color: colors.neutralColor,
                                     thickness: GridSettings.lineThickness,
@@ -254,6 +305,15 @@ export default function MainCanvas({
                     }
                 </EffectComposer>
             </Canvas>
+            {
+                canvasMode.mode == "game-of-life" &&
+                <Canvas frameloop="demand">
+                    <EffectComposer>
+                        <GameOfLifeDriver />
+                        <GameOfLife params={gofParams.current} />
+                    </EffectComposer>
+                </Canvas>
+            }
         </div>
     )
 }

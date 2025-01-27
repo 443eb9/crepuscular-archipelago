@@ -1,10 +1,8 @@
-import { production } from "@/data/endpoints"
-import { resolveLygia } from "@/data/lygia"
 import { Transform } from "@/data/utils"
 import { Size } from "@react-three/fiber"
 import { Effect } from "postprocessing"
 import { forwardRef, useMemo } from "react"
-import { Color, Texture, Uniform, Vector2, Vector3, VideoTexture, WebGLRenderer, WebGLRenderTarget } from "three"
+import { Color, DataTexture, Texture, Uniform, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget } from "three"
 import resolvedMainGridFrag from "./resolved-main-grid-frag"
 
 const fragment = `
@@ -164,7 +162,7 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
 }
 `
 
-export type GridMode = "islands" | "binary-noise" | "noise" | "game-of-life"
+export type GridMode = "islands" | "binary-noise" | "noise"
 
 export type MainGridParams = {
     backgroundColor: Color,
@@ -179,7 +177,7 @@ export type MainGridParams = {
     focusingValue: { value: number },
     maxValidNoiseValue: number,
     cellSize: number,
-    noise: Texture | VideoTexture,
+    noise: { value: Texture },
     canvasSize: Size,
     focusOutlineThickness: number,
     focusOutlineDist: number,
@@ -196,7 +194,7 @@ export type InfiniteGridUniforms = {
     translation: Vector2,
     focusingValue: number,
     maxValidNoiseValue: number,
-    noise: Texture | VideoTexture,
+    noise: Texture,
 
     lineColor: Color,
     fillColor: Color,
@@ -218,10 +216,10 @@ export type InfiniteGridUniforms = {
 }
 
 function paramToUniforms(params: MainGridParams): InfiniteGridUniforms {
-    const { transform, focusingValue, canvasSize, ...rest } = params
-
+    const { transform, focusingValue, noise, canvasSize, mode, ...rest } = params
     return {
         ...rest,
+        noise: noise.value,
         focusingValue: focusingValue.value,
         translation: transform.translation,
         scale: transform.scale,
@@ -232,9 +230,8 @@ function paramToUniforms(params: MainGridParams): InfiniteGridUniforms {
 function gridModeToDef(mode: GridMode): string[] {
     switch (mode) {
         case "islands": return ["MODE_ISLANDS"]
-        case "binary-noise": return ["MODE_BINARY_NOISE", "UV_Y_INV"]
-        case "noise": return ["MODE_NOISE", "UV_Y_INV"]
-        case "game-of-life": return ["MODE_GAME_OF_LIFE"]
+        case "binary-noise": return ["MODE_BINARY_NOISE"]
+        case "noise": return ["MODE_NOISE"]
     }
 }
 
@@ -242,7 +239,7 @@ class MainGridImpl extends Effect {
     params: MainGridParams
 
     constructor(params: MainGridParams) {
-        super("MainGridEffect", production ? resolvedMainGridFrag : resolveLygia(fragment), {
+        super("MainGridEffect", resolvedMainGridFrag, {
             uniforms: new Map([["params", new Uniform(paramToUniforms(params))]]),
             defines: new Map(gridModeToDef(params.mode).map(def => [def, ""]))
         })

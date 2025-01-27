@@ -144,7 +144,8 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
                                         islandMapMeta={props.islandMapMeta}
                                         params={props.params}
                                         maxValidNoiseValueOverride={canvasMode.mode == "bad-apple" ? 0.5 : undefined}
-                                        canvasMode={canvasMode}
+                                        // canvasMode={canvasMode}
+                                        canvasMode={{ mode: "game-of-life" }}
                                     />
                                 </>
                                 : <div>

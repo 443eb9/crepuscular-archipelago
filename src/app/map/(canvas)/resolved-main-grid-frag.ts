@@ -648,6 +648,9 @@ vec3 getPixelColor(vec2 pixel) {
 }
 
 void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
+    outputColor = vec4(vec2(textureSize(params.noise, 0)) / vec2(2), 0.0, 1.0);
+    return;
+
     vec2 pixel = (uv * 2.0 - 1.0) * 0.5 * params.canvasSize * params.scale + params.translation;
     outputColor = vec4(getPixelColor(pixel), 1.0);
 }

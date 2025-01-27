@@ -38,8 +38,8 @@ export default function CoordIndicator() {
     }
 
     return (
-        <div>
-            <Text className="font-bender" noFont>{pos.x}, {pos.y}</Text>
+        <div className="bg-light-background dark:bg-dark-background px-1">
+            <Text className="font-bender font-bold" noFont>{pos.x}, {pos.y}</Text>
         </div>
     )
 }
