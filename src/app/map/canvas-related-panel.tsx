@@ -49,14 +49,18 @@ export default function CanvasRelatedPanel({ posX, posY, followScale, noBg, ...p
 
     useEffect(() => {
         const resizeHandler = () => {
-            setUpdateFlag(!updateFlag)
+            // TODO need to wait for a while or the component will rerender before canvasSize gets updated.
+            //      but this is not elegant
+            setTimeout(() => {
+                setUpdateFlag(!updateFlag)
+            }, 100)
         }
 
         window.addEventListener("resize", resizeHandler)
         return () => {
             window.removeEventListener("resize", resizeHandler)
         }
-    }, [])
+    }, [updateFlag])
 
     return (
         <motion.div

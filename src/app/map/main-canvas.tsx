@@ -138,7 +138,7 @@ export default function MainCanvas({
                 setUpdateFlag(!updateFlag)
                 canvasState?.setter("ready")
             }
-        }, [])
+        }, [updateFlag])
 
         return <></>
     }
