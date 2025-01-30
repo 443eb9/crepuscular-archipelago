@@ -73,21 +73,20 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
     const islandGrid = useContext(islandGridContext)
     const [canvasMode, setCanvasMode] = useState<CanvasMode>({ mode: "islands" })
 
-    const [lowResolution, setLowResolution] = useState<boolean | undefined>(false)
+    const [mobile, setMobile] = useState<boolean | undefined>(false)
 
     useEffect(() => {
         const resizeHandler = () => {
-            const width = window.innerWidth
-            const height = window.innerHeight
-
-            if ((width < 1024 || height < 768) && lowResolution != undefined) {
-                setLowResolution(true)
+            if (window.innerWidth < window.innerHeight && mobile != undefined) {
+                setMobile(true)
             } else {
-                setLowResolution(false)
+                setMobile(false)
             }
         }
 
+        resizeHandler()
         window.addEventListener("resize", resizeHandler)
+
         return () => {
             window.removeEventListener("resize", resizeHandler)
         }
@@ -125,7 +124,7 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
                             }} />
                         }
                         {
-                            lowResolution != true
+                            mobile != true
                                 ? <>
                                     {
                                         canvasState == "ready" &&
@@ -148,10 +147,10 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
                                     />
                                 </>
                                 : <div>
-                                    <Text>分辨率过低，可能无法正常显示内容</Text>
+                                    <Text>正在使用竖屏设备，可能无法正常显示内容。另外，触屏设备无法正常使用本页面。</Text>
                                     <div className="flex items-center">
                                         <Text>你可以使用更大的屏幕浏览，或者</Text>
-                                        <OutlinedButton onClick={() => setLowResolution(undefined)}>强制渲染</OutlinedButton>
+                                        <OutlinedButton onClick={() => setMobile(undefined)}>强制渲染</OutlinedButton>
                                     </div>
                                 </div>
                         }
