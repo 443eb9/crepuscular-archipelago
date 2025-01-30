@@ -38,8 +38,9 @@ impl Default for ContentEncryptor {
 }
 
 impl ContentEncryptor {
-    pub fn encrypt(&self, content: &str) -> String {
-        BASE64_STANDARD.encode(self.cipher.encrypt(&self.iv, content.as_bytes()).unwrap())
+    pub fn encrypt(&self, content: &mut String) {
+        *content =
+            BASE64_STANDARD.encode(self.cipher.encrypt(&self.iv, content.as_bytes()).unwrap());
     }
 }
 
@@ -220,7 +221,7 @@ fn load_all_islands(
 
         let (island, mut body) = extract_frontmatter::<IslandToml>(content);
         if island.is_encrypted {
-            body = encryptor.encrypt(&content);
+            encryptor.encrypt(&mut body);
         }
 
         for tag in &island.tags {
@@ -334,7 +335,7 @@ fn load_all_foams(encryptor: &ContentEncryptor) -> Vec<Foam> {
 
         let (foam, mut body) = extract_frontmatter::<FoamToml>(content);
         if foam.is_encrypted {
-            body = encryptor.encrypt(&content);
+            encryptor.encrypt(&mut body);
         }
 
         foams.push(Foam {
@@ -354,7 +355,7 @@ fn extract_frontmatter<T: DeserializeOwned>(body: &str) -> (T, String) {
     let frontmatter_end = body[frontmatter_begin..].find(DELIMITER).unwrap() + frontmatter_begin;
     (
         toml::from_str(&body[frontmatter_begin..frontmatter_end]).unwrap(),
-        body[frontmatter_end + DELIMITER.len()..].to_string(),
+        body[frontmatter_end + DELIMITER.len()..].trim().to_string(),
     )
 }
 
