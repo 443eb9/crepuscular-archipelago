@@ -22,6 +22,9 @@ use zip::ZipArchive;
 
 use crate::utils::retrieve_bytes_logged;
 
+const DEFAULT_UA: &str =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0";
+
 pub struct EventLoop {
     scheduler: Scheduler<Utc>,
 }
@@ -144,15 +147,15 @@ macro_rules! resp_check_ok {
     };
 }
 
-pub struct ArtifactFetcher {
+pub struct RepoUpdater {
     client: Client,
 }
 
-impl Default for ArtifactFetcher {
+impl Default for RepoUpdater {
     fn default() -> Self {
         let api_key = std::env::var("GITHUB_TOKEN").unwrap();
         let client = Client::builder()
-        .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246")
+            .user_agent(DEFAULT_UA)
             .default_headers(HeaderMap::from_iter([
                 (
                     HeaderName::from_static("accept"),
@@ -190,16 +193,16 @@ pub struct WorkflowRun {
     pub head_sha: String,
 }
 
-impl ArtifactFetcher {
+impl RepoUpdater {
     const ARTIFACTS_API_URL: &str =
         "https://api.github.com/repos/443eb9/crepuscular-archipelago/actions/artifacts";
 }
 
 #[async_trait]
-impl Job for ArtifactFetcher {
+impl Job for RepoUpdater {
     async fn run(&mut self) -> Result<(), Box<dyn Error>> {
-        log::info!("Checking local commit hash.");
         let local_commit = read_to_string(".next/commit");
+        log::info!("Local commit: {:?}", local_commit.as_ref().ok());
 
         let artifact_list_resp = self.client.get(Self::ARTIFACTS_API_URL).send().await?;
         resp_check_ok!(artifact_list_resp);
@@ -207,11 +210,7 @@ impl Job for ArtifactFetcher {
         let artifacts = artifact_list_resp.json::<ArtifactList>().await?;
         let latest = artifacts.artifacts.first().unwrap();
 
-        log::info!(
-            "Local commit: {:?}, remote commit: {}",
-            local_commit.as_ref().ok(),
-            latest.workflow_run.head_sha,
-        );
+        log::info!("Remote commit: {}", latest.workflow_run.head_sha,);
 
         if local_commit.is_ok_and(|c| c == latest.workflow_run.head_sha) {
             return Err("Already up-to-date. Skipping".into());
@@ -237,7 +236,7 @@ impl Job for ArtifactFetcher {
         let artifact = retrieve_bytes_logged(artifact_resp).await?;
 
         log::info!("Start unpacking artifact.");
-        let _ = remove_dir_all(".next"); // Can fail
+        let _ = remove_dir_all(".next");
         create_dir_all(".next")?;
         write(".next/commit", &latest.workflow_run.head_sha)?;
         ZipArchive::new(Cursor::new(artifact))?.extract(".next")?;
@@ -257,9 +256,7 @@ pub struct PixivIllustFetcher {
 impl Default for PixivIllustFetcher {
     fn default() -> Self {
         let client = Client::builder()
-            .user_agent(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0",
-            )
+            .user_agent(DEFAULT_UA)
             .default_headers(HeaderMap::from_iter([(
                 HeaderName::from_static("referer"),
                 HeaderValue::from_static("https://www.pixiv.net/"),

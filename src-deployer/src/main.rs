@@ -2,7 +2,7 @@ use clokwerk::TimeUnits;
 use env_logger::Env;
 
 use crate::jobs::{
-    ArtifactFetcher, BackendRunner, ChainedJobs, EventLoop, FrontendRunner, Job, PixivIllustFetcher,
+    RepoUpdater, BackendRunner, ChainedJobs, EventLoop, FrontendRunner, Job, PixivIllustFetcher,
 };
 
 mod jobs;
@@ -16,7 +16,7 @@ async fn main() {
     let mut pixiv = PixivIllustFetcher::default();
 
     let mut jobs = ChainedJobs::default();
-    jobs.push(Box::new(ArtifactFetcher::default()));
+    jobs.push(Box::new(RepoUpdater::default()));
     jobs.push(Box::new(BackendRunner::default()));
     jobs.push(Box::new(FrontendRunner::default()));
 
