@@ -18,7 +18,7 @@ export default function InlinedArticle({ meta, content, params }: { meta: Island
 
     return (
         <div className="w-full h-full flex flex-col gap-2">
-            <OutlinedBox className="flex flex-col">
+            <OutlinedBox className="flex flex-col bg-light-background dark:bg-dark-background">
                 <div className="flex grow">
                     {headerExpanded && <ArticleHeader island={meta} params={params} noGoBack />}
                 </div>
@@ -49,7 +49,9 @@ export default function InlinedArticle({ meta, content, params }: { meta: Island
                 </div>
             </OutlinedBox>
             <div className="h-full overflow-y-auto">
-                <ArticleBody island={meta} body={content} />
+                <div className="bg-light-background dark:bg-dark-background">
+                    <ArticleBody island={meta} body={content} />
+                </div>
             </div>
         </div>
     )

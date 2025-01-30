@@ -35,8 +35,6 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const id = Number.parseInt((await params).id)
     const meta = await fetchIslandMeta(id)
     const title = meta.ok ? meta.data.title : "Undefined Coordinate"
-
-    console.log("AAAAAAAAAAAA")
     return {
         title: `${title} - Crepuscular Archipelago`
     }
