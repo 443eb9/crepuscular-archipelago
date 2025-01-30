@@ -26,7 +26,7 @@ export default function IslandCard({ island, content, params, noLink }: { island
                     return (
                         <LinkNoPrefetch
                             className="absolute w-full h-full"
-                            href={`/island?id=${island.id}&${queryParamsToSearchParams(params)}`}
+                            href={`/island/${island.id}?${queryParamsToSearchParams(params)}`}
                         />
                     )
                 }

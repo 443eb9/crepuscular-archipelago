@@ -33,7 +33,7 @@ export default function InlinedArticle({ meta, content, params }: { meta: Island
                     <div className="flex gap-2 m-2">
                         <OutlinedButton>
                             <LinkNoPrefetch
-                                href={`/island?id=${meta.id}&${params}`}
+                                href={`/island/${meta.id}?${params}`}
                                 target="_blank"
                             >
                                 <IoArrowForwardOutline size={32} />
