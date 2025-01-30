@@ -1,5 +1,6 @@
 import { Vector2 } from "three";
 import { OSS } from "./endpoints"
+import { createDecipheriv } from "crypto";
 
 export function formatDate(date: string | undefined) {
     if (!date) {
@@ -36,4 +37,16 @@ export function findClassNameAmong(target: HTMLElement, className: string): bool
         }
     }
     return true
+}
+
+export function decrypt(body: string, key: string, iv: string) {
+    const keyBuf = Buffer.from(key)
+    const ivBuf = Buffer.from(iv)
+    const content = Buffer.from(body, "base64")
+    const data = content.subarray(0, content.length - 16)
+    const authTag = content.subarray(content.length - 16)
+
+    const decipher = createDecipheriv("aes-256-gcm", keyBuf, ivBuf)
+    decipher.setAuthTag(authTag)
+    return decipher.update(data, undefined, "utf8") + decipher.final("utf8")
 }

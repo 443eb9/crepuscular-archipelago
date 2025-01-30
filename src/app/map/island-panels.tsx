@@ -65,7 +65,7 @@ export default function IslandPanels({
                 <OutlinedBox className="flex flex-col gap-2 p-2 backdrop-blur-md pointer-events-auto">
                     {
                         totalPages > 0
-                            ? <Pagination total={totalPages} current={currentPage} buttonSize={36} params={params} />
+                            ? <Pagination total={totalPages} buttonSize={36} params={params} />
                             : <Text className="font-bender font-bold">Void</Text>
                     }
                 </OutlinedBox>

@@ -10,7 +10,7 @@ use rand::{rngs::StdRng, seq::SliceRandom, SeedableRng};
 use serde::Serialize;
 
 use crate::{
-    model::IslandMapMeta,
+    models::IslandMapMeta,
     sql::{self, IslandDB},
 };
 

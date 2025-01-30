@@ -10,7 +10,7 @@ mod filter;
 mod fs;
 mod http;
 mod islands;
-mod model;
+mod models;
 mod sql;
 
 #[actix_web::main]
@@ -39,6 +39,8 @@ async fn main() -> std::io::Result<()> {
             .service(http::get_island_map_noise_texture)
             .service(http::get_island_map_centers)
             .service(http::get_island_at)
+            .service(http::get_foams)
+            .service(http::get_foams_count)
             .service(http::download_memorize_db)
             .service(http::error_test)
     })

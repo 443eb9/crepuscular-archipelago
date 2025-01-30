@@ -7,7 +7,7 @@ import clsx from "clsx"
 import { usePathname } from "next/navigation"
 import LinkNoPrefetch from "./link-no-prefetch"
 
-export default function Pagination({ total, current, buttonSize, params }: { total: number, current: number, buttonSize: number, params: QueryParams }) {
+export default function Pagination({ total, buttonSize, params }: { total: number, buttonSize: number, params: QueryParams }) {
     const pathname = usePathname()
 
     return (
@@ -19,8 +19,8 @@ export default function Pagination({ total, current, buttonSize, params }: { tot
                             key={page}
                             className={clsx(
                                 `aspect-square
-                            ${current == page ? "text-dark-contrast dark:text-light-contrast" : ""}`,
-                                { "bg-light-contrast dark:bg-dark-contrast": current == page }
+                            ${params.page == page ? "text-dark-contrast dark:text-light-contrast" : ""}`,
+                                { "bg-light-contrast dark:bg-dark-contrast": params.page == page }
                             )}
                             style={{
                                 width: `${buttonSize}px`

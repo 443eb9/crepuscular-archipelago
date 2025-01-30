@@ -1,9 +1,9 @@
 use futures::{future::join_all, join};
-use sqlx::{Error, SqlitePool};
+use sqlx::{Result, SqlitePool};
 
 use crate::{
     filter::{AdvancedFilter, TagsFilter},
-    model::{Island, IslandCount, IslandMeta, IslandMetaTagged, TagData},
+    models::{Foam, FoamCount, Island, IslandCount, IslandMeta, IslandMetaTagged, TagData},
 };
 
 #[derive(Clone)]
@@ -11,20 +11,20 @@ pub struct IslandDB {
     pub db: SqlitePool,
 }
 
-pub async fn query_all_tags(pool: &IslandDB) -> Result<Vec<TagData>, Error> {
+pub async fn query_all_tags(pool: &IslandDB) -> Result<Vec<TagData>> {
     Ok(sqlx::query_as("SELECT id, name, amount FROM tags")
         .fetch_all(&pool.db)
         .await?)
 }
 
-pub async fn query_island_content(pool: &IslandDB, id: u32) -> Result<Island, Error> {
+pub async fn query_island_content(pool: &IslandDB, id: u32) -> Result<Island> {
     sqlx::query_as("SELECT id, content FROM islands WHERE id = ?")
         .bind(id)
         .fetch_one(&pool.db)
         .await
 }
 
-pub async fn query_island_count(pool: &IslandDB) -> Result<IslandCount, Error> {
+pub async fn query_island_count(pool: &IslandDB) -> Result<IslandCount> {
     Ok(sqlx::query_as("SELECT COUNT(*) as count FROM islands")
         .fetch_one(&pool.db)
         .await?)
@@ -34,7 +34,7 @@ pub async fn query_island_count_filtered(
     pool: &IslandDB,
     tags_filter: i32,
     advanced_filter: i32,
-) -> Result<IslandCount, Error> {
+) -> Result<IslandCount> {
     let tags_filter = TagsFilter::new(tags_filter);
     let advanced_filter = AdvancedFilter::new(advanced_filter);
 
@@ -97,7 +97,7 @@ pub async fn query_island_count_filtered(
     Ok(query.fetch_one(&pool.db).await?)
 }
 
-pub async fn query_island_meta(pool: &IslandDB, id: u32) -> Result<IslandMetaTagged, Error> {
+pub async fn query_island_meta(pool: &IslandDB, id: u32) -> Result<IslandMetaTagged> {
     let (meta, tags) = join!(
         sqlx::query_as::<_,IslandMeta>(
             "SELECT id, title, subtitle, desc, ty, date, banner, is_original, is_encrypted, is_deleted FROM islands
@@ -115,7 +115,7 @@ pub async fn query_islands_meta(
     pool: &IslandDB,
     page: u32,
     length: u32,
-) -> Result<Vec<IslandMetaTagged>, Error> {
+) -> Result<Vec<IslandMetaTagged>> {
     let total = query_island_count(pool).await?.count;
 
     if page * length > total {
@@ -163,7 +163,7 @@ pub async fn query_islands_meta_filtered(
     length: u32,
     tags_filter: i32,
     advanced_filter: i32,
-) -> Result<Vec<IslandMetaTagged>, Error> {
+) -> Result<Vec<IslandMetaTagged>> {
     let total = query_island_count_filtered(pool, tags_filter, advanced_filter)
         .await?
         .count;
@@ -304,7 +304,7 @@ pub async fn query_islands_meta_filtered(
         })
 }
 
-async fn query_island_tags(pool: &IslandDB, id: u32) -> Result<Vec<TagData>, Error> {
+async fn query_island_tags(pool: &IslandDB, id: u32) -> Result<Vec<TagData>> {
     Ok(sqlx::query_as(
         "
             SELECT id, name, amount FROM tags
@@ -315,4 +315,28 @@ async fn query_island_tags(pool: &IslandDB, id: u32) -> Result<Vec<TagData>, Err
     .bind(id)
     .fetch_all(&pool.db)
     .await?)
+}
+
+pub async fn query_foams_count(pool: &IslandDB) -> Result<FoamCount> {
+    Ok(sqlx::query_as("SELECT COUNT(*) as count FROM foams")
+        .fetch_one(&pool.db)
+        .await?)
+}
+
+pub async fn query_foams(pool: &IslandDB, page: u32, length: u32) -> Result<Vec<Foam>> {
+    let total = query_foams_count(pool).await?.count;
+    let end = total - page * length;
+    let start = total
+        .checked_sub((page + 1) * length - 1)
+        .unwrap_or_default();
+    sqlx::query_as(
+        "
+            SELECT id, content, date, is_encrypted FROM foams
+            WHERE id BETWEEN ? AND ?
+        ",
+    )
+    .bind(start)
+    .bind(end)
+    .fetch_all(&pool.db)
+    .await
 }

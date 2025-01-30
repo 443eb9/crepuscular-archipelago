@@ -9,7 +9,7 @@ use actix_web::{
 use async_stream::stream;
 use chrono::{Timelike, Utc};
 
-use crate::{islands::IslandMaps, model::IslandMapQueryResponse, sql::*};
+use crate::{islands::IslandMaps, models::IslandMapQueryResponse, sql::*};
 
 macro_rules! sql_query_request {
     ($query: ident, $($param: expr),+) => {
@@ -115,6 +115,16 @@ pub async fn get_island_at(
         }
         Err(err) => HttpResponse::InternalServerError().json(err.to_string()),
     }
+}
+
+#[get("/api/get/foamsCount")]
+pub async fn get_foams_count(pool: Data<IslandDB>) -> impl Responder {
+    sql_query_request!(query_foams_count, &pool)
+}
+
+#[get("/api/get/foams/{page}/{len}")]
+pub async fn get_foams(pool: Data<IslandDB>, params: Path<(u32, u32)>) -> impl Responder {
+    sql_query_request!(query_foams, &pool, params.0, params.1)
 }
 
 #[get("/api/get/memorizeDb")]

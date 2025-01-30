@@ -1,5 +1,5 @@
 import { apiEndpoint } from "./endpoints"
-import { Island, IslandCount, IslandMapMeta, IslandMapQueryResult, IslandMapRegionCenters, IslandMeta, LinkExchangeData, TagData } from "./model"
+import { FoamCount, FoamData, Island, IslandCount, IslandMapMeta, IslandMapQueryResult, IslandMapRegionCenters, IslandMeta, LinkExchangeData, TagData } from "./model"
 import { LinkExchangeCache } from "./dummy-data"
 
 export type Response<T> = {
@@ -51,7 +51,7 @@ export async function wrappedApiPost<T>(endpoint: string, body: Object): Promise
 }
 
 export async function fetchAllTags(): Promise<Response<TagData[]>> {
-    return wrappedApiGet("/get/allTags")
+    return wrappedApiGet(`/get/allTags`)
 }
 
 export async function fetchIslandCount(tagsFilter: number, advancedFilter: number): Promise<Response<IslandCount>> {
@@ -84,6 +84,14 @@ export function fetchIslandMapMeta(): Promise<Response<IslandMapMeta>> {
 
 export function fetchIslandMapRegionCenters(page: number): Promise<Response<IslandMapRegionCenters>> {
     return wrappedApiGet(`/get/islandMap/${page}/centers`)
+}
+
+export async function fetchFoamsCount(): Promise<Response<FoamCount>> {
+    return wrappedApiGet(`/get/foamsCount`)
+}
+
+export async function fetchFoams(page: number, len: number): Promise<Response<FoamData[]>> {
+    return wrappedApiGet(`/get/foams/${page}/${len}`)
 }
 
 export async function fetchLinkExchange(): Promise<Response<LinkExchangeData[]>> {

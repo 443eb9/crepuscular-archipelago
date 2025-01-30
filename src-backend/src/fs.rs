@@ -1,18 +1,47 @@
 use std::{collections::HashMap, str::FromStr};
 
 use aes_gcm::{
-    aead::{Aead, Nonce},
-    Aes256Gcm, Key, KeyInit,
+    aead::{consts::U12, Aead, Nonce},
+    aes::Aes256,
+    Aes256Gcm, AesGcm, Key, KeyInit,
 };
 use base64::{prelude::BASE64_STANDARD, Engine};
-use chrono::{DateTime, FixedOffset};
+use chrono::DateTime;
 use serde::{de::DeserializeOwned, Deserialize};
 use sqlx::{query, sqlite::SqliteConnectOptions, SqlitePool};
 
 use crate::{
     env::{get_island_cache_root, get_island_storage_root},
-    model::{IslandMeta, IslandMetaTagged, IslandType, TagData},
+    models::{Foam, IslandMeta, IslandMetaTagged, IslandType, TagData},
 };
+
+struct ContentEncryptor {
+    cipher: AesGcm<Aes256, U12>,
+    iv: Nonce<Aes256Gcm>,
+}
+
+impl Default for ContentEncryptor {
+    fn default() -> Self {
+        let encryption_key = std::env::var("ENCRYPTION_KEY")
+            .expect("Missing ENCRYPTION_KEY in environment variable.");
+        let encryption_key = Key::<Aes256Gcm>::from_slice(&encryption_key.as_bytes());
+        let encrypt_nonce =
+            std::env::var("ENCRYPTION_IV").expect("Missing ENCRYPTION_IV in environment variable.");
+        let encrypt_nonce = Nonce::<Aes256Gcm>::from_slice(&encrypt_nonce.as_bytes());
+        let cipher = Aes256Gcm::new(encryption_key);
+
+        Self {
+            cipher,
+            iv: encrypt_nonce.to_owned(),
+        }
+    }
+}
+
+impl ContentEncryptor {
+    pub fn encrypt(&self, content: &str) -> String {
+        BASE64_STANDARD.encode(self.cipher.encrypt(&self.iv, content.as_bytes()).unwrap())
+    }
+}
 
 pub async fn init_islands_cache() -> SqlitePool {
     let _ = std::fs::create_dir_all(get_island_cache_root());
@@ -21,8 +50,8 @@ pub async fn init_islands_cache() -> SqlitePool {
         .filename(get_island_cache_root().join("archipelago.sqlite3"))
         .create_if_missing(true);
     let db = SqlitePool::connect_with(conn_opt).await.unwrap();
+    let encryptor = ContentEncryptor::default();
 
-    let (islands, tags) = load_all_islands();
     const INIT_TABLES: &[&'static str] = &[
         "DROP TABLE island_tags",
         "DROP TABLE islands",
@@ -79,6 +108,8 @@ pub async fn init_islands_cache() -> SqlitePool {
         let _ = query(cmd).execute(&db).await;
     }
 
+    let (islands, tags) = load_all_islands(&encryptor);
+
     for tag in tags {
         query("INSERT INTO tags (name, amount) VALUES (?, ?)")
             .bind(tag.name)
@@ -114,24 +145,26 @@ pub async fn init_islands_cache() -> SqlitePool {
         }
     }
 
+    let foams = load_all_foams(&encryptor);
+
+    for foam in foams {
+        query("INSERT INTO foams (date, is_encrypted, content) VALUES (?, ?, ?)")
+            .bind(foam.date)
+            .bind(foam.is_encrypted)
+            .bind(foam.content)
+            .execute(&db)
+            .await
+            .unwrap();
+    }
+
     db
 }
 
-fn load_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData>) {
-    let encryption_key =
-        std::env::var("ENCRYPTION_KEY").expect("Missing ENCRYPTION_KEY in environment variable.");
-    let encryption_key = Key::<Aes256Gcm>::from_slice(&encryption_key.as_bytes());
-    let encrypt_nonce =
-        std::env::var("ENCRYPTION_IV").expect("Missing ENCRYPTION_IV in environment variable.");
-    let encrypt_nonce = Nonce::<Aes256Gcm>::from_slice(&encrypt_nonce.as_bytes());
-    let cipher = Aes256Gcm::new(encryption_key);
-
-    fn bool_true() -> bool {
-        true
-    }
-
+fn load_all_islands(
+    encryptor: &ContentEncryptor,
+) -> (Vec<(IslandMetaTagged, String)>, Vec<TagData>) {
     #[derive(Deserialize)]
-    struct IslandStringTagged {
+    struct IslandToml {
         pub title: String,
         #[serde(default)]
         pub subtitle: Option<String>,
@@ -185,9 +218,9 @@ fn load_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData>) {
         assert_eq!(content.len(), 1);
         let content = &content[0];
 
-        let (island, mut body) = extract_frontmatter::<IslandStringTagged>(content);
+        let (island, mut body) = extract_frontmatter::<IslandToml>(content);
         if island.is_encrypted {
-            body = BASE64_STANDARD.encode(cipher.encrypt(encrypt_nonce, body.as_bytes()).unwrap());
+            body = encryptor.encrypt(&content);
         }
 
         for tag in &island.tags {
@@ -258,6 +291,63 @@ fn load_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData>) {
     )
 }
 
+fn load_all_foams(encryptor: &ContentEncryptor) -> Vec<Foam> {
+    #[derive(Deserialize)]
+    struct FoamToml {
+        pub date: toml::value::Datetime,
+        #[serde(default = "bool_true")]
+        pub is_encrypted: bool,
+    }
+
+    let dir = std::fs::read_dir(get_island_storage_root().join("foams")).unwrap();
+    let mut foams = Vec::new();
+
+    for entry in dir {
+        let Ok(entry) = entry else {
+            break;
+        };
+
+        let id = entry
+            .file_name()
+            .to_str()
+            .unwrap()
+            .to_string()
+            .parse::<u32>()
+            .unwrap();
+
+        let assets = std::fs::read_dir(entry.path()).unwrap();
+        let content = assets
+            .into_iter()
+            .filter_map(|entry| {
+                entry.ok().and_then(|entry| {
+                    entry
+                        .path()
+                        .extension()
+                        .is_some_and(|ext| ext == "md")
+                        .then(|| std::fs::read_to_string(entry.path()).ok())
+                        .flatten()
+                })
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(content.len(), 1);
+        let content = &content[0];
+
+        let (foam, mut body) = extract_frontmatter::<FoamToml>(content);
+        if foam.is_encrypted {
+            body = encryptor.encrypt(&content);
+        }
+
+        foams.push(Foam {
+            id,
+            date: DateTime::from_str(&foam.date.to_string()).unwrap(),
+            content: body,
+            is_encrypted: foam.is_encrypted,
+        });
+    }
+
+    foams
+}
+
 fn extract_frontmatter<T: DeserializeOwned>(body: &str) -> (T, String) {
     const DELIMITER: &str = "---";
     let frontmatter_begin = body.find(DELIMITER).unwrap() + DELIMITER.len();
@@ -266,4 +356,8 @@ fn extract_frontmatter<T: DeserializeOwned>(body: &str) -> (T, String) {
         toml::from_str(&body[frontmatter_begin..frontmatter_end]).unwrap(),
         body[frontmatter_end + DELIMITER.len()..].to_string(),
     )
+}
+
+fn bool_true() -> bool {
+    true
 }

@@ -28,22 +28,15 @@ export type IslandCount = {
     count: number,
 }
 
-export type MemorizeForm = {
-    stuId: string,
-    name: string,
+export type FoamData = {
+    id: number,
+    date: string,
+    content: string,
+    is_encrypted: boolean,
+}
 
-    wechat: string,
-    qq: string,
-    phone: string,
-    email: string,
-
-    desc: string,
-    hobby: string,
-    position: string,
-    ftrMajor: string,
-
-    message: string,
-    ip: string,
+export type FoamCount = {
+    count: number,
 }
 
 export type FriendDialogData = {
@@ -80,26 +73,6 @@ export type IslandMap = {
     width: number,
     height: number,
     data: Uint8Array,
-}
-
-export type SteamGame = {
-    appid: number,
-    name: string,
-    playtime_2weeks: number,
-    playtime_forever: number,
-    img_icon_url: string,
-}
-
-export type SteamRecentlyPlayedGames = {
-    totalCount: number,
-    games: SteamGame[],
-}
-
-export type SteamPlayerSummaries = {
-    players: [{
-        lastlogoff: number,
-        personastate: number,
-    }]
 }
 
 export type IslandMapQuery = {

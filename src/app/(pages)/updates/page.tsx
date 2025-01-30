@@ -63,7 +63,7 @@ export default async function Page(props: { searchParams: Promise<RawSearchParam
                             {data =>
                                 data.count > 0 &&
                                 <OutlinedBox className="flex gap-2 py-2 border-x-0 border-dashed">
-                                    <Pagination total={Math.ceil(data.count / queryParams.len)} current={queryParams.page} buttonSize={48} params={queryParams} />
+                                    <Pagination total={Math.ceil(data.count / queryParams.len)} buttonSize={48} params={queryParams} />
                                 </OutlinedBox>
                             }
                         </NetworkErrorable>

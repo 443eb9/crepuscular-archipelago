@@ -126,3 +126,18 @@ pub struct IslandMapMeta {
     pub per_page_regions: u32,
     pub page_cnt: u32,
 }
+
+#[derive(Serialize, FromRow)]
+#[serde(rename_all = "camelCase")]
+pub struct Foam {
+    pub id: u32,
+    pub date: DateTime<FixedOffset>,
+    pub content: String,
+    pub is_encrypted: bool,
+}
+
+#[derive(Debug, Serialize, FromRow)]
+#[serde(rename_all = "camelCase")]
+pub struct FoamCount {
+    pub count: u32,
+}
