@@ -19,7 +19,7 @@ async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
     let islands_db = IslandDB {
-        db: fs::init_cache().await,
+        db: fs::init_islands_cache().await,
     };
 
     let island_map = IslandMaps::new(&islands_db);

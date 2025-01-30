@@ -1,13 +1,12 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, str::FromStr};
 
 use aes_gcm::{
     aead::{Aead, Nonce},
     Aes256Gcm, Key, KeyInit,
 };
 use base64::{prelude::BASE64_STANDARD, Engine};
-use chrono::DateTime;
-use serde::Deserialize;
-use serde_json::Value;
+use chrono::{DateTime, FixedOffset};
+use serde::{de::DeserializeOwned, Deserialize};
 use sqlx::{query, sqlite::SqliteConnectOptions, SqlitePool};
 
 use crate::{
@@ -15,7 +14,7 @@ use crate::{
     model::{IslandMeta, IslandMetaTagged, IslandType, TagData},
 };
 
-pub async fn init_cache() -> SqlitePool {
+pub async fn init_islands_cache() -> SqlitePool {
     let _ = std::fs::create_dir_all(get_island_cache_root());
 
     let conn_opt = SqliteConnectOptions::new()
@@ -23,11 +22,12 @@ pub async fn init_cache() -> SqlitePool {
         .create_if_missing(true);
     let db = SqlitePool::connect_with(conn_opt).await.unwrap();
 
-    let (islands, tags) = load_and_cache_all_islands();
+    let (islands, tags) = load_all_islands();
     const INIT_TABLES: &[&'static str] = &[
         "DROP TABLE island_tags",
         "DROP TABLE islands",
         "DROP TABLE tags",
+        "DROP TABLE foams",
         r#"create table islands
         (
             id           integer               not null
@@ -63,13 +63,20 @@ pub async fn init_cache() -> SqlitePool {
             constraint island_tags_pk
                 primary key (island_id, tag_id)
         );"#,
+        r#"create table foams
+        (
+            id           integer               not null
+                constraint meta_pk
+                    primary key autoincrement,
+            date         text,
+            is_encrypted Boolean default false,
+            is_deleted   integer default false,
+            content      text    default ""
+        );"#,
     ];
 
     for cmd in INIT_TABLES {
-        match query(cmd).execute(&db).await {
-            Ok(_) => {}
-            Err(err) => log::error!("{}", err),
-        };
+        let _ = query(cmd).execute(&db).await;
     }
 
     for tag in tags {
@@ -110,15 +117,39 @@ pub async fn init_cache() -> SqlitePool {
     db
 }
 
-fn load_and_cache_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData>) {
+fn load_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData>) {
     let encryption_key =
         std::env::var("ENCRYPTION_KEY").expect("Missing ENCRYPTION_KEY in environment variable.");
     let encryption_key = Key::<Aes256Gcm>::from_slice(&encryption_key.as_bytes());
-    let encrypt_nonce = std::env::var("ENCRYPTION_IV")
-        .expect("Missing ENCRYPTION_IV in environment variable.");
+    let encrypt_nonce =
+        std::env::var("ENCRYPTION_IV").expect("Missing ENCRYPTION_IV in environment variable.");
     let encrypt_nonce = Nonce::<Aes256Gcm>::from_slice(&encrypt_nonce.as_bytes());
-
     let cipher = Aes256Gcm::new(encryption_key);
+
+    fn bool_true() -> bool {
+        true
+    }
+
+    #[derive(Deserialize)]
+    struct IslandStringTagged {
+        pub title: String,
+        #[serde(default)]
+        pub subtitle: Option<String>,
+        #[serde(default)]
+        pub desc: Option<String>,
+        #[serde(default)]
+        pub date: Option<toml::value::Datetime>,
+        pub ty: IslandType,
+        pub tags: Vec<String>,
+        #[serde(default)]
+        pub banner: bool,
+        #[serde(default = "bool_true")]
+        pub is_original: bool,
+        #[serde(default)]
+        pub is_encrypted: bool,
+        #[serde(default)]
+        pub is_deleted: bool,
+    }
 
     let dir = std::fs::read_dir(get_island_storage_root().join("islands")).unwrap();
     let mut all_tags = HashMap::<String, u32>::default();
@@ -134,7 +165,7 @@ fn load_and_cache_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData
             .to_str()
             .unwrap()
             .to_string()
-            .parse()
+            .parse::<u32>()
             .unwrap();
 
         let assets = std::fs::read_dir(entry.path()).unwrap();
@@ -152,43 +183,24 @@ fn load_and_cache_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData
             })
             .collect::<Vec<_>>();
         assert_eq!(content.len(), 1);
-
         let content = &content[0];
-        let lines = content.lines().collect::<Vec<_>>();
 
-        let mut front_matter_boundary = Vec::with_capacity(2);
-        for (index, line) in lines.iter().enumerate() {
-            if *line == "---" {
-                front_matter_boundary.push(index);
-            }
-            if front_matter_boundary.len() == 2 {
-                break;
-            }
-        }
-
-        let (island, tags) =
-            front_matter_parse(&lines[front_matter_boundary[0] + 1..front_matter_boundary[1]]);
-        let mut body = lines[front_matter_boundary[1] + 1..]
-            .iter()
-            .map(|s| s.chars().chain(['\n']))
-            .flatten()
-            .collect::<String>();
-
+        let (island, mut body) = extract_frontmatter::<IslandStringTagged>(content);
         if island.is_encrypted {
             body = BASE64_STANDARD.encode(cipher.encrypt(encrypt_nonce, body.as_bytes()).unwrap());
         }
 
-        islands.push((IslandMeta { id, ..island }, tags.clone(), body));
-
-        for tag in &tags {
+        for tag in &island.tags {
             all_tags
                 .entry(tag.to_owned())
                 .and_modify(|cnt| *cnt = *cnt + 1)
                 .or_insert(1u32);
         }
+
+        islands.push((id, island, body));
     }
 
-    islands.sort_by_key(|(meta, ..)| meta.id);
+    islands.sort_by_key(|(id, ..)| *id);
 
     let mut all_tags = all_tags.into_iter().collect::<Vec<_>>();
     all_tags.sort_by_key(|(name, _)| name.to_owned());
@@ -201,11 +213,26 @@ fn load_and_cache_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData
     (
         islands
             .into_iter()
-            .map(|(island, tags, content)| {
+            .map(|(id, island, content)| {
                 (
                     IslandMetaTagged::new(
-                        island,
-                        tags.into_iter()
+                        IslandMeta {
+                            id,
+                            title: island.title,
+                            subtitle: island.subtitle,
+                            desc: island.desc,
+                            date: island
+                                .date
+                                .map(|t| DateTime::from_str(&t.to_string()).unwrap()),
+                            ty: island.ty,
+                            banner: island.banner,
+                            is_original: island.is_original,
+                            is_encrypted: island.is_encrypted,
+                            is_deleted: island.is_deleted,
+                        },
+                        island
+                            .tags
+                            .into_iter()
                             .map(|name| {
                                 let id = all_tags_ids[&name];
                                 TagData {
@@ -231,28 +258,12 @@ fn load_and_cache_all_islands() -> (Vec<(IslandMetaTagged, String)>, Vec<TagData
     )
 }
 
-fn front_matter_parse(lines: &[&str]) -> (IslandMeta, Vec<String>) {
-    let mut meta = IslandMeta::default();
-    let mut tags = Vec::new();
-    for item in lines {
-        let idx = item.find(": ").unwrap();
-        let field = &item[..idx];
-        let data = &item[idx + 2..];
-
-        match field {
-            "title" => meta.title = data.to_string(),
-            "subtitle" => meta.subtitle = (!data.is_empty()).then(|| data.to_string()),
-            "desc" => meta.desc = (!data.is_empty()).then(|| data.to_string()),
-            "ty" => meta.ty = IslandType::deserialize(Value::from(data)).unwrap(),
-            "date" => meta.date = Some(DateTime::parse_from_rfc3339(data).unwrap()),
-            "banner" => meta.banner = data.parse::<bool>().unwrap(),
-            "is_original" => meta.is_original = data.parse::<bool>().unwrap(),
-            "is_encrypted" => meta.is_encrypted = data.parse::<bool>().unwrap(),
-            "is_deleted" => meta.is_deleted = data.parse::<bool>().unwrap(),
-            "tags" => tags.extend(data.split(',').map(str::to_string)),
-            _ => unreachable!(),
-        }
-    }
-
-    (meta, tags)
+fn extract_frontmatter<T: DeserializeOwned>(body: &str) -> (T, String) {
+    const DELIMITER: &str = "---";
+    let frontmatter_begin = body.find(DELIMITER).unwrap() + DELIMITER.len();
+    let frontmatter_end = body[frontmatter_begin..].find(DELIMITER).unwrap() + frontmatter_begin;
+    (
+        toml::from_str(&body[frontmatter_begin..frontmatter_end]).unwrap(),
+        body[frontmatter_end + DELIMITER.len()..].to_string(),
+    )
 }
