@@ -1,13 +1,13 @@
 import NetworkErrorable from "@/components/network-errorable";
 import Pagination from "@/components/pagination";
-import { fetchFoams, fetchFoamsCount } from "@/data/api";
+import { fetchFoams, fetchFoamCount } from "@/data/api";
 import { processQueryParams, RawSearchParams } from "@/data/search-param-util";
 import FoamsGrid from "./foams-grid";
 import ContentWrapper from "@/components/content-wrapper";
 
 export default async function Page({ searchParams }: { searchParams: Promise<RawSearchParams> }) {
     const params = processQueryParams(await searchParams)
-    const count = await fetchFoamsCount()
+    const count = await fetchFoamCount()
     const foams = await fetchFoams(params.page, params.len)
 
     return (

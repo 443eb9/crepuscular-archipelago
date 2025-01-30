@@ -25,7 +25,7 @@ pub async fn get_all_tags(pool: Data<IslandDB>) -> impl Responder {
     sql_query_request!(query_all_tags, &pool)
 }
 
-#[get("/api/get/islandCount/{tagsFilter}/{advancedFilter}")]
+#[get("/api/get/island/count/{tagsFilter}/{advancedFilter}")]
 pub async fn get_island_count(pool: Data<IslandDB>, params: Path<(i32, i32)>) -> impl Responder {
     if *params == (0, 0) {
         sql_query_request!(query_island_count, &pool)
@@ -34,12 +34,12 @@ pub async fn get_island_count(pool: Data<IslandDB>, params: Path<(i32, i32)>) ->
     }
 }
 
-#[get("/api/get/islandMeta/{id}")]
+#[get("/api/get/island/meta/{id}")]
 pub async fn get_island_meta(pool: Data<IslandDB>, id: Path<u32>) -> impl Responder {
     sql_query_request!(query_island_meta, &pool, *id)
 }
 
-#[get("/api/get/islandsMeta/{page}/{length}/{tagsFilter}/{advancedFilter}")]
+#[get("/api/get/island/metas/{page}/{length}/{tagsFilter}/{advancedFilter}")]
 pub async fn get_islands_meta(
     pool: Data<IslandDB>,
     params: Path<(u32, u32, i32, i32)>,
@@ -63,7 +63,7 @@ pub async fn get_island(pool: Data<IslandDB>, id: Path<u32>) -> impl Responder {
     sql_query_request!(query_island_content, &pool, *id)
 }
 
-#[get("/api/get/islandMap/{page}")]
+#[get("/api/get/map/{page}")]
 pub async fn get_island_map_noise_texture(
     params: Path<u32>,
     island_map: Data<Mutex<IslandMaps>>,
@@ -78,7 +78,7 @@ pub async fn get_island_map_noise_texture(
     )
 }
 
-#[get("/api/get/islandMap/meta")]
+#[get("/api/get/map/meta")]
 pub async fn get_island_map_meta(island_map: Data<Mutex<IslandMaps>>) -> impl Responder {
     match island_map.lock() {
         Ok(map) => HttpResponse::Ok().json(map.get_map_meta()),
@@ -86,7 +86,7 @@ pub async fn get_island_map_meta(island_map: Data<Mutex<IslandMaps>>) -> impl Re
     }
 }
 
-#[get("/api/get/islandMap/{page}/centers")]
+#[get("/api/get/map/{page}/centers")]
 pub async fn get_island_map_centers(
     params: Path<u32>,
     island_map: Data<Mutex<IslandMaps>>,
@@ -97,7 +97,7 @@ pub async fn get_island_map_centers(
     }
 }
 
-#[get("/api/get/islandMap/{page}/{x}/{y}")]
+#[get("/api/get/map/{page}/{x}/{y}")]
 pub async fn get_island_at(
     params: Path<(u32, i32, i32)>,
     island_map: Data<Mutex<IslandMaps>>,
@@ -117,12 +117,12 @@ pub async fn get_island_at(
     }
 }
 
-#[get("/api/get/foamsCount")]
+#[get("/api/get/foam/count")]
 pub async fn get_foams_count(pool: Data<IslandDB>) -> impl Responder {
     sql_query_request!(query_foams_count, &pool)
 }
 
-#[get("/api/get/foams/{page}/{len}")]
+#[get("/api/get/foam/{page}/{len}")]
 pub async fn get_foams(pool: Data<IslandDB>, params: Path<(u32, u32)>) -> impl Responder {
     sql_query_request!(query_foams, &pool, params.0, params.1)
 }

@@ -55,15 +55,15 @@ export async function fetchAllTags(): Promise<Response<TagData[]>> {
 }
 
 export async function fetchIslandCount(tagsFilter: number, advancedFilter: number): Promise<Response<IslandCount>> {
-    return wrappedApiGet(`/get/islandCount/${tagsFilter}/${advancedFilter}`)
+    return wrappedApiGet(`/get/island/count/${tagsFilter}/${advancedFilter}`)
 }
 
 export async function fetchIslandMeta(id: number): Promise<Response<IslandMeta>> {
-    return wrappedApiGet(`/get/islandMeta/${id}`)
+    return wrappedApiGet(`/get/island/meta/${id}`)
 }
 
 export async function fetchIslandsMeta(page: number, length: number, tagsFilter: number, advancedFilter: number): Promise<Response<IslandMeta[]>> {
-    return wrappedApiGet(`/get/islandsMeta/${page}/${length}/${tagsFilter}/${advancedFilter}`)
+    return wrappedApiGet(`/get/island/metas/${page}/${length}/${tagsFilter}/${advancedFilter}`)
 }
 
 export async function fetchIsland(id: number): Promise<Response<Island>> {
@@ -71,27 +71,27 @@ export async function fetchIsland(id: number): Promise<Response<Island>> {
 }
 
 export function islandMapUrl(page: number) {
-    return apiEndpoint(`/get/islandMap/${page}`)
+    return apiEndpoint(`/get/map/${page}`)
 }
 
 export function fetchIslandAt(page: number, x: number, y: number): Promise<Response<IslandMapQueryResult>> {
-    return wrappedApiGet(`/get/islandMap/${page}/${x}/${y}`)
+    return wrappedApiGet(`/get/map/${page}/${x}/${y}`)
 }
 
 export function fetchIslandMapMeta(): Promise<Response<IslandMapMeta>> {
-    return wrappedApiGet(`/get/islandMap/meta`)
+    return wrappedApiGet(`/get/map/meta`)
 }
 
 export function fetchIslandMapRegionCenters(page: number): Promise<Response<IslandMapRegionCenters>> {
-    return wrappedApiGet(`/get/islandMap/${page}/centers`)
+    return wrappedApiGet(`/get/map/${page}/centers`)
 }
 
-export async function fetchFoamsCount(): Promise<Response<FoamCount>> {
-    return wrappedApiGet(`/get/foamsCount`)
+export async function fetchFoamCount(): Promise<Response<FoamCount>> {
+    return wrappedApiGet(`/get/foam/count`)
 }
 
 export async function fetchFoams(page: number, len: number): Promise<Response<FoamData[]>> {
-    return wrappedApiGet(`/get/foams/${page}/${len}`)
+    return wrappedApiGet(`/get/foam/${page}/${len}`)
 }
 
 export async function fetchLinkExchange(): Promise<Response<LinkExchangeData[]>> {
