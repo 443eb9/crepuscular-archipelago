@@ -10,9 +10,6 @@ import { Size } from "@react-three/fiber"
 import Text from "@/components/text"
 import OutlinedButton from "@/components/outlined-button"
 import { QueryParams } from "@/data/search-param-util"
-import { GridMode } from "./(canvas)/main-grid"
-import { TbApple } from "react-icons/tb"
-import CanvasRelatedPanel from "./canvas-related-panel"
 import BadAppleEntrance from "./bad-apple-entrance"
 import toast from "react-hot-toast"
 
@@ -129,7 +126,6 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
                                     {
                                         canvasState == "ready" &&
                                         <IslandPanels
-                                            currentPage={props.params.page}
                                             totalPages={Math.ceil(props.totalIslands / props.islandMapMeta.perPageRegions)}
                                             params={props.params}
                                             allTags={props.allTags}

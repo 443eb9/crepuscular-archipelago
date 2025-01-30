@@ -21,9 +21,9 @@ import { CanvasMode } from "./main-canvas"
 const InlinedArticleSuppressBlur = "inlined-article-suppress-blur"
 
 export default function IslandPanels({
-    totalPages, currentPage, params, allTags, islands, regionCenters, mode
+    totalPages, params, allTags, islands, regionCenters, mode
 }: {
-    totalPages: number, currentPage: number, params: QueryParams, allTags: TagData[], islands: IslandMeta[], regionCenters: IslandMapRegionCenters, mode: CanvasMode
+    totalPages: number, params: QueryParams, allTags: TagData[], islands: IslandMeta[], regionCenters: IslandMapRegionCenters, mode: CanvasMode
 }) {
     const visitingIsland = useContext(visitingIslandContext)
 

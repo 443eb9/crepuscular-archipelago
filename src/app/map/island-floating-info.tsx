@@ -24,7 +24,7 @@ export default function IslandFloatingInfo({ regionId, island, center, params }:
     const [islandContent, setIslandContent] = useState<string | undefined>()
 
     useEffect(() => {
-        async function update() {
+        const update = async () => {
             if (focusingRegionId.value == null) {
                 setState("none")
             } else if (focusingRegionId.value == regionId) {
@@ -41,13 +41,8 @@ export default function IslandFloatingInfo({ regionId, island, center, params }:
             }
         }
 
-        update()
-
-        document.addEventListener("mousedown", update)
-        return () => {
-            document.removeEventListener("mousedown", update)
-        }
-    }, [islandContent, island.id, focusingRegionId.value])
+        window.setInterval(update, 100)
+    }, [regionId, islandContent, island.id])
 
     return (
         <CanvasRelatedPanel
