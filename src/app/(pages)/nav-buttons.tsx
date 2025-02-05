@@ -19,7 +19,6 @@ export default function NavButtons({ containerClassName, className }: { containe
             <NavButton title="首页" href={"/"} />
             <NavButton title="地图" href={"/map"} />
             <NavButton title="动态" href={"/updates"} />
-            <NavButton title="泡沫" href={"/foams"} />
             <NavButton title="关于" href={"/about"} />
             <NavButton title="收藏" href={"/bookmarks"} />
             <NavButton title="设置" href={"/settings"} />

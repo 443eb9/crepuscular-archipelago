@@ -23,6 +23,7 @@ export default async function Page() {
     const selfIntro = await wrappedFetch<string>(frontendEndpoint("/self-intro.md"), "GET")
     const linkExchange = await fetchLinkExchange()
     const projects = await wrappedFetch<ProjectData[]>(frontendEndpoint("/projects.json"), "GET")
+    const emoticons = await wrappedFetch<string[]>(frontendEndpoint("/emoticons.json"), "GET")
 
     return (
         <main>
@@ -34,6 +35,15 @@ export default async function Page() {
                             <Text>期待这边多出来一个 米画师 图标的一天</Text>
                             <Text className="text-right">——2024.8.15留</Text>
                         </OutlinedBox>
+                        <NetworkErrorable resp={emoticons}>
+                            {data =>
+                                <div className="flex grow justify-center items-center">
+                                    <Text className="opacity-50 font-bold">
+                                        {data[Math.floor(Math.random() * data.length)]}
+                                    </Text>
+                                </div>
+                            }
+                        </NetworkErrorable>
                     </div>
                     <OutlinedBox className="w-full p-4">
                         <NetworkErrorable resp={selfIntro}>

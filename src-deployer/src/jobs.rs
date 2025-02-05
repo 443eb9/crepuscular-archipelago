@@ -209,8 +209,7 @@ impl Job for RepoUpdater {
 
         let artifacts = artifact_list_resp.json::<ArtifactList>().await?;
         let latest = artifacts.artifacts.first().unwrap();
-
-        log::info!("Remote commit: {}", latest.workflow_run.head_sha,);
+        log::info!("Remote commit: {}", latest.workflow_run.head_sha);
 
         if local_commit.is_ok_and(|c| c == latest.workflow_run.head_sha) {
             return Err("Already up-to-date. Skipping".into());
@@ -392,7 +391,7 @@ impl Job for PixivIllustFetcher {
     }
 
     fn timeout(&self) -> Option<Duration> {
-        Some(Duration::from_secs_f32(30.0))
+        Some(Duration::from_secs(30))
     }
 }
 
