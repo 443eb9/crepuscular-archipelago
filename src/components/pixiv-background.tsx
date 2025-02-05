@@ -35,7 +35,7 @@ export default function PixivBackground() {
 
     const BackgroundWrapper = ({ ext }: { ext: string }) =>
         <div
-            className="w-[100vw] h-[100vh] fixed -z-[1000] bg-cover bg-fixed opacity-20 blur-md"
+            className="w-[100vw] h-[100vh] fixed -z-[1000] bg-cover bg-fixed bg-center opacity-20 blur-md"
             style={{
                 backgroundImage: `url(${frontendEndpoint(`/images/pixiv-weekly.${ext}`)})`,
                 // Avoid blur issue on edge of image
