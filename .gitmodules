@@ -1,3 +1,4 @@
 [submodule "islands"]
 	path = src-media
 	url = git@github.com:443eb9/islands.git
+	branch = main
