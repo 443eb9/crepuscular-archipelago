@@ -204,10 +204,14 @@ impl Job for RepoUpdater {
         let local_commit = read_to_string(".next/commit");
         log::info!("Local commit: {:?}", local_commit.as_ref().ok());
 
+        log::info!("[DBG] Sending get to {}", Self::ARTIFACTS_API_URL);
         let artifact_list_resp = self.client.get(Self::ARTIFACTS_API_URL).send().await?;
+        log::info!("[DBG] Received response {:?}", artifact_list_resp);
         resp_check_ok!(artifact_list_resp);
 
+        log::info!("[DBG] Retrieving artifact list.");
         let artifacts = artifact_list_resp.json::<ArtifactList>().await?;
+        log::info!("[DBG] Retrieved list.");
         let latest = artifacts.artifacts.first().unwrap();
         log::info!("Remote commit: {}", latest.workflow_run.head_sha);
 
