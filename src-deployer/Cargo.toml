@@ -9,8 +9,8 @@ chrono = "0.4"
 clokwerk = "0.4"
 dotenvy = "0.15"
 env_logger = "0.11"
-file-format = "0.26"
 futures-lite = "2"
+image = "0.25"
 log = "0.4"
 reqwest = { version = "0.12", features = ["json", "stream"] }
 serde = { version = "1", features = ["derive"] }

@@ -10,8 +10,8 @@ use std::{
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use clokwerk::{Scheduler, SyncJob};
-use file_format::{FileFormat, Kind};
 use futures_lite::future::block_on;
+use image::{imageops::FilterType, GenericImageView, ImageFormat};
 use reqwest::{
     header::{HeaderMap, HeaderName, HeaderValue},
     Client, StatusCode,
@@ -269,6 +269,8 @@ impl Default for PixivIllustFetcher {
 
 impl PixivIllustFetcher {
     const PIXIV_RANKING_PAGE: &str = "https://www.pixiv.net/ranking.php?mode=weekly&content=illust";
+    const MAX_IMAGE_WIDTH: u32 = 1280;
+    const MAX_IMAGE_HEIGHT: u32 = 720;
 }
 
 #[async_trait]
@@ -358,18 +360,36 @@ impl Job for PixivIllustFetcher {
 
         log::info!("Start downloading artwork.");
         let original_artwork = retrieve_bytes_logged(original_artwork_resp).await?;
-        let artwork_format = FileFormat::from_bytes(&original_artwork);
-        if artwork_format.kind() != Kind::Image {
-            return Err(
-                format!("Unexpected artwork format: {}", artwork_format.extension()).into(),
-            );
+        let Ok(mut artwork) = image::load_from_memory(&original_artwork) else {
+            return Err("Failed to load image.".into());
+        };
+
+        log::info!("Resizing image.");
+        let (width, height) = artwork.dimensions();
+        let resized = {
+            let aspect_ratio = width as f32 / height as f32;
+            if aspect_ratio >= 1.0 && width > Self::MAX_IMAGE_WIDTH {
+                Some((
+                    Self::MAX_IMAGE_WIDTH,
+                    (Self::MAX_IMAGE_WIDTH as f32 / aspect_ratio) as u32,
+                ))
+            } else if aspect_ratio < 1.0 && height > Self::MAX_IMAGE_HEIGHT {
+                Some((
+                    (Self::MAX_IMAGE_HEIGHT as f32 * aspect_ratio) as u32,
+                    Self::MAX_IMAGE_HEIGHT,
+                ))
+            } else {
+                None
+            }
+        };
+        if let Some((new_width, new_height)) = resized {
+            artwork = artwork.resize_exact(new_width, new_height, FilterType::CatmullRom);
+        } else {
+            log::info!("Image already smaller than maximum size. Resizing skipped.");
         }
 
-        log::info!("Start saving artwork to disk.");
-        write(
-            format!("public/images/pixiv-weekly.{}", artwork_format.extension()),
-            original_artwork,
-        )?;
+        log::info!("Start saving image to disk.");
+        artwork.save_with_format("public/images/pixiv-weekly.webp", ImageFormat::WebP)?;
 
         #[derive(Serialize)]
         struct ArtworkMeta {
