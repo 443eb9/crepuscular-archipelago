@@ -8,6 +8,8 @@ import { useEffect, useState } from "react"
 import FriendDialog from "./friend-dialog"
 import { findClassNameAmong } from "@/data/utils"
 import LinkNoPrefetch from "@/components/link-no-prefetch"
+import { AnimatePresence } from "motion/react"
+import AnimVisibilityDiv from "@/components/anim/anim-visibility-div"
 
 const SuppressBlur = "suppress-blur"
 
@@ -44,12 +46,14 @@ export default function LinkExchange({ links }: { links: LinkExchangeData[] }) {
                                         >
                                             <Image src={link.avatar} alt={`${link.name} avatar`} fill unoptimized />
                                         </EmphasizedBox>
-                                        {
-                                            curDialog == i && link.dialog &&
-                                            <div className={`absolute w-96 z-10 ${SuppressBlur}`}>
-                                                <FriendDialog dialog={link.dialog} />
-                                            </div>
-                                        }
+                                        <AnimatePresence>
+                                            {
+                                                curDialog == i && link.dialog &&
+                                                <AnimVisibilityDiv className={`absolute w-96 z-10 ${SuppressBlur}`}>
+                                                    <FriendDialog dialog={link.dialog} />
+                                                </AnimVisibilityDiv>
+                                            }
+                                        </AnimatePresence>
                                     </div>
                                     <LinkNoPrefetch target="_blank" href={link.link} className="flex flex-col h-full" style={{ maxWidth: "calc(100% - 80px)" }}>
                                         <Text className="text-small">{link.name}</Text>
