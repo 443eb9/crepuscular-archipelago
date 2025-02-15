@@ -32,9 +32,11 @@ export default function FoamsGrid({ foams }: { foams: FoamData[] }) {
         >
             {
                 cols != undefined &&
-                foams.map(foam =>
-                    <Foam foam={foam} />
-                )
+                foams
+                    .reverse()
+                    .map(foam =>
+                        <Foam foam={foam} />
+                    )
             }
         </div>
     )

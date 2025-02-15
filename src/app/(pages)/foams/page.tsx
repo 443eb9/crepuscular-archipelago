@@ -16,7 +16,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Raw
                 {data => <FoamsGrid foams={data} />}
             </NetworkErrorable>
             <NetworkErrorable resp={count}>
-                {data => <Pagination total={data.count} buttonSize={48} params={params} />}
+                {data => <div className="flex gap-2"><Pagination total={Math.ceil(data.count / params.len)} buttonSize={48} params={params} /></div>}
             </NetworkErrorable>
         </ContentWrapper>
     )
