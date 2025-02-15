@@ -449,17 +449,21 @@ pub struct BackendRunner {
 impl Job for BackendRunner {
     async fn run(&mut self) -> Result<(), Box<dyn Error>> {
         log::info!("Updating local repo.");
+        let output_code = Command::new("git").arg("pull").output()?;
         Command::new("git")
             .args(["checkout", "main"])
             .current_dir("src-media")
             .spawn()?
             .wait()?;
-        let output = Command::new("git")
+        let output_media = Command::new("git")
             .arg("pull")
             .current_dir("src-media")
             .output()?;
 
-        if String::from_utf8(output.stdout)?.contains("Already") && self.process.is_some() {
+        if String::from_utf8(output_code.stdout)?.contains("Already")
+            && String::from_utf8(output_media.stdout)?.contains("Already")
+            && self.process.is_some()
+        {
             return Err("Already up to date. Skipping.".into());
         }
 
