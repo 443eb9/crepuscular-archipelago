@@ -25,6 +25,8 @@ use crate::utils::retrieve_bytes_logged;
 const DEFAULT_UA: &str =
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0";
 
+const WEB_REQUEST_TIMEOUT: Duration = Duration::new(5, 0);
+
 pub struct EventLoop {
     scheduler: Scheduler<Utc>,
 }
@@ -155,6 +157,7 @@ impl Default for RepoUpdater {
     fn default() -> Self {
         let api_key = std::env::var("GITHUB_TOKEN").unwrap();
         let client = Client::builder()
+            .connect_timeout(WEB_REQUEST_TIMEOUT)
             .user_agent(DEFAULT_UA)
             .default_headers(HeaderMap::from_iter([
                 (
@@ -204,33 +207,16 @@ impl Job for RepoUpdater {
         let local_commit = read_to_string(".next/commit");
         log::info!("Local commit: {:?}", local_commit.as_ref().ok());
 
-        log::info!("[DBG] Sending get to {}", Self::ARTIFACTS_API_URL);
         let artifact_list_resp = self.client.get(Self::ARTIFACTS_API_URL).send().await?;
-        log::info!("[DBG] Received response {:?}", artifact_list_resp);
         resp_check_ok!(artifact_list_resp);
 
-        log::info!("[DBG] Retrieving artifact list.");
         let artifacts = artifact_list_resp.json::<ArtifactList>().await?;
-        log::info!("[DBG] Retrieved list.");
         let latest = artifacts.artifacts.first().unwrap();
         log::info!("Remote commit: {}", latest.workflow_run.head_sha);
 
         if local_commit.is_ok_and(|c| c == latest.workflow_run.head_sha) {
             return Err("Already up-to-date. Skipping".into());
         }
-
-        log::info!("Updating local repo.");
-        Command::new("git").arg("pull").spawn()?.wait()?;
-        Command::new("git")
-            .args(["checkout", "main"])
-            .current_dir("src-media")
-            .spawn()?
-            .wait()?;
-        Command::new("git")
-            .arg("pull")
-            .current_dir("src-media")
-            .spawn()?
-            .wait()?;
 
         let artifact_resp = self.client.get(&latest.archive_download_url).send().await?;
         resp_check_ok!(artifact_resp);
@@ -259,6 +245,7 @@ pub struct PixivIllustFetcher {
 impl Default for PixivIllustFetcher {
     fn default() -> Self {
         let client = Client::builder()
+            .connect_timeout(WEB_REQUEST_TIMEOUT)
             .user_agent(DEFAULT_UA)
             .default_headers(HeaderMap::from_iter([(
                 HeaderName::from_static("referer"),
