@@ -46,7 +46,7 @@ export type MouseTrackerUniforms = {
     canvasSize: Vector2,
 }
 
-function paramsToUniforms(params: MouseTrackerParams & { cursorPos: Vector2 }): MouseTrackerUniforms {
+function paramsToUniforms(params: MouseTrackerParams): MouseTrackerUniforms {
     const { transform, canvasSize, ...rest } = params
     return {
         ...rest,
@@ -56,9 +56,9 @@ function paramsToUniforms(params: MouseTrackerParams & { cursorPos: Vector2 }): 
 }
 
 class MouseTrackerImpl extends Effect {
-    params: MouseTrackerParams & { cursorPos: Vector2 }
+    params: MouseTrackerParams
 
-    constructor(params: MouseTrackerParams & { cursorPos: Vector2 }) {
+    constructor(params: MouseTrackerParams) {
         super("MouseTrackerEffect", fragment, {
             uniforms: new Map([["params", new Uniform(paramsToUniforms(params))]])
         })

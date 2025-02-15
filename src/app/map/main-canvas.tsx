@@ -119,6 +119,18 @@ export default function MainCanvas({
         }
     }, [params.page, canvasMode.mode])
 
+    useEffect(() => {
+        const cursorHandler = (ev: MouseEvent) => {
+            islandGrid.cursor.x = ev.pageX / window.innerWidth * 2 - 1
+            islandGrid.cursor.y = -(ev.pageY / window.innerHeight * 2 - 1)
+        }
+
+        window.addEventListener("mousemove", cursorHandler)
+        return () => {
+            window.removeEventListener("mousemove", cursorHandler)
+        }
+    }, [])
+
     const ColorResolver = () => {
         return (
             <div
@@ -131,8 +143,7 @@ export default function MainCanvas({
     const CanvasStateTracker = () => {
         const three = useThree()
         useEffect(() => {
-            if (islandGrid.cursor != three.pointer || islandGrid.canvasSize != three.size) {
-                islandGrid.cursor = three.pointer
+            if (islandGrid.canvasSize != three.size) {
                 islandGrid.canvasSize = three.size
 
                 setUpdateFlag(!updateFlag)
