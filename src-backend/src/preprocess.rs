@@ -8,12 +8,31 @@ use aes_gcm::{
 use base64::{prelude::BASE64_STANDARD, Engine};
 use chrono::DateTime;
 use serde::{de::DeserializeOwned, Deserialize};
-use sqlx::{query, sqlite::SqliteConnectOptions, SqlitePool};
+use sqlx::{query, SqlitePool};
 
 use crate::{
-    env::{get_island_cache_root, get_island_storage_root},
+    env::get_island_storage_root,
+    islands::IslandMaps,
     models::{Foam, IslandMeta, IslandMetaTagged, IslandType, TagData},
 };
+
+pub struct ProgramData {
+    pub main_db: SqlitePool,
+    pub island_maps: IslandMaps,
+}
+
+pub async fn preprocess() -> ProgramData {
+    log::info!("Preprocess start.");
+    let db = SqlitePool::connect("sqlite::memory:").await.unwrap();
+    init_cache_db(&db).await;
+
+    log::info!("Preprocess done, starting web server.");
+
+    ProgramData {
+        island_maps: IslandMaps::new(&db),
+        main_db: db,
+    }
+}
 
 struct ContentEncryptor {
     cipher: AesGcm<Aes256, U12>,
@@ -44,13 +63,7 @@ impl ContentEncryptor {
     }
 }
 
-pub async fn init_islands_cache() -> SqlitePool {
-    let _ = std::fs::create_dir_all(get_island_cache_root());
-
-    let conn_opt = SqliteConnectOptions::new()
-        .filename(get_island_cache_root().join("archipelago.sqlite3"))
-        .create_if_missing(true);
-    let db = SqlitePool::connect_with(conn_opt).await.unwrap();
+async fn init_cache_db(db: &SqlitePool) {
     let encryptor = ContentEncryptor::default();
 
     const INIT_TABLES: &[&'static str] = &[
@@ -106,7 +119,7 @@ pub async fn init_islands_cache() -> SqlitePool {
     ];
 
     for cmd in INIT_TABLES {
-        let _ = query(cmd).execute(&db).await;
+        let _ = query(cmd).execute(db).await;
     }
 
     let (islands, tags) = load_all_islands(&encryptor);
@@ -115,7 +128,7 @@ pub async fn init_islands_cache() -> SqlitePool {
         query("INSERT INTO tags (name, amount) VALUES (?, ?)")
             .bind(tag.name)
             .bind(tag.amount)
-            .execute(&db)
+            .execute(db)
             .await
             .unwrap();
     }
@@ -132,7 +145,7 @@ pub async fn init_islands_cache() -> SqlitePool {
             .bind(island.is_encrypted)
             .bind(island.is_deleted)
             .bind(content)
-            .execute(&db)
+            .execute(db)
             .await
             .unwrap();
 
@@ -140,7 +153,7 @@ pub async fn init_islands_cache() -> SqlitePool {
             query("INSERT INTO island_tags (island_id, tag_id) VALUES (?, ?)")
                 .bind(island.id)
                 .bind(tag.id)
-                .execute(&db)
+                .execute(db)
                 .await
                 .unwrap();
         }
@@ -153,12 +166,10 @@ pub async fn init_islands_cache() -> SqlitePool {
             .bind(foam.date)
             .bind(foam.is_encrypted)
             .bind(foam.content)
-            .execute(&db)
+            .execute(db)
             .await
             .unwrap();
     }
-
-    db
 }
 
 fn load_all_islands(
@@ -220,6 +231,7 @@ fn load_all_islands(
         let content = &content[0];
 
         let (island, mut body) = extract_frontmatter::<IslandToml>(content);
+        body = replace_image_urls(body);
         if island.is_encrypted {
             encryptor.encrypt(&mut body);
         }
@@ -334,6 +346,7 @@ fn load_all_foams(encryptor: &ContentEncryptor) -> Vec<Foam> {
         let content = &content[0];
 
         let (foam, mut body) = extract_frontmatter::<FoamToml>(content);
+        body = replace_image_urls(body);
         if foam.is_encrypted {
             encryptor.encrypt(&mut body);
         }
@@ -357,6 +370,13 @@ fn extract_frontmatter<T: DeserializeOwned>(body: &str) -> (T, String) {
         toml::from_str(&body[frontmatter_begin..frontmatter_end]).unwrap(),
         body[frontmatter_end + DELIMITER.len()..].trim().to_string(),
     )
+}
+
+fn replace_image_urls(body: String) -> String {
+    regex::Regex::new(r#"\.\/([0-9]+)\/"#)
+        .unwrap()
+        .replace_all(&body, "https://oss.443eb9.dev/islandsmedia/$1/")
+        .into()
 }
 
 fn bool_true() -> bool {

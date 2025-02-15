@@ -19,6 +19,7 @@ image = "0.25"
 log = "0.4"
 noise = { version = "0.9", features = ["images"] }
 rand = "0.9"
+regex = "1"
 serde = "1"
 serde_json = "1"
 sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio", "chrono"] }

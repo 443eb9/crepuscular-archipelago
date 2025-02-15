@@ -8,10 +8,11 @@ use noise::{
 };
 use rand::{rngs::StdRng, seq::SliceRandom, SeedableRng};
 use serde::Serialize;
+use sqlx::SqlitePool;
 
 use crate::{
     models::IslandMapMeta,
-    sql::{self, IslandDB},
+    sql::{self},
 };
 
 #[derive(Serialize)]
@@ -337,7 +338,7 @@ impl IslandMaps {
     pub const PAGE_SIZE: u32 = 128;
     pub const PER_PAGE_REGIONS: u32 = 10;
 
-    pub fn new(db: &IslandDB) -> Self {
+    pub fn new(db: &SqlitePool) -> Self {
         let cnt = futures::executor::block_on(sql::query_island_count(db)).unwrap();
 
         let mut map = Self {

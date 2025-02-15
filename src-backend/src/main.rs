@@ -3,14 +3,12 @@ use std::sync::Mutex;
 use actix_cors::Cors;
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 
-use crate::{islands::IslandMaps, sql::IslandDB};
-
 mod env;
 mod filter;
-mod fs;
 mod http;
 mod islands;
 mod models;
+mod preprocess;
 mod sql;
 
 #[actix_web::main]
@@ -18,16 +16,12 @@ async fn main() -> std::io::Result<()> {
     dotenvy::dotenv().unwrap();
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    let islands_db = IslandDB {
-        db: fs::init_islands_cache().await,
-    };
-
-    let island_map = IslandMaps::new(&islands_db);
+    let program_data = preprocess::preprocess().await;
 
     HttpServer::new(move || {
         App::new()
-            .app_data(Data::new(islands_db.clone()))
-            .app_data(Data::new(Mutex::new(island_map.clone())))
+            .app_data(Data::new(program_data.main_db.clone()))
+            .app_data(Data::new(Mutex::new(program_data.island_maps.clone())))
             .wrap(Logger::default())
             .wrap(Cors::permissive())
             .service(http::get_all_tags)

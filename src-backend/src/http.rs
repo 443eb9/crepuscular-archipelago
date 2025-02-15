@@ -8,6 +8,7 @@ use actix_web::{
 };
 use async_stream::stream;
 use chrono::{Timelike, Utc};
+use sqlx::SqlitePool;
 
 use crate::{islands::IslandMaps, models::IslandMapQueryResponse, sql::*};
 
@@ -21,12 +22,12 @@ macro_rules! sql_query_request {
 }
 
 #[get("/api/get/allTags")]
-pub async fn get_all_tags(pool: Data<IslandDB>) -> impl Responder {
+pub async fn get_all_tags(pool: Data<SqlitePool>) -> impl Responder {
     sql_query_request!(query_all_tags, &pool)
 }
 
 #[get("/api/get/island/count/{tagsFilter}/{advancedFilter}")]
-pub async fn get_island_count(pool: Data<IslandDB>, params: Path<(i32, i32)>) -> impl Responder {
+pub async fn get_island_count(pool: Data<SqlitePool>, params: Path<(i32, i32)>) -> impl Responder {
     if *params == (0, 0) {
         sql_query_request!(query_island_count, &pool)
     } else {
@@ -35,13 +36,13 @@ pub async fn get_island_count(pool: Data<IslandDB>, params: Path<(i32, i32)>) ->
 }
 
 #[get("/api/get/island/meta/{id}")]
-pub async fn get_island_meta(pool: Data<IslandDB>, id: Path<u32>) -> impl Responder {
+pub async fn get_island_meta(pool: Data<SqlitePool>, id: Path<u32>) -> impl Responder {
     sql_query_request!(query_island_meta, &pool, *id)
 }
 
 #[get("/api/get/island/metas/{page}/{length}/{tagsFilter}/{advancedFilter}")]
 pub async fn get_islands_meta(
-    pool: Data<IslandDB>,
+    pool: Data<SqlitePool>,
     params: Path<(u32, u32, i32, i32)>,
 ) -> impl Responder {
     if params.2 == 0 && params.3 == 0 {
@@ -59,7 +60,7 @@ pub async fn get_islands_meta(
 }
 
 #[get("/api/get/island/{id}")]
-pub async fn get_island(pool: Data<IslandDB>, id: Path<u32>) -> impl Responder {
+pub async fn get_island(pool: Data<SqlitePool>, id: Path<u32>) -> impl Responder {
     sql_query_request!(query_island_content, &pool, *id)
 }
 
@@ -118,12 +119,12 @@ pub async fn get_island_at(
 }
 
 #[get("/api/get/foam/count")]
-pub async fn get_foams_count(pool: Data<IslandDB>) -> impl Responder {
+pub async fn get_foams_count(pool: Data<SqlitePool>) -> impl Responder {
     sql_query_request!(query_foams_count, &pool)
 }
 
 #[get("/api/get/foam/{page}/{len}")]
-pub async fn get_foams(pool: Data<IslandDB>, params: Path<(u32, u32)>) -> impl Responder {
+pub async fn get_foams(pool: Data<SqlitePool>, params: Path<(u32, u32)>) -> impl Responder {
     sql_query_request!(query_foams, &pool, params.0, params.1)
 }
 

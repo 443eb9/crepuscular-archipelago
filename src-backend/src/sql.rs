@@ -6,32 +6,27 @@ use crate::{
     models::{Foam, FoamCount, Island, IslandCount, IslandMeta, IslandMetaTagged, TagData},
 };
 
-#[derive(Clone)]
-pub struct IslandDB {
-    pub db: SqlitePool,
-}
-
-pub async fn query_all_tags(pool: &IslandDB) -> Result<Vec<TagData>> {
+pub async fn query_all_tags(pool: &SqlitePool) -> Result<Vec<TagData>> {
     Ok(sqlx::query_as("SELECT id, name, amount FROM tags")
-        .fetch_all(&pool.db)
+        .fetch_all(pool)
         .await?)
 }
 
-pub async fn query_island_content(pool: &IslandDB, id: u32) -> Result<Island> {
+pub async fn query_island_content(pool: &SqlitePool, id: u32) -> Result<Island> {
     sqlx::query_as("SELECT id, content FROM islands WHERE id = ?")
         .bind(id)
-        .fetch_one(&pool.db)
+        .fetch_one(pool)
         .await
 }
 
-pub async fn query_island_count(pool: &IslandDB) -> Result<IslandCount> {
+pub async fn query_island_count(pool: &SqlitePool) -> Result<IslandCount> {
     Ok(sqlx::query_as("SELECT COUNT(*) as count FROM islands")
-        .fetch_one(&pool.db)
+        .fetch_one(pool)
         .await?)
 }
 
 pub async fn query_island_count_filtered(
-    pool: &IslandDB,
+    pool: &SqlitePool,
     tags_filter: i32,
     advanced_filter: i32,
 ) -> Result<IslandCount> {
@@ -94,17 +89,17 @@ pub async fn query_island_count_filtered(
         query = query.bind(tag_id);
     }
 
-    Ok(query.fetch_one(&pool.db).await?)
+    Ok(query.fetch_one(pool).await?)
 }
 
-pub async fn query_island_meta(pool: &IslandDB, id: u32) -> Result<IslandMetaTagged> {
+pub async fn query_island_meta(pool: &SqlitePool, id: u32) -> Result<IslandMetaTagged> {
     let (meta, tags) = join!(
         sqlx::query_as::<_,IslandMeta>(
             "SELECT id, title, subtitle, desc, ty, date, banner, is_original, is_encrypted, is_deleted FROM islands
             WHERE id = ?"
         )
         .bind(id)
-        .fetch_one(&pool.db),
+        .fetch_one(pool),
         query_island_tags(pool, id)
     );
 
@@ -112,7 +107,7 @@ pub async fn query_island_meta(pool: &IslandDB, id: u32) -> Result<IslandMetaTag
 }
 
 pub async fn query_islands_meta(
-    pool: &IslandDB,
+    pool: &SqlitePool,
     page: u32,
     length: u32,
 ) -> Result<Vec<IslandMetaTagged>> {
@@ -137,7 +132,7 @@ pub async fn query_islands_meta(
     )
     .bind(start)
     .bind(end)
-    .fetch_all(&pool.db)
+    .fetch_all(pool)
     .await?;
 
     join_all(
@@ -158,7 +153,7 @@ pub async fn query_islands_meta(
 }
 
 pub async fn query_islands_meta_filtered(
-    pool: &IslandDB,
+    pool: &SqlitePool,
     page: u32,
     length: u32,
     tags_filter: i32,
@@ -290,7 +285,7 @@ pub async fn query_islands_meta_filtered(
 
     query = query.bind(start).bind(end);
 
-    let metas: Vec<IslandMeta> = query.fetch_all(&pool.db).await?;
+    let metas: Vec<IslandMeta> = query.fetch_all(pool).await?;
     join_all(metas.iter().map(|meta| query_island_tags(pool, meta.id)))
         .await
         .into_iter()
@@ -304,7 +299,7 @@ pub async fn query_islands_meta_filtered(
         })
 }
 
-async fn query_island_tags(pool: &IslandDB, id: u32) -> Result<Vec<TagData>> {
+async fn query_island_tags(pool: &SqlitePool, id: u32) -> Result<Vec<TagData>> {
     Ok(sqlx::query_as(
         "
             SELECT id, name, amount FROM tags
@@ -313,17 +308,17 @@ async fn query_island_tags(pool: &IslandDB, id: u32) -> Result<Vec<TagData>> {
         ",
     )
     .bind(id)
-    .fetch_all(&pool.db)
+    .fetch_all(pool)
     .await?)
 }
 
-pub async fn query_foams_count(pool: &IslandDB) -> Result<FoamCount> {
+pub async fn query_foams_count(pool: &SqlitePool) -> Result<FoamCount> {
     Ok(sqlx::query_as("SELECT COUNT(*) as count FROM foams")
-        .fetch_one(&pool.db)
+        .fetch_one(pool)
         .await?)
 }
 
-pub async fn query_foams(pool: &IslandDB, page: u32, length: u32) -> Result<Vec<Foam>> {
+pub async fn query_foams(pool: &SqlitePool, page: u32, length: u32) -> Result<Vec<Foam>> {
     let total = query_foams_count(pool).await?.count;
     let end = total - page * length;
     let start = total
@@ -337,6 +332,6 @@ pub async fn query_foams(pool: &IslandDB, page: u32, length: u32) -> Result<Vec<
     )
     .bind(start)
     .bind(end)
-    .fetch_all(&pool.db)
+    .fetch_all(pool)
     .await
 }
