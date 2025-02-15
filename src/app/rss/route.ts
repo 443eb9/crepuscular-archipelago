@@ -22,7 +22,7 @@ export async function GET(request: Request) {
             const title = island.subtitle ? `${island.title} - ${island.subtitle}` : island.title
             const isWip = island.date ? "" : "[WIP] "
 
-            if (island.date == undefined || wip != "0") {
+            if (island.date != undefined || wip != "0") {
                 if (island.isDeleted) {
                     feed.item({
                         title: `${island.id} Access Denied`,

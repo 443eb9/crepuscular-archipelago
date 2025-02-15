@@ -157,6 +157,7 @@ impl Default for RepoUpdater {
     fn default() -> Self {
         let api_key = std::env::var("GITHUB_TOKEN").unwrap();
         let client = Client::builder()
+            .timeout(Duration::from_secs(300))
             .connect_timeout(WEB_REQUEST_TIMEOUT)
             .user_agent(DEFAULT_UA)
             .default_headers(HeaderMap::from_iter([
