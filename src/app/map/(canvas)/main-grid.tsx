@@ -119,25 +119,25 @@ vec3 getPixelColor(vec2 pixel) {
     vec2 grid = floor(pixel / params.cellSize);
 
     vec2 dash = mod(offset, params.dash * 2.0 * params.scale);
-    bool lined = any(lessThan(offset, vec2(params.thickness * params.scale)));
-    bool dashed = all(lessThan(dash, vec2(params.dash * params.scale)));
+    bool border = all(lessThan(dash, vec2(params.dash * params.scale))) && any(lessThan(offset, vec2(params.thickness * params.scale)));
 
     // Grid borders
-    if (lined && dashed) {
+    if (border) {
         color = params.lineColor;
-        return color;
     }
     
 #ifdef MODE_ISLANDS
     // Island blocks
-    int thisState = isIsland(grid);
-    if (thisState == NOT_ISLAND) {
-        wave(offset, grid, color);
-        if (params.focusingValue < 1.0) {
-            color *= params.unfocusColor;
+    if (!border) {
+        int thisState = isIsland(grid);
+        if (thisState == NOT_ISLAND) {
+            wave(offset, grid, color);
+            if (params.focusingValue < 1.0) {
+                color *= params.unfocusColor;
+            }
+        } else {
+            applyColor(thisState, color);
         }
-    } else {
-        applyColor(thisState, color);
     }
     
     // Outline

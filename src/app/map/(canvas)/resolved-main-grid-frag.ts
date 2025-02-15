@@ -15,7 +15,6 @@ export default `
     It's also possible to get a permanent commercial license hooked to a single and specific version of LYGIA.
 */
 
-
 #ifndef FNC_MOD289
 #define FNC_MOD289
 float mod289(const in float x) { return x - floor(x * (1. / 289.)) * 289.; }
@@ -453,31 +452,31 @@ vec3 gnoise3(vec3 x) {
 #ifndef FBM_SCALE_SCALAR
 #define FBM_SCALE_SCALAR 2.0
 #endif
-#ifndef FBM_AMPLITUD_INITIAL
-#define FBM_AMPLITUD_INITIAL 0.5
+#ifndef FBM_AMPLITUDE_INITIAL
+#define FBM_AMPLITUDE_INITIAL 0.5
 #endif
-#ifndef FBM_AMPLITUD_SCALAR
-#define FBM_AMPLITUD_SCALAR 0.5
+#ifndef FBM_AMPLITUDE_SCALAR
+#define FBM_AMPLITUDE_SCALAR 0.5
 #endif
 #ifndef FNC_FBM
 #define FNC_FBM
 FBM_NOISE_TYPE fbm(in vec2 st) {
     FBM_NOISE_TYPE value = FBM_NOISE_TYPE(FBM_VALUE_INITIAL);
-    float amplitud = FBM_AMPLITUD_INITIAL;
+    float amplitude = FBM_AMPLITUDE_INITIAL;
     for (int i = 0; i < FBM_OCTAVES; i++) {
-        value += amplitud * FBM_NOISE2_FNC(st);
+        value += amplitude * FBM_NOISE2_FNC(st);
         st *= FBM_SCALE_SCALAR;
-        amplitud *= FBM_AMPLITUD_SCALAR;
+        amplitude *= FBM_AMPLITUDE_SCALAR;
     }
     return value;
 }
 FBM_NOISE_TYPE fbm(in vec3 pos) {
     FBM_NOISE_TYPE value = FBM_NOISE_TYPE(FBM_VALUE_INITIAL);
-    float amplitud = FBM_AMPLITUD_INITIAL;
+    float amplitude = FBM_AMPLITUDE_INITIAL;
     for (int i = 0; i < FBM_OCTAVES; i++) {
-        value += amplitud * FBM_NOISE3_FNC(pos);
+        value += amplitude * FBM_NOISE3_FNC(pos);
         pos *= FBM_SCALE_SCALAR;
-        amplitud *= FBM_AMPLITUD_SCALAR;
+        amplitude *= FBM_AMPLITUDE_SCALAR;
     }
     return value;
 }
@@ -608,25 +607,25 @@ vec3 getPixelColor(vec2 pixel) {
     vec2 grid = floor(pixel / params.cellSize);
 
     vec2 dash = mod(offset, params.dash * 2.0 * params.scale);
-    bool lined = any(lessThan(offset, vec2(params.thickness * params.scale)));
-    bool dashed = all(lessThan(dash, vec2(params.dash * params.scale)));
+    bool border = all(lessThan(dash, vec2(params.dash * params.scale))) && any(lessThan(offset, vec2(params.thickness * params.scale)));
 
     // Grid borders
-    if (lined && dashed) {
+    if (border) {
         color = params.lineColor;
-        return color;
     }
     
 #ifdef MODE_ISLANDS
     // Island blocks
-    int thisState = isIsland(grid);
-    if (thisState == NOT_ISLAND) {
-        wave(offset, grid, color);
-        if (params.focusingValue < 1.0) {
-            color *= params.unfocusColor;
+    if (!border) {
+        int thisState = isIsland(grid);
+        if (thisState == NOT_ISLAND) {
+            wave(offset, grid, color);
+            if (params.focusingValue < 1.0) {
+                color *= params.unfocusColor;
+            }
+        } else {
+            applyColor(thisState, color);
         }
-    } else {
-        applyColor(thisState, color);
     }
     
     // Outline
