@@ -77,7 +77,7 @@ export default function IslandPanels({
                 visitingIsland?.value &&
                 <div className="absolute z-50 w-full h-full flex justify-center items-center pointer-events-auto">
                     <div className="absolute -z-10 w-full h-full bg-black opacity-50" />
-                    <ContentWrapper containerClassName="overflow-y-auto h-[95%]" className={InlinedArticleSuppressBlur}>
+                    <ContentWrapper containerClassName="w-full overflow-y-auto h-[95%]" className={InlinedArticleSuppressBlur}>
                         <InlinedArticle
                             meta={visitingIsland.value.meta}
                             content={visitingIsland.value.content.content}
