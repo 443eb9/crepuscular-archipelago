@@ -16,19 +16,19 @@ use crate::{
     models::{Foam, IslandMeta, IslandMetaTagged, IslandType, TagData},
 };
 
-pub struct ProgramData {
+pub struct InitData {
     pub main_db: SqlitePool,
     pub island_maps: IslandMaps,
 }
 
-pub async fn preprocess() -> ProgramData {
+pub async fn preprocess() -> InitData {
     log::info!("Preprocess start.");
     let db = SqlitePool::connect("sqlite::memory:").await.unwrap();
     init_cache_db(&db).await;
 
     log::info!("Preprocess done, starting web server.");
 
-    ProgramData {
+    InitData {
         island_maps: IslandMaps::new(&db),
         main_db: db,
     }
@@ -63,7 +63,7 @@ impl ContentEncryptor {
     }
 }
 
-async fn init_cache_db(db: &SqlitePool) {
+pub async fn init_cache_db(db: &SqlitePool) {
     let encryptor = ContentEncryptor::default();
 
     const INIT_TABLES: &[&'static str] = &[

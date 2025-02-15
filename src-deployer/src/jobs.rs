@@ -1,6 +1,6 @@
 use std::{
     error::Error,
-    fs::{create_dir_all, read_to_string, remove_dir_all, write, File},
+    fs::{create_dir_all, read_to_string, remove_dir_all, write},
     io::Cursor,
     ops::{Deref, DerefMut},
     process::{Child, Command},
@@ -20,7 +20,7 @@ use serde::{Deserialize, Serialize};
 use tokio::time::timeout;
 use zip::ZipArchive;
 
-use crate::utils::retrieve_bytes_logged;
+use crate::utils::{create_process_io, retrieve_bytes_logged, ProcessLoggingIo};
 
 const DEFAULT_UA: &str =
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0";
@@ -424,11 +424,11 @@ impl Job for FrontendRunner {
         const NPM: &str = "npm";
 
         Command::new(NPM).args(["i", "--verbose"]).output()?;
-        let _ = create_dir_all("log");
+        let ProcessLoggingIo { out, err } = create_process_io("frontend")?;
         let npm = Command::new(NPM)
             .args(["run", "start"])
-            .stdout(File::create("log/frontend-stdout.log")?)
-            .stderr(File::create("log/frontend-stderr.log")?)
+            .stdout(out)
+            .stderr(err)
             .spawn()?;
         self.npm.replace(npm);
 
@@ -448,15 +448,30 @@ pub struct BackendRunner {
 #[async_trait]
 impl Job for BackendRunner {
     async fn run(&mut self) -> Result<(), Box<dyn Error>> {
+        log::info!("Updating local repo.");
+        Command::new("git")
+            .args(["checkout", "main"])
+            .current_dir("src-media")
+            .spawn()?
+            .wait()?;
+        let output = Command::new("git")
+            .arg("pull")
+            .current_dir("src-media")
+            .output()?;
+
+        if String::from_utf8(output.stdout)?.contains("Already") && self.process.is_some() {
+            return Err("Already up to date. Skipping.".into());
+        }
+
         if let Some(old_process) = &mut self.process {
             old_process.kill()?;
         }
 
-        let _ = create_dir_all("log");
+        let ProcessLoggingIo { out, err } = create_process_io("backend")?;
         let process = Command::new("cargo")
             .args(["run", "--bin", "backend", "--release"])
-            .stdout(File::create("log/backend-stdout.log")?)
-            .stderr(File::create("log/backend-stderr.log")?)
+            .stdout(out)
+            .stderr(err)
             .spawn()?;
         self.process.replace(process);
 

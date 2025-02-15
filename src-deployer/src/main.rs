@@ -2,7 +2,7 @@ use clokwerk::TimeUnits;
 use env_logger::Env;
 
 use crate::jobs::{
-    RepoUpdater, BackendRunner, ChainedJobs, EventLoop, FrontendRunner, Job, PixivIllustFetcher,
+    BackendRunner, ChainedJobs, EventLoop, FrontendRunner, Job, PixivIllustFetcher, RepoUpdater,
 };
 
 mod jobs;
@@ -14,21 +14,21 @@ async fn main() {
     env_logger::init_from_env(Env::default().filter_or("LOG_LEVEL", "info"));
 
     let mut pixiv = PixivIllustFetcher::default();
+    let mut backend = BackendRunner::default();
 
-    let mut jobs = ChainedJobs::default();
-    jobs.push(Box::new(RepoUpdater::default()));
-    jobs.push(Box::new(BackendRunner::default()));
-    jobs.push(Box::new(FrontendRunner::default()));
+    let mut frontend = ChainedJobs::default();
+    frontend.push(Box::new(RepoUpdater::default()));
+    frontend.push(Box::new(FrontendRunner::default()));
 
     log::info!("Initial run begin.");
     let _ = pixiv.wrapped_run().await;
-    for job in jobs.iter_mut() {
-        let _ = job.wrapped_run().await;
-    }
+    let _ = frontend.run().await;
+    let _ = backend.wrapped_run().await;
     log::info!("Initial run end.");
 
     EventLoop::new()
-        .schedule(jobs, |sc| sc.every(5u32.minutes()))
+        .schedule(frontend, |sc| sc.every(5u32.minutes()))
+        .schedule(backend, |sc| sc.every(5u32.minutes()))
         .schedule(pixiv, |sc| sc.every(1u32.day()))
         .start();
 }

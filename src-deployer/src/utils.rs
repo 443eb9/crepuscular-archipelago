@@ -1,5 +1,7 @@
 use std::{
     error::Error,
+    fs::{create_dir_all, File},
+    process::Stdio,
     sync::{
         atomic::{AtomicU32, Ordering},
         Arc,
@@ -40,4 +42,17 @@ pub async fn retrieve_bytes_logged(resp: Response) -> Result<Vec<u8>, Box<dyn Er
     }
 
     Ok(result)
+}
+
+pub struct ProcessLoggingIo {
+    pub out: Stdio,
+    pub err: Stdio,
+}
+
+pub fn create_process_io(name: &str) -> std::io::Result<ProcessLoggingIo> {
+    let _ = create_dir_all("log");
+    Ok(ProcessLoggingIo {
+        out: File::create(format!("log/{name}-stdout.log"))?.into(),
+        err: File::create(format!("log/{name}-stderr.log"))?.into(),
+    })
 }
