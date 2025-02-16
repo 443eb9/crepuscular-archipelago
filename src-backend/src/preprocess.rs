@@ -1,4 +1,8 @@
-use std::{collections::HashMap, str::FromStr};
+use std::{
+    collections::HashMap,
+    fs::{create_dir_all, File},
+    str::FromStr,
+};
 
 use aes_gcm::{
     aead::{consts::U12, Aead, Nonce},
@@ -8,10 +12,10 @@ use aes_gcm::{
 use base64::{prelude::BASE64_STANDARD, Engine};
 use chrono::DateTime;
 use serde::{de::DeserializeOwned, Deserialize};
-use sqlx::{query, SqlitePool};
+use sqlx::{query, sqlite::SqliteConnectOptions, SqlitePool};
 
 use crate::{
-    env::get_island_storage_root,
+    env::{get_island_cache_root, get_island_storage_root},
     islands::IslandMaps,
     models::{Foam, IslandMeta, IslandMetaTagged, IslandType, TagData},
 };
@@ -23,7 +27,11 @@ pub struct InitData {
 
 pub async fn preprocess() -> InitData {
     log::info!("Preprocess start.");
-    let db = SqlitePool::connect("sqlite::memory:").await.unwrap();
+    let _ = create_dir_all(get_island_cache_root());
+    let conn_opt = SqliteConnectOptions::new()
+        .filename(get_island_cache_root().join("archipelago.sqlite3"))
+        .create_if_missing(true);
+    let db = SqlitePool::connect_with(conn_opt).await.unwrap();
     init_cache_db(&db).await;
 
     log::info!("Preprocess done, starting web server.");
