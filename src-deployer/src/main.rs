@@ -22,7 +22,9 @@ async fn main() {
 
     log::info!("Initial run begin.");
     let _ = pixiv.wrapped_run().await;
-    let _ = frontend.run().await;
+    for job in frontend.iter_mut() {
+        let _ = job.wrapped_run().await;
+    }
     let _ = backend.wrapped_run().await;
     log::info!("Initial run end.");
 
