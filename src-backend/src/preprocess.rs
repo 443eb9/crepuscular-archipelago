@@ -67,10 +67,6 @@ pub async fn init_cache_db(db: &SqlitePool) {
     let encryptor = ContentEncryptor::default();
 
     const INIT_TABLES: &[&'static str] = &[
-        "DROP TABLE island_tags",
-        "DROP TABLE islands",
-        "DROP TABLE tags",
-        "DROP TABLE foams",
         r#"create table islands
         (
             id           integer               not null
@@ -118,11 +114,18 @@ pub async fn init_cache_db(db: &SqlitePool) {
         );"#,
     ];
 
+    log::info!("Start initializing tables...");
     for cmd in INIT_TABLES {
-        let _ = query(cmd).execute(db).await;
+        query(cmd).execute(db).await.unwrap();
     }
 
+    log::info!("Start loading all islands...");
     let (islands, tags) = load_all_islands(&encryptor);
+    log::info!(
+        "Successfully loaded {} islands and {} tags.",
+        islands.len(),
+        tags.len()
+    );
 
     for tag in tags {
         query("INSERT INTO tags (name, amount) VALUES (?, ?)")
@@ -159,7 +162,9 @@ pub async fn init_cache_db(db: &SqlitePool) {
         }
     }
 
+    log::info!("Start loading all foams...");
     let foams = load_all_foams(&encryptor);
+    log::info!("Successfully loaded {} foams.", foams.len());
 
     for foam in foams {
         query("INSERT INTO foams (date, is_encrypted, content) VALUES (?, ?, ?)")
