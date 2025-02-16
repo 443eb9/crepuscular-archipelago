@@ -75,6 +75,10 @@ pub async fn init_cache_db(db: &SqlitePool) {
     let encryptor = ContentEncryptor::default();
 
     const INIT_TABLES: &[&'static str] = &[
+        "DROP TABLE island_tags",
+        "DROP TABLE islands",
+        "DROP TABLE tags",
+        "DROP TABLE foams",
         r#"create table islands
         (
             id           integer               not null
@@ -124,7 +128,10 @@ pub async fn init_cache_db(db: &SqlitePool) {
 
     log::info!("Start initializing tables...");
     for cmd in INIT_TABLES {
-        query(cmd).execute(db).await.unwrap();
+        match query(cmd).execute(db).await {
+            Ok(_) => {}
+            Err(err) => log::error!("{}", err),
+        }
     }
 
     log::info!("Start loading all islands...");
