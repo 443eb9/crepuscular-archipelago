@@ -1,5 +1,6 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
+use serde_repr::Deserialize_repr;
 use sqlx::{prelude::Type, FromRow};
 
 use crate::islands::IslandMapQuery;
@@ -13,16 +14,14 @@ pub enum IslandType {
     Note,
 }
 
-#[derive(Debug, Default, Serialize, Deserialize, Type, PartialEq, Eq)]
+#[derive(Debug, Default, Serialize, Deserialize_repr, Type, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
+#[repr(u32)]
 pub enum IslandState {
     #[default]
     Finished,
-    // Leave date to None sets state to WorkInProgress.
     WorkInProgress,
-    // This requires manually assignment.
     LongTermProject,
-    // This requires manually assignment.
     Deprecated,
 }
 

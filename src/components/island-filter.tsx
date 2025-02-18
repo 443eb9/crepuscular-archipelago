@@ -10,6 +10,8 @@ import Toggle from "@/components/toggle"
 import RadioButtonGroup from "@/components/radio-button-group"
 import { usePathname } from "next/navigation"
 import LinkNoPrefetch from "./link-no-prefetch"
+import CheckboxGroup from "./checkbox-group"
+import { extractBits } from "@/data/utils"
 
 export default function IslandFilter({ params, allTags }: { params: QueryParams, allTags: TagData[] }) {
     const pathname = usePathname()
@@ -34,7 +36,7 @@ export default function IslandFilter({ params, allTags }: { params: QueryParams,
                 <div>
                     <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: params.advf ^ (1 << 1) }).toString()}`}>
                         <Toggle enabled={(params.advf >> 1 & 1) == 1}>
-                            <Text>反选</Text>
+                            <Text>反选 Tag</Text>
                         </Toggle>
                     </LinkNoPrefetch>
                     <Text className="font-bold">逻辑模式</Text>
@@ -49,8 +51,19 @@ export default function IslandFilter({ params, allTags }: { params: QueryParams,
                             </LinkNoPrefetch>
                         )}
                         enabled={params.advf >> 2 & 1}
-                    >
-                    </RadioButtonGroup>
+                    />
+                    <Text className="font-bold">排除状态</Text>
+                    <CheckboxGroup
+                        className="grid grid-cols-2"
+                        labels={["已完成", "未完成", "长期项目", "已弃坑"]
+                            .map((name, index) =>
+                                <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: params.advf ^ (1 << index + 3) })}`} key={name}>
+                                    <Text>{name}</Text>
+                                </LinkNoPrefetch>
+                            )
+                        }
+                        enabled={extractBits(params.advf >> 3 & 0b1111)}
+                    />
                 </div>
                 <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, tags: 0, advf: 0 }).toString()}`}>
                     <OutlinedButton className="w-full h-8 mt-2">

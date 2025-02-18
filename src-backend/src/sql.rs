@@ -1,9 +1,14 @@
+use std::iter;
+
 use futures::{future::join_all, join};
+use serde::Serialize;
 use sqlx::{Result, SqlitePool};
 
 use crate::{
     filter::{AdvancedFilter, TagsFilter},
-    models::{Foam, FoamCount, Island, IslandCount, IslandMeta, IslandMetaTagged, TagData},
+    models::{
+        Foam, FoamCount, Island, IslandCount, IslandMeta, IslandMetaTagged, IslandState, TagData,
+    },
 };
 
 pub async fn query_all_tags(pool: &SqlitePool) -> Result<Vec<TagData>> {
@@ -31,24 +36,11 @@ pub async fn query_island_count_filtered(
     advanced_filter: i32,
 ) -> Result<IslandCount> {
     let tags_filter = TagsFilter::new(tags_filter);
-    let advanced_filter = AdvancedFilter::new(advanced_filter);
+    let advanced_filter = AdvancedFilter::new(advanced_filter, &tags_filter);
 
-    if tags_filter.filtered_ids.is_empty() {
+    if tags_filter.filtered_ids.is_empty() && advanced_filter.excluded_states.is_empty() {
         return query_island_count(pool).await;
     }
-
-    let and_restriction = {
-        if advanced_filter.is_or_not_and {
-            String::default()
-        } else {
-            format!(
-                "
-                HAVING COUNT(tag_id) = {}
-                ",
-                tags_filter.filtered_ids.len()
-            )
-        }
-    };
 
     let sql = {
         if advanced_filter.is_exclude {
@@ -59,12 +51,15 @@ pub async fn query_island_count_filtered(
                     SELECT id, tag_id
                     FROM island_tags
                     WHERE island_id = id
-                    AND tag_id IN ({})
+                    {}
                     GROUP BY island_id
                     {}
                 )
+                {}
                 ",
-                &tags_filter.sql_conditions, and_restriction
+                tags_filter.sql_restriction,
+                advanced_filter.and_sql_restriction,
+                advanced_filter.excluded_state_sql_restriction
             )
         } else {
             format!(
@@ -72,13 +67,16 @@ pub async fn query_island_count_filtered(
                 WITH Filtered AS (
                     SELECT id FROM islands
                     JOIN island_tags ON id = island_id
-                    AND tag_id IN ({})
+                    {}
+                    {}
                     GROUP BY island_id
                     {}
                 )
                 SELECT COUNT(*) as count FROM Filtered
                 ",
-                &tags_filter.sql_conditions, and_restriction
+                tags_filter.sql_restriction,
+                advanced_filter.excluded_state_sql_restriction,
+                advanced_filter.and_sql_restriction,
             )
         }
     };
@@ -173,52 +171,42 @@ pub async fn query_islands_meta_filtered(
         .unwrap_or_default();
 
     let tags_filter = TagsFilter::new(tags_filter);
-    let advanced_filter = AdvancedFilter::new(advanced_filter);
+    let advanced_filter = AdvancedFilter::new(advanced_filter, &tags_filter);
 
-    if tags_filter.filtered_ids.is_empty() {
+    if tags_filter.filtered_ids.is_empty() && advanced_filter.excluded_states.is_empty() {
         return query_islands_meta(pool, page, length).await;
     }
-
-    let and_restriction = {
-        if advanced_filter.is_or_not_and {
-            String::default()
-        } else {
-            format!(
-                "
-                HAVING COUNT(tag_id) = {}
-                ",
-                tags_filter.filtered_ids.len()
-            )
-        }
-    };
 
     let sql = {
         if advanced_filter.is_exclude {
             format!(
                 "
-                WITH FilteredIslands AS (
-                    SELECT
-                        id,
-                        title,
-                        subtitle,
-                        desc,
-                        ty,
-                        date,
-                        license,
-                        state,
-                        banner,
-                        is_encrypted,
-                        is_deleted,
-                        ROW_NUMBER() OVER (ORDER BY id) AS rn
-                    FROM islands
-                    WHERE NOT EXISTS (
-                        SELECT island_id, tag_id
-                        FROM island_tags
-                        WHERE island_id = islands.id
-                        AND tag_id IN ({})
-                        GROUP BY island_id
+                WITH OrderedIslands As (
+                    WITH FilteredIslands AS (
+                        SELECT
+                            id,
+                            title,
+                            subtitle,
+                            desc,
+                            ty,
+                            date,
+                            license,
+                            state,
+                            banner,
+                            is_encrypted,
+                            is_deleted
+                        FROM islands
+                        WHERE NOT EXISTS (
+                            SELECT island_id, tag_id
+                            FROM island_tags
+                            WHERE island_id = islands.id
+                            {}
+                            GROUP BY island_id
+                            {}
+                        )
                         {}
                     )
+                    SELECT *, ROW_NUMBER() OVER (ORDER BY id) AS rn FROM FilteredIslands
                 )
                 SELECT
                     id,
@@ -232,10 +220,12 @@ pub async fn query_islands_meta_filtered(
                     banner,
                     is_encrypted,
                     is_deleted
-                FROM FilteredIslands
+                FROM OrderedIslands
                 WHERE rn BETWEEN ? AND ?
                 ",
-                &tags_filter.sql_conditions, and_restriction
+                tags_filter.sql_restriction,
+                advanced_filter.and_sql_restriction,
+                advanced_filter.excluded_state_sql_restriction,
             )
         } else {
             format!(
@@ -256,7 +246,8 @@ pub async fn query_islands_meta_filtered(
                         ROW_NUMBER() OVER (ORDER BY id) AS rn
                     FROM islands
                     JOIN island_tags ON id = island_id
-                    AND tag_id IN ({})
+                    {}
+                    {}
                     GROUP BY island_id
                     {}
                 )
@@ -276,7 +267,9 @@ pub async fn query_islands_meta_filtered(
                 WHERE rn BETWEEN ? AND ?
                 GROUP BY id
                 ",
-                &tags_filter.sql_conditions, and_restriction
+                tags_filter.sql_restriction,
+                advanced_filter.excluded_state_sql_restriction,
+                advanced_filter.and_sql_restriction,
             )
         }
     };

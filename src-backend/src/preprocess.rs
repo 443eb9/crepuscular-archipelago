@@ -86,7 +86,7 @@ pub async fn init_cache_db(db: &SqlitePool) {
             ty           integer               not null,
             date         text,
             license      text,
-            state        text,
+            state        integer,
             banner       boolean default false not null,
             is_original  Boolean,
             is_encrypted Boolean default false,
@@ -157,7 +157,7 @@ pub async fn init_cache_db(db: &SqlitePool) {
             .bind(island.ty)
             .bind(island.date)
             .bind(island.license)
-            .bind(island.state)
+            .bind(island.state as u32)
             .bind(island.banner)
             .bind(island.is_encrypted)
             .bind(island.is_deleted)
@@ -208,13 +208,27 @@ fn load_all_islands(
         #[serde(default)]
         pub license: License,
         #[serde(default)]
-        pub state: IslandState,
+        pub state: IslandStateStr,
         #[serde(default)]
         pub banner: bool,
         #[serde(default)]
         pub is_encrypted: bool,
         #[serde(default)]
         pub is_deleted: bool,
+    }
+
+    #[derive(Deserialize, Default, PartialEq, Eq)]
+    #[serde(rename_all = "camelCase")]
+    #[repr(u32)]
+    pub enum IslandStateStr {
+        #[default]
+        Finished,
+        // Leave date to None sets state to WorkInProgress.
+        WorkInProgress,
+        // This requires manually assignment.
+        LongTermProject,
+        // This requires manually assignment.
+        Deprecated,
     }
 
     let dir = std::fs::read_dir(get_island_storage_root().join("islands")).unwrap();
@@ -257,8 +271,8 @@ fn load_all_islands(
             encryptor.encrypt(&mut body);
         }
 
-        if island.date.is_none() && island.state == IslandState::Finished {
-            island.state = IslandState::WorkInProgress;
+        if island.date.is_none() && island.state == IslandStateStr::Finished {
+            island.state = IslandStateStr::WorkInProgress;
         }
 
         for tag in &island.tags {
@@ -296,7 +310,7 @@ fn load_all_islands(
                                 .date
                                 .map(|t| DateTime::from_str(&t.to_string()).unwrap()),
                             ty: island.ty,
-                            state: island.state,
+                            state: unsafe { std::mem::transmute::<_, IslandState>(island.state) },
                             banner: island.banner,
                             license: island.license,
                             is_encrypted: island.is_encrypted,

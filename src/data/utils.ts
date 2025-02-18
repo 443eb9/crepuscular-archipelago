@@ -39,6 +39,19 @@ export function findClassNameAmong(target: HTMLElement, className: string): bool
     return true
 }
 
+export function extractBits(bits: number): number[] {
+    let x = 0
+    let res = []
+    while (bits) {
+        if ((bits & 1) != 0) {
+            res.push(x)
+        }
+        bits = bits >> 1
+        x++
+    }
+    return res
+}
+
 export function decrypt(body: string, key: string, iv: string) {
     const keyBuf = Buffer.from(key)
     const ivBuf = Buffer.from(iv)
