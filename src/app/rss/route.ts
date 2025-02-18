@@ -33,7 +33,7 @@ export async function GET(request: Request) {
                 } else {
                     feed.item({
                         title: isWip + title,
-                        description: island.desc ?? "[No description.]",
+                        description: island.desc ?? "N/A",
                         url: island.ty == "article" ? `https://443eb9.dev/island?id=${island.id}` : "https://443eb9.dev/updates",
                         date: island.date ? island.date : "",
                         categories: [island.ty],

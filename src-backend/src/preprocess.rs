@@ -1,8 +1,4 @@
-use std::{
-    collections::HashMap,
-    fs::{create_dir_all, File},
-    str::FromStr,
-};
+use std::{collections::HashMap, fs::create_dir_all, str::FromStr};
 
 use aes_gcm::{
     aead::{consts::U12, Aead, Nonce},
@@ -269,7 +265,7 @@ fn load_all_islands(
     islands.sort_by_key(|(id, ..)| *id);
 
     let mut all_tags = all_tags.into_iter().collect::<Vec<_>>();
-    all_tags.sort_by_key(|(name, _)| name.to_owned());
+    all_tags.sort_by_key(|(_, amount)| -(*amount as i32));
     let all_tags_ids = all_tags
         .iter()
         .enumerate()
