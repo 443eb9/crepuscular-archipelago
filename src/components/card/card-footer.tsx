@@ -10,8 +10,14 @@ export default function CardFooter({ island, params }: { island: IslandMeta, par
     return (
         <div>
             <div className="flex flex-col gap-2">
+                <TagsContainer island={island} params={params} />
                 <div className="flex justify-between">
-                    <TagsContainer island={island} params={params} />
+                    <License
+                        className="flex gap-1 dark:invert"
+                        license={island.license}
+                        iconWidth={20}
+                        iconHeight={20}
+                    />
                     {
                         island.date == undefined
                             ? <div className="flex items-center gap-1">
@@ -26,12 +32,6 @@ export default function CardFooter({ island, params }: { island: IslandMeta, par
                             </div>
                     }
                 </div>
-                <License
-                    className="flex gap-1 dark:invert"
-                    license={island.license}
-                    iconWidth={20}
-                    iconHeight={20}
-                />
             </div>
             {
                 !island.isDeleted && !island.date != undefined &&
