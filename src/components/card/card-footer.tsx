@@ -4,6 +4,7 @@ import { FaClock } from "react-icons/fa6"
 import Text from "@/components/text"
 import { QueryParams } from "@/data/search-param-util"
 import TagsContainer from "../tags-container"
+import License from "../license"
 
 export default function CardFooter({ island, params }: { island: IslandMeta, params: QueryParams }) {
     return (
@@ -25,6 +26,12 @@ export default function CardFooter({ island, params }: { island: IslandMeta, par
                             </div>
                     }
                 </div>
+                <License
+                    className="flex gap-1 dark:invert"
+                    license={island.license}
+                    iconWidth={20}
+                    iconHeight={20}
+                />
             </div>
             {
                 !island.isDeleted && !island.date != undefined &&

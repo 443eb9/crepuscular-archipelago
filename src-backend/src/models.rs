@@ -4,12 +4,33 @@ use sqlx::{prelude::Type, FromRow};
 
 use crate::islands::IslandMapQuery;
 
-#[derive(Debug, Serialize, Deserialize, Type, PartialEq, Eq)]
+#[derive(Debug, Default, Serialize, Deserialize, Type, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub enum IslandType {
+    #[default]
     Article,
     Achievement,
     Note,
+}
+
+#[derive(Debug, Default, Serialize, Deserialize, Type, PartialEq, Eq)]
+pub enum License {
+    #[serde(rename = "CC_BY")]
+    CcBy,
+    #[serde(rename = "CC_BY_SA")]
+    CcBySa,
+    #[default]
+    #[serde(rename = "CC_BY_NC")]
+    CcByNc,
+    #[serde(rename = "CC_BY_NC_SA")]
+    CcByNcSa,
+    #[serde(rename = "CC_BY_ND")]
+    CcByNd,
+    #[serde(rename = "CC_BY_NC_ND")]
+    CcByNcNd,
+    #[serde(rename = "CC0")]
+    Cc0,
+    Repost,
 }
 
 #[derive(Debug, Serialize, FromRow)]
@@ -20,7 +41,7 @@ pub struct TagData {
     pub amount: u32,
 }
 
-#[derive(Debug, Serialize, FromRow)]
+#[derive(Debug, Default, Serialize, FromRow)]
 #[serde(rename_all = "camelCase")]
 pub struct IslandMeta {
     pub id: u32,
@@ -30,26 +51,9 @@ pub struct IslandMeta {
     pub date: Option<DateTime<FixedOffset>>,
     pub ty: IslandType,
     pub banner: bool,
-    pub is_original: bool,
+    pub license: License,
     pub is_encrypted: bool,
     pub is_deleted: bool,
-}
-
-impl Default for IslandMeta {
-    fn default() -> Self {
-        Self {
-            id: 0,
-            title: Default::default(),
-            subtitle: None,
-            desc: None,
-            date: None,
-            ty: IslandType::Achievement,
-            banner: false,
-            is_original: true,
-            is_encrypted: false,
-            is_deleted: false,
-        }
-    }
 }
 
 impl IslandMeta {
@@ -76,8 +80,8 @@ pub struct IslandMetaTagged {
     pub date: Option<DateTime<FixedOffset>>,
     pub ty: IslandType,
     pub tags: Vec<TagData>,
+    pub license: License,
     pub banner: bool,
-    pub is_original: bool,
     pub is_encrypted: bool,
     pub is_deleted: bool,
 }
@@ -92,8 +96,8 @@ impl IslandMetaTagged {
             date: meta.date,
             ty: meta.ty,
             tags,
+            license: meta.license,
             banner: meta.banner,
-            is_original: meta.is_original,
             is_encrypted: meta.is_encrypted,
             is_deleted: meta.is_deleted,
         }

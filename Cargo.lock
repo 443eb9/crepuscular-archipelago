@@ -481,6 +481,7 @@ dependencies = [
  "aes-gcm",
  "async-stream",
  "base64",
+ "bitflags 2.6.0",
  "chrono",
  "dotenvy",
  "env_logger",

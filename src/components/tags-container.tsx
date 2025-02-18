@@ -12,7 +12,6 @@ export default function TagsContainer({ island, params }: { island: IslandMeta, 
                 ))
             }
             {island.date == undefined && <SpTag title="WIP" />}
-            {!island.isOriginal && <SpTag title="非原创" />}
         </div>
     )
 }

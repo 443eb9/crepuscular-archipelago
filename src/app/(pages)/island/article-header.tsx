@@ -7,6 +7,7 @@ import TagsContainer from "@/components/tags-container"
 import LinkNoPrefetch from "@/components/link-no-prefetch"
 import AnimHoverInvertBox from "@/components/anim/anim-hover-invert"
 import Text from "@/components/text"
+import License from "@/components/license"
 
 export default function ArticleHeader({ island, params, noGoBack }: { island: IslandMeta, params: QueryParams, noGoBack?: boolean }) {
     return (
@@ -41,7 +42,7 @@ export default function ArticleHeader({ island, params, noGoBack }: { island: Is
                     </div>
                 }
                 {
-                    !island.isOriginal &&
+                    island.license == "Repost" &&
                     <div className="text-light-contrast bg-warn">
                         注意：这是一篇非原创的文章，请注意查看文章简介和正文中的原文地址！
                     </div>
@@ -59,6 +60,12 @@ export default function ArticleHeader({ island, params, noGoBack }: { island: Is
                             </div>
                     }
                 </div>
+                <License
+                    className="flex gap-1 dark:invert"
+                    license={island.license}
+                    iconWidth={20}
+                    iconHeight={20}
+                />
                 <div className="flex gap-3 mt-1">
                     <div className="bg-light-contrast dark:bg-dark-contrast w-3 h-3"></div>
                     <div className="bg-light-contrast dark:bg-dark-contrast w-3 h-3"></div>

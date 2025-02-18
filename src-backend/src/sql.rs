@@ -95,7 +95,7 @@ pub async fn query_island_count_filtered(
 pub async fn query_island_meta(pool: &SqlitePool, id: u32) -> Result<IslandMetaTagged> {
     let (meta, tags) = join!(
         sqlx::query_as::<_,IslandMeta>(
-            "SELECT id, title, subtitle, desc, ty, date, banner, is_original, is_encrypted, is_deleted FROM islands
+            "SELECT id, title, subtitle, desc, ty, date, license, banner, is_encrypted, is_deleted FROM islands
             WHERE id = ?"
         )
         .bind(id)
@@ -124,7 +124,7 @@ pub async fn query_islands_meta(
 
     let metas = sqlx::query_as::<_,IslandMeta>(
         "
-            SELECT id, title, subtitle, desc, ty, date, banner, is_original, is_encrypted, is_deleted FROM islands
+            SELECT id, title, subtitle, desc, ty, date, license, banner, is_encrypted, is_deleted FROM islands
             JOIN island_tags ON id = island_id
             WHERE id BETWEEN ? AND ?
             GROUP BY id
@@ -204,8 +204,8 @@ pub async fn query_islands_meta_filtered(
                         desc,
                         ty,
                         date,
+                        license,
                         banner,
-                        is_original,
                         is_encrypted,
                         is_deleted,
                         ROW_NUMBER() OVER (ORDER BY id) AS rn
@@ -226,8 +226,8 @@ pub async fn query_islands_meta_filtered(
                     desc,
                     ty,
                     date,
+                    license,
                     banner,
-                    is_original,
                     is_encrypted,
                     is_deleted
                 FROM FilteredIslands
@@ -246,8 +246,8 @@ pub async fn query_islands_meta_filtered(
                         desc,
                         ty,
                         date,
+                        license,
                         banner,
-                        is_original,
                         is_encrypted,
                         is_deleted,
                         ROW_NUMBER() OVER (ORDER BY id) AS rn
@@ -264,8 +264,8 @@ pub async fn query_islands_meta_filtered(
                     desc,
                     ty,
                     date,
+                    license,
                     banner,
-                    is_original,
                     is_encrypted,
                     is_deleted
                 FROM FilteredIslands

@@ -13,7 +13,7 @@ use sqlx::{query, sqlite::SqliteConnectOptions, SqlitePool};
 use crate::{
     env::{get_island_cache_root, get_island_storage_root},
     islands::IslandMaps,
-    models::{Foam, IslandMeta, IslandMetaTagged, IslandType, TagData},
+    models::{Foam, IslandMeta, IslandMetaTagged, IslandType, License, TagData},
 };
 
 pub struct InitData {
@@ -85,6 +85,7 @@ pub async fn init_cache_db(db: &SqlitePool) {
             desc         text,
             ty           integer               not null,
             date         text,
+            license      text,
             banner       boolean default false not null,
             is_original  Boolean,
             is_encrypted Boolean default false,
@@ -148,14 +149,14 @@ pub async fn init_cache_db(db: &SqlitePool) {
     }
 
     for (island, content) in islands {
-        query("INSERT INTO islands (title, subtitle, desc, ty, date, banner, is_original, is_encrypted, is_deleted, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+        query("INSERT INTO islands (title, subtitle, desc, ty, date, license, banner, is_encrypted, is_deleted, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
             .bind(island.title)
             .bind(island.subtitle)
             .bind(island.desc)
             .bind(island.ty)
             .bind(island.date)
+            .bind(island.license)
             .bind(island.banner)
-            .bind(island.is_original)
             .bind(island.is_encrypted)
             .bind(island.is_deleted)
             .bind(content)
@@ -203,9 +204,9 @@ fn load_all_islands(
         pub ty: IslandType,
         pub tags: Vec<String>,
         #[serde(default)]
+        pub license: License,
+        #[serde(default)]
         pub banner: bool,
-        #[serde(default = "bool_true")]
-        pub is_original: bool,
         #[serde(default)]
         pub is_encrypted: bool,
         #[serde(default)]
@@ -288,7 +289,7 @@ fn load_all_islands(
                                 .map(|t| DateTime::from_str(&t.to_string()).unwrap()),
                             ty: island.ty,
                             banner: island.banner,
-                            is_original: island.is_original,
+                            license: island.license,
                             is_encrypted: island.is_encrypted,
                             is_deleted: island.is_deleted,
                         },
