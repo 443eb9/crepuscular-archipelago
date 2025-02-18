@@ -39,7 +39,7 @@ export default function IslandFilter({ params, allTags }: { params: QueryParams,
                             <Text>反选 Tag</Text>
                         </Toggle>
                     </LinkNoPrefetch>
-                    <Text className="font-bold">逻辑模式</Text>
+                    <Text className="font-bold">Tag 过滤逻辑</Text>
                     <RadioButtonGroup
                         className="flex justify-around"
                         labels={[
