@@ -3,9 +3,9 @@ export type IslandType = "article" | "achievement" | "note"
 export type IslandMeta = {
     id: number,
     title: string,
-    subtitle: string | undefined,
-    desc: string,
-    date: Date | undefined,
+    subtitle: string | null,
+    desc: string | null,
+    date: Date | null,
     ty: IslandType,
     tags: TagData[],
     banner: boolean,

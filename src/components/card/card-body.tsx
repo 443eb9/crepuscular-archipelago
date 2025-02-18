@@ -2,6 +2,7 @@ import { IslandMeta } from "@/data/model"
 import DiagLines from "@/components/decos/diag-lines"
 import Markdown from "@/components/markdown"
 import Text from "@/components/text"
+import clsx from "clsx"
 
 export default function CardBody({ island, content }: { island: IslandMeta, content?: string }) {
     return (
@@ -19,12 +20,14 @@ export default function CardBody({ island, content }: { island: IslandMeta, cont
                 <div className="w-4 h-1 bg-light-contrast dark:bg-dark-contrast ml-3" />
                 <div className="w-2 h-1 bg-light-contrast dark:bg-dark-contrast ml-3" />
             </div>
-            <Text
-                className="font-sh-sans text-ellipsis overflow-hidden line-clamp-6"
-                style={{ width: "calc(100% - 80px)" }}
-            >
-                {island.desc}
-            </Text>
+            {
+                island.ty == "article" &&
+                <Text className={clsx(
+                    { "opacity-50 italic": !island.desc }
+                )} style={{ width: "calc(100% - 80px)" }}>
+                    {island.desc ?? "No description."}
+                </Text>
+            }
             {
                 content &&
                 <Markdown body={content} />

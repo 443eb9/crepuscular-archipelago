@@ -41,7 +41,6 @@ export default function IslandCard({ island, content, params, noLink }: { island
             <OutlinedBox className={clsx(
                 "flex flex-col justify-between p-4 shadow-md gap-2",
                 { "border-dashed": island.date == undefined || island.isDeleted },
-                { "min-h-[200px]": !island.isDeleted }
             )}>
                 <div>
                     <CardHeader island={island} />

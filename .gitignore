@@ -6,6 +6,7 @@ cache
 log
 pixiv-weekly.webp
 pixiv-weekly.json
+.idea
 
 # dependencies
 /node_modules
