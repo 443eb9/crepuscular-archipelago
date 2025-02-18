@@ -40,7 +40,7 @@ export default function IslandCard({ island, content, params, noLink }: { island
         <div className="relative pointer-events-auto">
             <OutlinedBox className={clsx(
                 "flex flex-col justify-between p-4 shadow-md gap-2",
-                { "border-dashed": island.date == undefined || island.isDeleted },
+                { "border-dashed": island.state == "workInProgress" || island.isDeleted },
             )}>
                 <div>
                     <CardHeader island={island} />

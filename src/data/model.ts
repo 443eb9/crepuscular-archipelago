@@ -2,15 +2,18 @@ export type IslandType = "article" | "achievement" | "note"
 
 export type LicenseType = "CC_BY" | "CC_BY_SA" | "CC_BY_NC" | "CC_BY_NC_SA" | "CC_BY_ND" | "CC_BY_NC_ND" | "CC0" | "Repost"
 
+export type IslandStateType = "finished" | "workInProgress" | "longTermProject" | "deprecated"
+
 export type IslandMeta = {
     id: number,
     title: string,
     subtitle: string | null,
     desc: string | null,
-    date: Date | null,
+    date: string | null,
     ty: IslandType,
     tags: TagData[],
     license: LicenseType,
+    state: IslandStateType,
     banner: boolean,
     isEncrypted: boolean,
     isDeleted: boolean,

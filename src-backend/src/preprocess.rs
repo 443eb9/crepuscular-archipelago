@@ -13,7 +13,7 @@ use sqlx::{query, sqlite::SqliteConnectOptions, SqlitePool};
 use crate::{
     env::{get_island_cache_root, get_island_storage_root},
     islands::IslandMaps,
-    models::{Foam, IslandMeta, IslandMetaTagged, IslandType, License, TagData},
+    models::{Foam, IslandMeta, IslandMetaTagged, IslandState, IslandType, License, TagData},
 };
 
 pub struct InitData {
@@ -86,6 +86,7 @@ pub async fn init_cache_db(db: &SqlitePool) {
             ty           integer               not null,
             date         text,
             license      text,
+            state        text,
             banner       boolean default false not null,
             is_original  Boolean,
             is_encrypted Boolean default false,
@@ -149,13 +150,14 @@ pub async fn init_cache_db(db: &SqlitePool) {
     }
 
     for (island, content) in islands {
-        query("INSERT INTO islands (title, subtitle, desc, ty, date, license, banner, is_encrypted, is_deleted, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+        query("INSERT INTO islands (title, subtitle, desc, ty, date, license, state, banner, is_encrypted, is_deleted, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
             .bind(island.title)
             .bind(island.subtitle)
             .bind(island.desc)
             .bind(island.ty)
             .bind(island.date)
             .bind(island.license)
+            .bind(island.state)
             .bind(island.banner)
             .bind(island.is_encrypted)
             .bind(island.is_deleted)
@@ -206,6 +208,8 @@ fn load_all_islands(
         #[serde(default)]
         pub license: License,
         #[serde(default)]
+        pub state: IslandState,
+        #[serde(default)]
         pub banner: bool,
         #[serde(default)]
         pub is_encrypted: bool,
@@ -247,10 +251,14 @@ fn load_all_islands(
         assert_eq!(content.len(), 1);
         let content = &content[0];
 
-        let (island, mut body) = extract_frontmatter::<IslandToml>(content);
+        let (mut island, mut body) = extract_frontmatter::<IslandToml>(content);
         body = replace_image_urls(body);
         if island.is_encrypted {
             encryptor.encrypt(&mut body);
+        }
+
+        if island.date.is_none() && island.state == IslandState::Finished {
+            island.state = IslandState::WorkInProgress;
         }
 
         for tag in &island.tags {
@@ -288,6 +296,7 @@ fn load_all_islands(
                                 .date
                                 .map(|t| DateTime::from_str(&t.to_string()).unwrap()),
                             ty: island.ty,
+                            state: island.state,
                             banner: island.banner,
                             license: island.license,
                             is_encrypted: island.is_encrypted,

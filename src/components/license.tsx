@@ -24,8 +24,9 @@ export default function License({
             {
                 license
                     .split("_")
-                    .map(seg =>
+                    .map((seg, index) =>
                         <Image
+                            key={index}
                             width={iconWidth}
                             height={iconHeight}
                             src={frontendEndpoint(`/images/ccicons/${seg.toLowerCase()}.svg`)}

@@ -8,6 +8,7 @@ import LinkNoPrefetch from "@/components/link-no-prefetch"
 import AnimHoverInvertBox from "@/components/anim/anim-hover-invert"
 import Text from "@/components/text"
 import License from "@/components/license"
+import IslandState from "@/components/island-state"
 
 export default function ArticleHeader({ island, params, noGoBack }: { island: IslandMeta, params: QueryParams, noGoBack?: boolean }) {
     return (
@@ -36,7 +37,7 @@ export default function ArticleHeader({ island, params, noGoBack }: { island: Is
                 </div>
                 <TagsContainer island={island} params={params} />
                 {
-                    island.date == undefined &&
+                    island.state == "workInProgress" &&
                     <div className="text-light-contrast bg-warn">
                         注意：这是一篇尚未完成的文章，其中可能存在不恰当的表达甚至错误！
                     </div>
@@ -47,19 +48,7 @@ export default function ArticleHeader({ island, params, noGoBack }: { island: Is
                         注意：这是一篇非原创的文章，请注意查看文章简介和正文中的原文地址！
                     </div>
                 }
-                <div className="flex items-center gap-2">
-                    {
-                        island.date == undefined
-                            ? <div className="flex items-center gap-1">
-                                <TbClockQuestion className="text-lg"></TbClockQuestion>
-                                <div className="font-bender">Future</div>
-                            </div>
-                            : <div className="flex items-center gap-1">
-                                <FaClock></FaClock>
-                                <div className="font-bender">{(new Date(island.date)).toLocaleDateString()}</div>
-                            </div>
-                    }
-                </div>
+                <IslandState date={island.date} state={island.state} />
                 <License
                     className="flex gap-1 dark:invert"
                     license={island.license}

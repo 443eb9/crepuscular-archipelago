@@ -14,6 +14,19 @@ pub enum IslandType {
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Type, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum IslandState {
+    #[default]
+    Finished,
+    // Leave date to None sets state to WorkInProgress.
+    WorkInProgress,
+    // This requires manually assignment.
+    LongTermProject,
+    // This requires manually assignment.
+    Deprecated,
+}
+
+#[derive(Debug, Default, Serialize, Deserialize, Type, PartialEq, Eq)]
 pub enum License {
     #[serde(rename = "CC_BY")]
     CcBy,
@@ -50,6 +63,7 @@ pub struct IslandMeta {
     pub desc: Option<String>,
     pub date: Option<DateTime<FixedOffset>>,
     pub ty: IslandType,
+    pub state: IslandState,
     pub banner: bool,
     pub license: License,
     pub is_encrypted: bool,
@@ -81,6 +95,7 @@ pub struct IslandMetaTagged {
     pub ty: IslandType,
     pub tags: Vec<TagData>,
     pub license: License,
+    pub state: IslandState,
     pub banner: bool,
     pub is_encrypted: bool,
     pub is_deleted: bool,
@@ -97,6 +112,7 @@ impl IslandMetaTagged {
             ty: meta.ty,
             tags,
             license: meta.license,
+            state: meta.state,
             banner: meta.banner,
             is_encrypted: meta.is_encrypted,
             is_deleted: meta.is_deleted,

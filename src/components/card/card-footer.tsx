@@ -1,10 +1,8 @@
 import { IslandMeta } from "@/data/model"
-import { TbClockQuestion } from "react-icons/tb"
-import { FaClock } from "react-icons/fa6"
-import Text from "@/components/text"
 import { QueryParams } from "@/data/search-param-util"
 import TagsContainer from "../tags-container"
 import License from "../license"
+import IslandState from "../island-state"
 
 export default function CardFooter({ island, params }: { island: IslandMeta, params: QueryParams }) {
     return (
@@ -18,19 +16,7 @@ export default function CardFooter({ island, params }: { island: IslandMeta, par
                         iconWidth={20}
                         iconHeight={20}
                     />
-                    {
-                        island.date == undefined
-                            ? <div className="flex items-center gap-1">
-                                <TbClockQuestion className="text-lg"></TbClockQuestion>
-                                <div className="font-bender">Future</div>
-                            </div>
-                            : <div className="flex items-center gap-1">
-                                <FaClock />
-                                <Text className="font-bender" suppressHydrationWarning>
-                                    {(new Date(island.date)).toLocaleDateString()}
-                                </Text>
-                            </div>
-                    }
+                    <IslandState date={island.date} state={island.state} />
                 </div>
             </div>
             {

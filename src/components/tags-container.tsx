@@ -1,7 +1,6 @@
 import { IslandMeta } from "@/data/model";
 import { QueryParams } from "@/data/search-param-util";
 import Tag from "./tag";
-import SpTag from "./sp-tag";
 
 export default function TagsContainer({ island, params }: { island: IslandMeta, params: QueryParams }) {
     return (
@@ -11,7 +10,6 @@ export default function TagsContainer({ island, params }: { island: IslandMeta, 
                     <Tag tag={tag} key={tag.id} params={params} />
                 ))
             }
-            {island.date == undefined && <SpTag title="WIP" />}
         </div>
     )
 }
