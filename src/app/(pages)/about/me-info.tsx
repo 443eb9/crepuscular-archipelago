@@ -7,8 +7,13 @@ import LinkNoPrefetch from "@/components/link-no-prefetch"
 import Text from "@/components/text"
 import { Suspense } from "react"
 import SelfTitles from "./self-titles"
+import NetworkErrorable from "@/components/network-errorable"
+import { wrappedFetch } from "@/data/api"
+import { frontendEndpoint } from "@/data/endpoints"
 
-export default function MeInfo() {
+export default async function MeInfo() {
+    const emoticons = await wrappedFetch<string[]>(frontendEndpoint("/emoticons.json"), "GET")
+
     return (
         <OutlinedBox className="flex font-bender p-4">
             <div className="w-full h-full">
@@ -26,6 +31,15 @@ export default function MeInfo() {
                     <div className="flex mt-2">
                         <SocialMediaButton href={"https://github.com/443eb9"}><FiGithub className="text-lg" /></SocialMediaButton>
                     </div>
+                    <NetworkErrorable resp={emoticons}>
+                        {data =>
+                            <div className="flex grow items-center">
+                                <Text className="opacity-50 font-bold">
+                                    {data[Math.floor(Math.random() * data.length)]}
+                                </Text>
+                            </div>
+                        }
+                    </NetworkErrorable>
                 </div>
             </div>
         </OutlinedBox>

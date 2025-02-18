@@ -14,6 +14,7 @@ import { frontendEndpoint } from "@/data/endpoints"
 import { ProjectData } from "@/data/model"
 import LinkNoPrefetch from "@/components/link-no-prefetch"
 import LinkExchange from "./link-exchange"
+import { Suspense } from "react"
 
 export const metadata: Metadata = {
     title: "About - Crepuscular Archipelago",
@@ -23,27 +24,19 @@ export default async function Page() {
     const selfIntro = await wrappedFetch<string>(frontendEndpoint("/self-intro.md"), "GET")
     const linkExchange = await fetchLinkExchange()
     const projects = await wrappedFetch<ProjectData[]>(frontendEndpoint("/projects.json"), "GET")
-    const emoticons = await wrappedFetch<string[]>(frontendEndpoint("/emoticons.json"), "GET")
 
     return (
         <main>
             <ContentWrapper className="flex flex-col gap-5">
                 <div className="flex flex-col md:flex-row gap-2">
                     <div className="flex flex-col gap-2 w-full md:w-72">
-                        <MeInfo></MeInfo>
+                        <Suspense>
+                            <MeInfo />
+                        </Suspense>
                         <OutlinedBox className="font-sh-sans text-light-dark-neutral italic text-large p-2 border-dashed">
                             <Text>期待这边多出来一个 米画师 图标的一天</Text>
                             <Text className="text-right">——2024.8.15留</Text>
                         </OutlinedBox>
-                        <NetworkErrorable resp={emoticons}>
-                            {data =>
-                                <div className="flex grow justify-center items-center">
-                                    <Text className="opacity-50 font-bold">
-                                        {data[Math.floor(Math.random() * data.length)]}
-                                    </Text>
-                                </div>
-                            }
-                        </NetworkErrorable>
                     </div>
                     <OutlinedBox className="w-full p-4">
                         <NetworkErrorable resp={selfIntro}>
