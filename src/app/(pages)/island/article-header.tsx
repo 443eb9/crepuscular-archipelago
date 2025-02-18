@@ -5,6 +5,8 @@ import DiagLines from "@/components/decos/diag-lines"
 import { QueryParams } from "@/data/search-param-util"
 import TagsContainer from "@/components/tags-container"
 import LinkNoPrefetch from "@/components/link-no-prefetch"
+import AnimHoverInvertBox from "@/components/anim/anim-hover-invert"
+import Text from "@/components/text"
 
 export default function ArticleHeader({ island, params, noGoBack }: { island: IslandMeta, params: QueryParams, noGoBack?: boolean }) {
     return (
@@ -12,12 +14,17 @@ export default function ArticleHeader({ island, params, noGoBack }: { island: Is
             <div className="flex flex-col gap-1 w-full">
                 {
                     !noGoBack &&
-                    <LinkNoPrefetch
-                        href={`/updates?${params.toString()}`}
-                        className="font-argon font-bold p-1"
-                    >
-                        &lt; $ cd .._
-                    </LinkNoPrefetch>
+                    <div className="flex flex-shrink">
+                        <AnimHoverInvertBox>
+                            <Text className="font-neon font-bold px-1" noFont>
+                                <LinkNoPrefetch
+                                    href={`/updates?${params.toString()}`}
+                                >
+                                    &lt; $ cd .._
+                                </LinkNoPrefetch>
+                            </Text>
+                        </AnimHoverInvertBox>
+                    </div>
                 }
                 <h1 className="w-24 font-bender text-lg font-bold px-2
                 bg-light-contrast dark:bg-dark-contrast
