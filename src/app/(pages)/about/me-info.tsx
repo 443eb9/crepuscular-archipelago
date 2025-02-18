@@ -4,6 +4,9 @@ import { Url } from "next/dist/shared/lib/router/router"
 import OutlinedBox from "@/components/outlined-box"
 import OutlinedButton from "@/components/outlined-button"
 import LinkNoPrefetch from "@/components/link-no-prefetch"
+import Text from "@/components/text"
+import { Suspense } from "react"
+import SelfTitles from "./self-titles"
 
 export default function MeInfo() {
     return (
@@ -11,12 +14,15 @@ export default function MeInfo() {
             <div className="w-full h-full">
                 <OutlinedBox className="w-full aspect-square bg-cover" style={{ backgroundImage: "url(https://avatars.githubusercontent.com/u/50186452)" }}></OutlinedBox>
                 <div className="flex flex-col mt-4">
-                    <h1 className="font-bold text-4xl">443eb9#C</h1>
-                    <h2 className="font-sh-serif font-bold text-lg">中国 浙江</h2>
+                    <Text elem="h1" noFont className="font-bold text-4xl">443eb9#C</Text>
+                    <Text elem="h2" className="text-lg">中国 浙江</Text>
                     <div className="flex gap-2 items-center text-xl">
-                        <IoMailOutline></IoMailOutline>
-                        <div className="">443eb9@gmail.com</div>
+                        <IoMailOutline />
+                        <Text noFont className="font-bender">443eb9@gmail.com</Text>
                     </div>
+                    <Suspense>
+                        <SelfTitles />
+                    </Suspense>
                     <div className="flex mt-2">
                         <SocialMediaButton href={"https://github.com/443eb9"}><FiGithub className="text-lg" /></SocialMediaButton>
                     </div>

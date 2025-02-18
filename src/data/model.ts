@@ -102,3 +102,8 @@ export type ArtworkMeta = {
     author: string,
     src: string,
 }
+
+export type SelfTitleData = {
+    title: string,
+    progress: number,
+}
