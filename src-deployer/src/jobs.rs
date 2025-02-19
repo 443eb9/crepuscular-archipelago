@@ -157,7 +157,6 @@ impl Default for RepoUpdater {
     fn default() -> Self {
         let api_key = std::env::var("GITHUB_TOKEN").unwrap();
         let client = Client::builder()
-            .timeout(Duration::from_secs(300))
             .connect_timeout(WEB_REQUEST_TIMEOUT)
             .user_agent(DEFAULT_UA)
             .default_headers(HeaderMap::from_iter([
@@ -208,7 +207,12 @@ impl Job for RepoUpdater {
         let local_commit = read_to_string(".next/commit");
         log::info!("Local commit: {:?}", local_commit.as_ref().ok());
 
-        let artifact_list_resp = self.client.get(Self::ARTIFACTS_API_URL).send().await?;
+        let artifact_list_resp = self
+            .client
+            .get(Self::ARTIFACTS_API_URL)
+            .timeout(Duration::from_secs(300))
+            .send()
+            .await?;
         resp_check_ok!(artifact_list_resp);
 
         let artifacts = artifact_list_resp.json::<ArtifactList>().await?;
