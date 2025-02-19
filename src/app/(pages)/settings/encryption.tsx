@@ -4,11 +4,18 @@ import Input from "@/components/input"
 import OutlinedBox from "@/components/outlined-box"
 import OutlinedButton from "@/components/outlined-button"
 import Text from "@/components/text"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { IoCheckmarkSharp } from "react-icons/io5"
 
 export default function Encryption() {
     const [cipher, setCipher] = useState<{ key?: string, iv?: string } | undefined>()
+
+    useEffect(() => {
+        setCipher({
+            key: localStorage.getItem("islandKey") ?? undefined,
+            iv: localStorage.getItem("islandIv") ?? undefined,
+        })
+    }, [])
 
     const handleKeyChange = () => {
         const input = document.querySelector("#cipher-key-input") as HTMLInputElement
