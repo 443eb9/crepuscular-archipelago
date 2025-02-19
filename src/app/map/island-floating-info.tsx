@@ -57,7 +57,7 @@ export default function IslandFloatingInfo({ regionId, island, center, params }:
             }}
         >
             {
-                island.isDeleted
+                island.state == "deleted"
                     ? <OutlinedBox className="font-bender font-bold text-xl p-2" style={{ borderStyle: "dashed" }}>
                         <Text className="font-bender" noFont>Access Denied</Text>
                     </OutlinedBox>

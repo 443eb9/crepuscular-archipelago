@@ -88,9 +88,7 @@ pub async fn init_cache_db(db: &SqlitePool) {
             license      text,
             state        integer,
             banner       boolean default false not null,
-            is_original  Boolean,
             is_encrypted Boolean default false,
-            is_deleted   integer default false,
             content      text    default ""
         );"#,
         r#"create table tags
@@ -150,7 +148,7 @@ pub async fn init_cache_db(db: &SqlitePool) {
     }
 
     for (island, content) in islands {
-        query("INSERT INTO islands (title, subtitle, desc, ty, date, license, state, banner, is_encrypted, is_deleted, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+        query("INSERT INTO islands (title, subtitle, desc, ty, date, license, state, banner, is_encrypted, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
             .bind(island.title)
             .bind(island.subtitle)
             .bind(island.desc)
@@ -160,7 +158,6 @@ pub async fn init_cache_db(db: &SqlitePool) {
             .bind(island.state as u32)
             .bind(island.banner)
             .bind(island.is_encrypted)
-            .bind(island.is_deleted)
             .bind(content)
             .execute(db)
             .await
@@ -213,11 +210,9 @@ fn load_all_islands(
         pub banner: bool,
         #[serde(default)]
         pub is_encrypted: bool,
-        #[serde(default)]
-        pub is_deleted: bool,
     }
 
-    #[derive(Deserialize, Default, PartialEq, Eq)]
+    #[derive(Deserialize, Debug, Default, PartialEq, Eq)]
     #[serde(rename_all = "camelCase")]
     #[repr(u32)]
     pub enum IslandStateStr {
@@ -225,10 +220,12 @@ fn load_all_islands(
         Finished,
         // Leave date to None sets state to WorkInProgress.
         WorkInProgress,
-        // This requires manually assignment.
+        // This requires manual assignment.
         LongTermProject,
-        // This requires manually assignment.
+        // This requires manual assignment.
         Deprecated,
+        // This requires manual assignment.
+        Deleted,
     }
 
     let dir = std::fs::read_dir(get_island_storage_root().join("islands")).unwrap();
@@ -314,7 +311,6 @@ fn load_all_islands(
                             banner: island.banner,
                             license: island.license,
                             is_encrypted: island.is_encrypted,
-                            is_deleted: island.is_deleted,
                         },
                         island
                             .tags

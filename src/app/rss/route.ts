@@ -23,7 +23,7 @@ export async function GET(request: Request) {
             feed.item({
                 title: title,
                 description: island.desc ?? "N/A",
-                url: island.ty == "article" ? `https://443eb9.dev/island?id=${island.id}` : "https://443eb9.dev/updates",
+                url: island.ty == "article" ? `https://443eb9.dev/island/${island.id}` : "https://443eb9.dev/updates",
                 date: island.date ? island.date : "",
                 categories: [island.ty, island.state],
             })

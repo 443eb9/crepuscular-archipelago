@@ -7,7 +7,7 @@ import OutlinedBox from "@/components/outlined-box"
 import { QueryParams } from "@/data/search-param-util"
 
 export default function ArticleContainer({ meta, content, params }: { meta: IslandMeta, params: QueryParams, content: string }) {
-    if (meta.ty != "article" || meta.isDeleted) {
+    if (meta.ty != "article" || meta.state == "deleted") {
         notFound()
     }
 

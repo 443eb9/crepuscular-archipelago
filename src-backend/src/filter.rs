@@ -40,12 +40,15 @@ impl TagsFilter {
 }
 
 bitflags::bitflags! {
-    #[derive(Debug)]
-    pub struct ExcludedStates : u32 {
-        const FINISHED = 1 << 0;
-        const WORK_IN_PROGRESS = 1 << 1;
-        const LONG_TERM_PROJECT = 1 << 2;
-        const DEPRECATED = 1 << 3;
+    #[derive(Debug, Clone, Copy)]
+    pub struct AdvancedFilterFlags : u32 {
+        const TAG_INVERT                = 1 << 1;
+        const TAG_OR_LOGIC              = 1 << 2;
+        const EXCLUDE_FINISHED          = 1 << 3;
+        const EXCLUDE_WORK_IN_PROGRESS  = 1 << 4;
+        const EXCLUDE_LONG_TERM_PROJECT = 1 << 5;
+        const EXCLUDE_DEPRECATED        = 1 << 6;
+        const EXCLUDE_DELETED           = 1 << 7;
     }
 }
 
@@ -53,28 +56,39 @@ bitflags::bitflags! {
 pub struct AdvancedFilter {
     pub is_exclude: bool,
     pub and_sql_restriction: String,
-    pub excluded_states: ExcludedStates,
     pub excluded_state_sql_restriction: String,
-    pub exclude_deleted_sql_restriction: String,
 }
 
 impl AdvancedFilter {
     pub fn new(filter: i32, tags_filter: &TagsFilter) -> Self {
-        let excluded_states = ExcludedStates::from_bits_truncate((filter >> 3) as u32);
+        let flags = AdvancedFilterFlags::from_bits_truncate(unsafe { std::mem::transmute(filter) });
+
         let excluded_state_sql_restriction = {
-            if excluded_states.is_empty() {
+            if flags.is_empty() {
                 String::default()
             } else {
+                let exclusion_bits_start = AdvancedFilterFlags::EXCLUDE_FINISHED
+                    .bits()
+                    .trailing_zeros();
                 format!(
                     "AND state NOT IN ({})",
-                    excluded_states
+                    flags
+                        .intersection(
+                            AdvancedFilterFlags::EXCLUDE_FINISHED
+                                | AdvancedFilterFlags::EXCLUDE_WORK_IN_PROGRESS
+                                | AdvancedFilterFlags::EXCLUDE_LONG_TERM_PROJECT
+                                | AdvancedFilterFlags::EXCLUDE_DEPRECATED
+                                | AdvancedFilterFlags::EXCLUDE_DELETED
+                        )
                         .iter()
-                        .map(|x| x.bits().trailing_zeros().to_string())
+                        .map(|x| (x.bits().trailing_zeros() - exclusion_bits_start).to_string())
                         .collect::<Vec<_>>()
                         .join(",")
                 )
             }
         };
+
+        dbg!(&excluded_state_sql_restriction);
 
         let and_sql_restriction = {
             if tags_filter.filtered_ids.is_empty() || (filter & (1 << 2)) != 0 {
@@ -84,20 +98,11 @@ impl AdvancedFilter {
             }
         };
 
-        let exclude_deleted_sql_restriction = {
-            if (filter & (1 << 7)) != 0 {
-                "AND is_deleted IS false".to_string()
-            } else {
-                String::default()
-            }
-        };
-
         Self {
-            is_exclude: (filter & (1 << 1)) != 0 && !tags_filter.filtered_ids.is_empty(),
+            is_exclude: flags.contains(AdvancedFilterFlags::TAG_INVERT)
+                && !tags_filter.filtered_ids.is_empty(),
             and_sql_restriction,
-            excluded_states,
             excluded_state_sql_restriction,
-            exclude_deleted_sql_restriction,
         }
     }
 }

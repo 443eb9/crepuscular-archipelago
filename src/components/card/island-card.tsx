@@ -11,7 +11,7 @@ import { QueryParams, queryParamsToSearchParams } from "@/data/search-param-util
 import LinkNoPrefetch from "../link-no-prefetch"
 
 export default function IslandCard({ island, content, params, noLink }: { island: IslandMeta, content?: string, params: QueryParams, noLink?: boolean }) {
-    if (island.isDeleted) {
+    if (island.state == "deleted") {
         return (
             <OutlinedBox className="border-dashed">
                 <Text className="font-bender font-bold text-2xl px-4 py-2" noFont>Access Denied</Text>
@@ -40,7 +40,7 @@ export default function IslandCard({ island, content, params, noLink }: { island
         <div className="relative pointer-events-auto">
             <OutlinedBox className={clsx(
                 "flex flex-col justify-between p-4 shadow-md gap-2",
-                { "border-dashed": island.state == "workInProgress" || island.isDeleted },
+                { "border-dashed": island.state == "workInProgress" },
             )}>
                 <div>
                     <CardHeader island={island} />

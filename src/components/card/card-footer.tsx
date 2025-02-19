@@ -20,7 +20,7 @@ export default function CardFooter({ island, params }: { island: IslandMeta, par
                 </div>
             </div>
             {
-                !island.isDeleted && !island.date != undefined &&
+                (island.state == "finished" || island.state == "longTermProject" || island.state == "deprecated") &&
                 <div className="">
                     <div className="absolute w-2 h-24 bg-light-contrast dark:bg-dark-contrast -bottom-4 -right-4"></div>
                     <div className="absolute w-8 h-2 bg-light-contrast dark:bg-dark-contrast -bottom-4 right-36"></div>

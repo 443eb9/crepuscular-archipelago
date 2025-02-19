@@ -1,14 +1,9 @@
-use std::iter;
-
 use futures::{future::join_all, join};
-use serde::Serialize;
 use sqlx::{Result, SqlitePool};
 
 use crate::{
     filter::{AdvancedFilter, TagsFilter},
-    models::{
-        Foam, FoamCount, Island, IslandCount, IslandMeta, IslandMetaTagged, IslandState, TagData,
-    },
+    models::{Foam, FoamCount, Island, IslandCount, IslandMeta, IslandMetaTagged, TagData},
 };
 
 pub async fn query_all_tags(pool: &SqlitePool) -> Result<Vec<TagData>> {
@@ -38,7 +33,9 @@ pub async fn query_island_count_filtered(
     let tags_filter = TagsFilter::new(tags_filter);
     let advanced_filter = AdvancedFilter::new(advanced_filter, &tags_filter);
 
-    if tags_filter.filtered_ids.is_empty() && advanced_filter.excluded_states.is_empty() {
+    if tags_filter.filtered_ids.is_empty()
+        && advanced_filter.excluded_state_sql_restriction.is_empty()
+    {
         return query_island_count(pool).await;
     }
 
@@ -52,14 +49,12 @@ pub async fn query_island_count_filtered(
                     FROM island_tags
                     WHERE island_id = id
                     {}
-                    {}
                     GROUP BY island_id
                     {}
                 )
                 {}
                 ",
                 tags_filter.sql_restriction,
-                advanced_filter.exclude_deleted_sql_restriction,
                 advanced_filter.and_sql_restriction,
                 advanced_filter.excluded_state_sql_restriction
             )
@@ -71,14 +66,12 @@ pub async fn query_island_count_filtered(
                     JOIN island_tags ON id = island_id
                     {}
                     {}
-                    {}
                     GROUP BY island_id
                     {}
                 )
                 SELECT COUNT(*) as count FROM Filtered
                 ",
                 tags_filter.sql_restriction,
-                advanced_filter.exclude_deleted_sql_restriction,
                 advanced_filter.excluded_state_sql_restriction,
                 advanced_filter.and_sql_restriction,
             )
@@ -96,8 +89,8 @@ pub async fn query_island_count_filtered(
 
 pub async fn query_island_meta(pool: &SqlitePool, id: u32) -> Result<IslandMetaTagged> {
     let (meta, tags) = join!(
-        sqlx::query_as::<_,IslandMeta>(
-            "SELECT id, title, subtitle, desc, ty, date, license, state, banner, is_encrypted, is_deleted FROM islands
+        sqlx::query_as::<_, IslandMeta>(
+            "SELECT id, title, subtitle, desc, ty, date, license, state, banner, is_encrypted FROM islands
             WHERE id = ?"
         )
         .bind(id)
@@ -126,7 +119,7 @@ pub async fn query_islands_meta(
 
     let metas = sqlx::query_as::<_,IslandMeta>(
         "
-            SELECT id, title, subtitle, desc, ty, date, license, state, banner, is_encrypted, is_deleted FROM islands
+            SELECT id, title, subtitle, desc, ty, date, license, state, banner, is_encrypted FROM islands
             JOIN island_tags ON id = island_id
             WHERE id BETWEEN ? AND ?
             GROUP BY id
@@ -177,7 +170,9 @@ pub async fn query_islands_meta_filtered(
     let tags_filter = TagsFilter::new(tags_filter);
     let advanced_filter = AdvancedFilter::new(advanced_filter, &tags_filter);
 
-    if tags_filter.filtered_ids.is_empty() && advanced_filter.excluded_states.is_empty() {
+    if tags_filter.filtered_ids.is_empty()
+        && advanced_filter.excluded_state_sql_restriction.is_empty()
+    {
         return query_islands_meta(pool, page, length).await;
     }
 
@@ -197,14 +192,12 @@ pub async fn query_islands_meta_filtered(
                             license,
                             state,
                             banner,
-                            is_encrypted,
-                            is_deleted
+                            is_encrypted
                         FROM islands
                         WHERE NOT EXISTS (
                             SELECT island_id, tag_id
                             FROM island_tags
                             WHERE island_id = islands.id
-                            {}
                             {}
                             GROUP BY island_id
                             {}
@@ -223,13 +216,11 @@ pub async fn query_islands_meta_filtered(
                     license,
                     state,
                     banner,
-                    is_encrypted,
-                    is_deleted
+                    is_encrypted
                 FROM OrderedIslands
                 WHERE rn BETWEEN ? AND ?
                 ",
                 tags_filter.sql_restriction,
-                advanced_filter.exclude_deleted_sql_restriction,
                 advanced_filter.and_sql_restriction,
                 advanced_filter.excluded_state_sql_restriction,
             )
@@ -248,11 +239,9 @@ pub async fn query_islands_meta_filtered(
                         state,
                         banner,
                         is_encrypted,
-                        is_deleted,
                         ROW_NUMBER() OVER (ORDER BY id) AS rn
                     FROM islands
                     JOIN island_tags ON id = island_id
-                    {}
                     {}
                     {}
                     GROUP BY island_id
@@ -275,7 +264,6 @@ pub async fn query_islands_meta_filtered(
                 GROUP BY id
                 ",
                 tags_filter.sql_restriction,
-                advanced_filter.exclude_deleted_sql_restriction,
                 advanced_filter.excluded_state_sql_restriction,
                 advanced_filter.and_sql_restriction,
             )

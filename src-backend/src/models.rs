@@ -23,6 +23,7 @@ pub enum IslandState {
     WorkInProgress,
     LongTermProject,
     Deprecated,
+    Deleted,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Type, PartialEq, Eq)]
@@ -66,15 +67,14 @@ pub struct IslandMeta {
     pub banner: bool,
     pub license: License,
     pub is_encrypted: bool,
-    pub is_deleted: bool,
 }
 
 impl IslandMeta {
     pub fn apply_deleted(self) -> Self {
-        if self.is_deleted {
+        if self.state == IslandState::Deleted {
             Self {
                 id: self.id,
-                is_deleted: true,
+                state: IslandState::Deleted,
                 ..Default::default()
             }
         } else {
@@ -97,7 +97,6 @@ pub struct IslandMetaTagged {
     pub state: IslandState,
     pub banner: bool,
     pub is_encrypted: bool,
-    pub is_deleted: bool,
 }
 
 impl IslandMetaTagged {
@@ -114,7 +113,6 @@ impl IslandMetaTagged {
             state: meta.state,
             banner: meta.banner,
             is_encrypted: meta.is_encrypted,
-            is_deleted: meta.is_deleted,
         }
     }
 }

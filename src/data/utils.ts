@@ -85,7 +85,7 @@ export function decrypt(body: string, key: string, iv: string) {
     return decipher.update(data, undefined, "utf8") + decipher.final("utf8")
 }
 
-export type AdvancedFilterType = "invert" | "tag-or-logic" | "exclude-finished" | "exclude-wip" | "exclude-ltp" | "exclude-deprecated" | "deleted"
+export type AdvancedFilterType = "invert" | "tag-or-logic" | "exclude-finished" | "exclude-wip" | "exclude-ltp" | "exclude-deprecated" | "exclude-deleted"
 
 export function advancedFilterEnabled(filter: number, ty: AdvancedFilterType) {
     switch (ty) {
@@ -95,7 +95,7 @@ export function advancedFilterEnabled(filter: number, ty: AdvancedFilterType) {
         case "exclude-wip": return bitEnabled(filter, 4)
         case "exclude-ltp": return bitEnabled(filter, 5)
         case "exclude-deprecated": return bitEnabled(filter, 6)
-        case "deleted": return bitEnabled(filter, 7)
+        case "exclude-deleted": return bitEnabled(filter, 7)
     }
 }
 
@@ -107,7 +107,7 @@ export function toggleAdvancedFilter(filter: number, ty: AdvancedFilterType) {
         case "exclude-wip": return toggleBit(filter, 4)
         case "exclude-ltp": return toggleBit(filter, 5)
         case "exclude-deprecated": return toggleBit(filter, 6)
-        case "deleted": return toggleBit(filter, 7)
+        case "exclude-deleted": return toggleBit(filter, 7)
     }
 }
 
@@ -119,6 +119,6 @@ export function setAdvancedFilter(filter: number, ty: AdvancedFilterType, state:
         case "exclude-wip": return setBit(filter, 4, state)
         case "exclude-ltp": return setBit(filter, 5, state)
         case "exclude-deprecated": return setBit(filter, 6, state)
-        case "deleted": return setBit(filter, 7, state)
+        case "exclude-deleted": return setBit(filter, 7, state)
     }
 }

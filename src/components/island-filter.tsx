@@ -34,11 +34,6 @@ export default function IslandFilter({ params, allTags }: { params: QueryParams,
                 <EndpointDottedSegment thickness={1} dotSize={5} style="dashed" className="my-2"></EndpointDottedSegment>
                 <Text className="font-bold text-lg">高级过滤</Text>
                 <div>
-                    <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: toggleAdvancedFilter(params.advf, "deleted") }).toString()}`}>
-                        <Toggle enabled={advancedFilterEnabled(params.advf, "deleted")}>
-                            <Text>排除已删除</Text>
-                        </Toggle>
-                    </LinkNoPrefetch>
                     <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: toggleAdvancedFilter(params.advf, "invert") }).toString()}`}>
                         <Toggle enabled={advancedFilterEnabled(params.advf, "invert")}>
                             <Text>反选 Tag</Text>
@@ -65,13 +60,14 @@ export default function IslandFilter({ params, allTags }: { params: QueryParams,
                             { name: "未完成", filter: toggleAdvancedFilter(params.advf, "exclude-wip") },
                             { name: "长期项目", filter: toggleAdvancedFilter(params.advf, "exclude-ltp") },
                             { name: "已弃坑", filter: toggleAdvancedFilter(params.advf, "exclude-deprecated") },
+                            { name: "已删除", filter: toggleAdvancedFilter(params.advf, "exclude-deleted") },
                         ].map(node =>
                             <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: node.filter })}`} key={node.name}>
                                 <Text>{node.name}</Text>
                             </LinkNoPrefetch>
                         )
                         }
-                        enabled={extractBits(params.advf >> 3 & 0b1111)}
+                        enabled={extractBits(params.advf >> 3 & 0b11111)}
                     />
                 </div>
                 <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, tags: 0, advf: 0 }).toString()}`}>
