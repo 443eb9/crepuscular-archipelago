@@ -612,6 +612,9 @@ vec3 getPixelColor(vec2 pixel) {
     // Grid borders
     if (border) {
         color = params.lineColor;
+#ifndef MODE_ISLANDS
+        return color;
+#endif
     }
     
 #ifdef MODE_ISLANDS

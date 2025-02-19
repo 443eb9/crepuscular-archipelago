@@ -124,8 +124,11 @@ vec3 getPixelColor(vec2 pixel) {
     // Grid borders
     if (border) {
         color = params.lineColor;
+#ifndef MODE_ISLANDS
+        return color;
+#endif
     }
-    
+
 #ifdef MODE_ISLANDS
     // Island blocks
     if (!border) {
@@ -146,6 +149,9 @@ vec3 getPixelColor(vec2 pixel) {
         color = params.outlineColor;
     }
 #elif defined(MODE_NOISE)
+    if (border) {
+        return color;
+    }
     float noise = sampleNoise(grid);
     color = mix(params.backgroundColor, params.fillColor, noise);
 #elif defined(MODE_BINARY_NOISE)
