@@ -12,6 +12,7 @@ import OutlinedButton from "@/components/outlined-button"
 import { QueryParams } from "@/data/search-param-util"
 import BadAppleEntrance from "./bad-apple-entrance"
 import toast from "react-hot-toast"
+import { useRouter } from "next/navigation"
 
 type VisitingIsland = { meta: IslandMeta, content: Island }
 
@@ -69,6 +70,7 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
     const [canvasState, setCanvasState] = useState<CanvasState>("pending")
     const islandGrid = useContext(islandGridContext)
     const [canvasMode, setCanvasMode] = useState<CanvasMode>({ mode: "islands" })
+    const router = useRouter()
 
     const [mobile, setMobile] = useState<boolean | undefined>(false)
 
@@ -94,6 +96,45 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
             videoRef.current.volume = 0.5
         }
     }, [canvasMode])
+
+    const MainContent = () => {
+        return (
+            <>
+                {
+                    canvasState == "ready" &&
+                    <IslandPanels
+                        totalPages={Math.ceil(props.totalIslands / props.islandMapMeta.perPageRegions)}
+                        params={props.params}
+                        allTags={props.allTags}
+                        regionCenters={props.regionCenters}
+                        islands={props.islands}
+                        mode={canvasMode}
+                    />
+                }
+                <MainCanvas
+                    islands={props.islands}
+                    islandMapMeta={props.islandMapMeta}
+                    params={props.params}
+                    maxValidNoiseValueOverride={canvasMode.mode == "bad-apple" ? 0.5 : undefined}
+                    canvasMode={canvasMode}
+                />
+            </>
+        )
+    }
+
+    const MobileFallback = () => {
+        return (
+            <div className="flex flex-col">
+                <Text>正在使用竖屏设备，可能无法正常显示内容。另外，触屏设备由于使用的事件不同，无法正常使用本页面。</Text>
+                <div className="flex items-center">
+                    <Text>你可以使用宽屏电脑浏览，</Text>
+                    <OutlinedButton onClick={router.back}>返回</OutlinedButton>
+                    <Text>，或者</Text>
+                    <OutlinedButton onClick={() => setMobile(undefined)}>强制渲染</OutlinedButton>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <islandGridContext.Provider value={islandGrid}>
@@ -121,34 +162,7 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
                             }} />
                         }
                         {
-                            mobile != true
-                                ? <>
-                                    {
-                                        canvasState == "ready" &&
-                                        <IslandPanels
-                                            totalPages={Math.ceil(props.totalIslands / props.islandMapMeta.perPageRegions)}
-                                            params={props.params}
-                                            allTags={props.allTags}
-                                            regionCenters={props.regionCenters}
-                                            islands={props.islands}
-                                            mode={canvasMode}
-                                        />
-                                    }
-                                    <MainCanvas
-                                        islands={props.islands}
-                                        islandMapMeta={props.islandMapMeta}
-                                        params={props.params}
-                                        maxValidNoiseValueOverride={canvasMode.mode == "bad-apple" ? 0.5 : undefined}
-                                        canvasMode={canvasMode}
-                                    />
-                                </>
-                                : <div>
-                                    <Text>正在使用竖屏设备，可能无法正常显示内容。另外，触屏设备无法正常使用本页面。</Text>
-                                    <div className="flex items-center">
-                                        <Text>你可以使用更大的屏幕浏览，或者</Text>
-                                        <OutlinedButton onClick={() => setMobile(undefined)}>强制渲染</OutlinedButton>
-                                    </div>
-                                </div>
+                            mobile != true ? <MainContent /> : <MobileFallback />
                         }
                     </div>
                 </canvasStateContext.Provider>

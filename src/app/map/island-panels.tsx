@@ -9,7 +9,6 @@ import { useContext, useEffect } from "react"
 import { visitingIslandContext } from "./islands-map"
 import InlinedArticle from "./inlined-article"
 import NavButtons from "../(pages)/nav-buttons"
-import ThemeSwither from "@/components/theme-switcher"
 import { QueryParams } from "@/data/search-param-util"
 import ContentWrapper from "@/components/content-wrapper"
 import { findClassNameAmong } from "@/data/utils"
@@ -59,9 +58,6 @@ export default function IslandPanels({
                 }
             </div>
             <div className="absolute left-2 top-2 flex flex-col gap-2">
-                <OutlinedBox className="pointer-events-auto backdrop-blur aspect-square flex items-center justify-center">
-                    <ThemeSwither />
-                </OutlinedBox>
                 <OutlinedBox className="flex flex-col gap-2 p-2 backdrop-blur-md pointer-events-auto">
                     {
                         totalPages > 0
@@ -87,7 +83,7 @@ export default function IslandPanels({
                 </div>
             }
             <div className="flex w-full justify-center">
-                <OutlinedBox className="absolute p-1 top-2 backdrop-blur-md pointer-events-auto">
+                <OutlinedBox className="absolute p-1 top-2 backdrop-blur-md pointer-events-auto flex">
                     <NavButtons className="w-16 h-12 p-1" />
                 </OutlinedBox>
             </div>
