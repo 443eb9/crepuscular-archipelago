@@ -98,7 +98,7 @@ pub async fn query_island_meta(pool: &SqlitePool, id: u32) -> Result<IslandMetaT
         query_island_tags(pool, id)
     );
 
-    Ok(IslandMetaTagged::new(meta?.apply_deleted(), tags?))
+    Ok(IslandMetaTagged::new(meta?, tags?).apply_deleted())
 }
 
 pub async fn query_islands_meta(
@@ -141,7 +141,7 @@ pub async fn query_islands_meta(
     .zip(metas)
     .try_fold(Vec::new(), |mut acc, (tags, meta)| match tags {
         Ok(tags) => {
-            acc.push(IslandMetaTagged::new(meta.apply_deleted(), tags));
+            acc.push(IslandMetaTagged::new(meta, tags).apply_deleted());
             Ok(acc)
         }
         Err(err) => Err(err),
@@ -259,8 +259,7 @@ pub async fn query_islands_meta_filtered(
                     license,
                     state,
                     banner,
-                    is_encrypted,
-                    is_deleted
+                    is_encrypted
                 FROM FilteredIslands
                 WHERE rn BETWEEN ? AND ?
                 GROUP BY id
@@ -287,7 +286,7 @@ pub async fn query_islands_meta_filtered(
         .zip(metas)
         .try_fold(Vec::new(), |mut acc, (tags, meta)| match tags {
             Ok(tags) => {
-                acc.push(IslandMetaTagged::new(meta.apply_deleted(), tags));
+                acc.push(IslandMetaTagged::new(meta, tags).apply_deleted());
                 Ok(acc)
             }
             Err(err) => Err(err),

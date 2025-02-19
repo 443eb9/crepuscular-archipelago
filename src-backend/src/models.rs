@@ -54,7 +54,7 @@ pub struct TagData {
     pub amount: u32,
 }
 
-#[derive(Debug, Default, Serialize, FromRow)]
+#[derive(Debug, Serialize, FromRow)]
 #[serde(rename_all = "camelCase")]
 pub struct IslandMeta {
     pub id: u32,
@@ -69,21 +69,7 @@ pub struct IslandMeta {
     pub is_encrypted: bool,
 }
 
-impl IslandMeta {
-    pub fn apply_deleted(self) -> Self {
-        if self.state == IslandState::Deleted {
-            Self {
-                id: self.id,
-                state: IslandState::Deleted,
-                ..Default::default()
-            }
-        } else {
-            self
-        }
-    }
-}
-
-#[derive(Debug, Serialize)]
+#[derive(Debug, Default, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct IslandMetaTagged {
     pub id: u32,
@@ -113,6 +99,18 @@ impl IslandMetaTagged {
             state: meta.state,
             banner: meta.banner,
             is_encrypted: meta.is_encrypted,
+        }
+    }
+
+    pub fn apply_deleted(self) -> Self {
+        if self.state == IslandState::Deleted {
+            Self {
+                id: self.id,
+                state: IslandState::Deleted,
+                ..Default::default()
+            }
+        } else {
+            self
         }
     }
 }
