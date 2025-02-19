@@ -115,7 +115,8 @@ pub async fn query_islands_meta(
     let end = total - page * length;
     let start = total
         .checked_sub((page + 1) * length - 1)
-        .unwrap_or_default();
+        .unwrap_or_default()
+        .max(1);
 
     let metas = sqlx::query_as::<_,IslandMeta>(
         "
@@ -165,7 +166,8 @@ pub async fn query_islands_meta_filtered(
     let end = total - page * length;
     let start = total
         .checked_sub((page + 1) * length - 1)
-        .unwrap_or_default();
+        .unwrap_or_default()
+        .max(1);
 
     let tags_filter = TagsFilter::new(tags_filter);
     let advanced_filter = AdvancedFilter::new(advanced_filter, &tags_filter);
