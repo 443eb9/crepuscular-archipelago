@@ -11,7 +11,7 @@ import RadioButtonGroup from "@/components/radio-button-group"
 import { usePathname } from "next/navigation"
 import LinkNoPrefetch from "./link-no-prefetch"
 import CheckboxGroup from "./checkbox-group"
-import { extractBits } from "@/data/utils"
+import { advancedFilterEnabled, extractBits, setAdvancedFilter, toggleAdvancedFilter } from "@/data/utils"
 
 export default function IslandFilter({ params, allTags }: { params: QueryParams, allTags: TagData[] }) {
     const pathname = usePathname()
@@ -34,8 +34,13 @@ export default function IslandFilter({ params, allTags }: { params: QueryParams,
                 <EndpointDottedSegment thickness={1} dotSize={5} style="dashed" className="my-2"></EndpointDottedSegment>
                 <Text className="font-bold text-lg">高级过滤</Text>
                 <div>
-                    <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: params.advf ^ (1 << 1) }).toString()}`}>
-                        <Toggle enabled={(params.advf >> 1 & 1) == 1}>
+                    <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: toggleAdvancedFilter(params.advf, "deleted") }).toString()}`}>
+                        <Toggle enabled={advancedFilterEnabled(params.advf, "deleted")}>
+                            <Text>排除已删除</Text>
+                        </Toggle>
+                    </LinkNoPrefetch>
+                    <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: toggleAdvancedFilter(params.advf, "invert") }).toString()}`}>
+                        <Toggle enabled={advancedFilterEnabled(params.advf, "invert")}>
                             <Text>反选 Tag</Text>
                         </Toggle>
                     </LinkNoPrefetch>
@@ -43,10 +48,10 @@ export default function IslandFilter({ params, allTags }: { params: QueryParams,
                     <RadioButtonGroup
                         className="flex justify-around"
                         labels={[
-                            { name: "和", mask: (x: number) => x & ~(1 << 2) },
-                            { name: "或", mask: (x: number) => x | (1 << 2) },
+                            { name: "和", filter: setAdvancedFilter(params.advf, "tag-or-logic", false) },
+                            { name: "或", filter: setAdvancedFilter(params.advf, "tag-or-logic", true) },
                         ].map(node =>
-                            <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: node.mask(params.advf) }).toString()}`} key={node.name}>
+                            <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: node.filter }).toString()}`} key={node.name}>
                                 <Text>{node.name}</Text>
                             </LinkNoPrefetch>
                         )}
@@ -55,12 +60,16 @@ export default function IslandFilter({ params, allTags }: { params: QueryParams,
                     <Text className="font-bold">排除状态</Text>
                     <CheckboxGroup
                         className="grid grid-cols-2"
-                        labels={["已完成", "未完成", "长期项目", "已弃坑"]
-                            .map((name, index) =>
-                                <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: params.advf ^ (1 << index + 3) })}`} key={name}>
-                                    <Text>{name}</Text>
-                                </LinkNoPrefetch>
-                            )
+                        labels={[
+                            { name: "已完成", filter: toggleAdvancedFilter(params.advf, "exclude-finished") },
+                            { name: "未完成", filter: toggleAdvancedFilter(params.advf, "exclude-wip") },
+                            { name: "长期项目", filter: toggleAdvancedFilter(params.advf, "exclude-ltp") },
+                            { name: "已弃坑", filter: toggleAdvancedFilter(params.advf, "exclude-deprecated") },
+                        ].map(node =>
+                            <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams({ ...params, advf: node.filter })}`} key={node.name}>
+                                <Text>{node.name}</Text>
+                            </LinkNoPrefetch>
+                        )
                         }
                         enabled={extractBits(params.advf >> 3 & 0b1111)}
                     />

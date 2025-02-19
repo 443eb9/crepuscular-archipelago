@@ -52,12 +52,14 @@ pub async fn query_island_count_filtered(
                     FROM island_tags
                     WHERE island_id = id
                     {}
+                    {}
                     GROUP BY island_id
                     {}
                 )
                 {}
                 ",
                 tags_filter.sql_restriction,
+                advanced_filter.exclude_deleted_sql_restriction,
                 advanced_filter.and_sql_restriction,
                 advanced_filter.excluded_state_sql_restriction
             )
@@ -69,12 +71,14 @@ pub async fn query_island_count_filtered(
                     JOIN island_tags ON id = island_id
                     {}
                     {}
+                    {}
                     GROUP BY island_id
                     {}
                 )
                 SELECT COUNT(*) as count FROM Filtered
                 ",
                 tags_filter.sql_restriction,
+                advanced_filter.exclude_deleted_sql_restriction,
                 advanced_filter.excluded_state_sql_restriction,
                 advanced_filter.and_sql_restriction,
             )
@@ -201,6 +205,7 @@ pub async fn query_islands_meta_filtered(
                             FROM island_tags
                             WHERE island_id = islands.id
                             {}
+                            {}
                             GROUP BY island_id
                             {}
                         )
@@ -224,6 +229,7 @@ pub async fn query_islands_meta_filtered(
                 WHERE rn BETWEEN ? AND ?
                 ",
                 tags_filter.sql_restriction,
+                advanced_filter.exclude_deleted_sql_restriction,
                 advanced_filter.and_sql_restriction,
                 advanced_filter.excluded_state_sql_restriction,
             )
@@ -248,6 +254,7 @@ pub async fn query_islands_meta_filtered(
                     JOIN island_tags ON id = island_id
                     {}
                     {}
+                    {}
                     GROUP BY island_id
                     {}
                 )
@@ -268,6 +275,7 @@ pub async fn query_islands_meta_filtered(
                 GROUP BY id
                 ",
                 tags_filter.sql_restriction,
+                advanced_filter.exclude_deleted_sql_restriction,
                 advanced_filter.excluded_state_sql_restriction,
                 advanced_filter.and_sql_restriction,
             )

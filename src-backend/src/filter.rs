@@ -55,6 +55,7 @@ pub struct AdvancedFilter {
     pub and_sql_restriction: String,
     pub excluded_states: ExcludedStates,
     pub excluded_state_sql_restriction: String,
+    pub exclude_deleted_sql_restriction: String,
 }
 
 impl AdvancedFilter {
@@ -83,11 +84,20 @@ impl AdvancedFilter {
             }
         };
 
+        let exclude_deleted_sql_restriction = {
+            if (filter & (1 << 7)) != 0 {
+                "AND is_deleted IS false".to_string()
+            } else {
+                String::default()
+            }
+        };
+
         Self {
             is_exclude: (filter & (1 << 1)) != 0 && !tags_filter.filtered_ids.is_empty(),
             and_sql_restriction,
             excluded_states,
             excluded_state_sql_restriction,
+            exclude_deleted_sql_restriction,
         }
     }
 }
