@@ -44,8 +44,8 @@ export default async function Page(props: { searchParams: Promise<RawSearchParam
                                                     Promise.all(data.reverse().map(async (island, i) => {
                                                         switch (island.ty) {
                                                             case "article":
-                                                                return <IslandCard island={island} key={i} params={queryParams} />
                                                             case "achievement":
+                                                            case "external":
                                                                 return <IslandCard island={island} key={i} params={queryParams} />
                                                             case "note":
                                                                 return <NetworkErrorable resp={await fetchIsland(island.id)}>

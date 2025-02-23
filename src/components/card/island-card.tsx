@@ -20,19 +20,27 @@ export default function IslandCard({ island, content, params, noLink }: { island
     }
 
     const LinkWrapper = () => {
+        if (noLink) { return <></> }
+
         switch (island.ty) {
             case "article":
-                if (!noLink) {
-                    return (
-                        <LinkNoPrefetch
-                            className="absolute w-full h-full"
-                            href={`/island/${island.id}?${queryParamsToSearchParams(params)}`}
-                        />
-                    )
-                }
+                return (
+                    <LinkNoPrefetch
+                        className="absolute w-full h-full"
+                        href={`/island/${island.id}?${queryParamsToSearchParams(params)}`}
+                    />
+                )
             case "achievement":
             case "note":
                 return <></>
+            case "external":
+                return (
+                    <LinkNoPrefetch
+                        className="absolute w-full h-full"
+                        target="_blank"
+                        href={island.reference!}
+                    />
+                )
         }
     }
 

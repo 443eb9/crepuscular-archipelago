@@ -17,15 +17,17 @@ export default function CardHeader({ island }: { island: IslandMeta }) {
 
     return (
         <div>
-            <h2 className="absolute font-bender font-bold leading-none pl-2 py-[2px] text-[10px] w-20 -top-1 left-3
+            <h2 className="absolute font-bender font-bold leading-none pl-2 py-[2px] text-[10px] w-24 -top-1 left-3
                 text-dark-contrast dark:text-light-contrast bg-light-contrast dark:bg-dark-contrast"
-            >{`# ${island.id}`}</h2>
+            >{`# ${island.id} ${island.ty == "external" ? "EXTERNAL" : ""}`}</h2>
             {header}
         </div>
     )
 }
 
 function ArticleCardHeader({ island }: { island: IslandMeta }) {
+    const bannerSrc = `${OSS}/${island.id}/BANNER.png`
+
     return (
         <div>
             {
@@ -37,7 +39,7 @@ function ArticleCardHeader({ island }: { island: IslandMeta }) {
                             aspectRatio: "10 / 3",
                         }}
                     >
-                        <Image src={`${OSS}/${island.id}/BANNER.png`} alt="Banner" scale={1} />
+                        <Image src={bannerSrc} alt={bannerSrc} scale={1} />
                     </OutlinedBox>
                 </div>
             }

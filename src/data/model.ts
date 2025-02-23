@@ -1,4 +1,4 @@
-export type IslandType = "article" | "achievement" | "note"
+export type IslandType = "article" | "achievement" | "note" | "external"
 
 export type LicenseType = "CC_BY" | "CC_BY_SA" | "CC_BY_NC" | "CC_BY_NC_SA" | "CC_BY_ND" | "CC_BY_NC_ND" | "CC0" | "Repost"
 
@@ -11,6 +11,7 @@ export type IslandMeta = {
     desc: string | null,
     date: string | null,
     ty: IslandType,
+    reference: string | null,
     tags: TagData[],
     license: LicenseType,
     state: IslandStateType,

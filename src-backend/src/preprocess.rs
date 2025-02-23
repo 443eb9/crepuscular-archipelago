@@ -84,6 +84,7 @@ pub async fn init_cache_db(db: &SqlitePool) {
             subtitle     TEXT,
             desc         text,
             ty           integer               not null,
+            reference    text,
             date         text,
             license      text,
             state        integer,
@@ -148,11 +149,12 @@ pub async fn init_cache_db(db: &SqlitePool) {
     }
 
     for (island, content) in islands {
-        query("INSERT INTO islands (title, subtitle, desc, ty, date, license, state, banner, is_encrypted, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+        query("INSERT INTO islands (title, subtitle, desc, ty, reference, date, license, state, banner, is_encrypted, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
             .bind(island.title)
             .bind(island.subtitle)
             .bind(island.desc)
             .bind(island.ty)
+            .bind(island.reference)
             .bind(island.date)
             .bind(island.license)
             .bind(island.state as u32)
@@ -201,6 +203,8 @@ fn load_all_islands(
         #[serde(default)]
         pub date: Option<toml::value::Datetime>,
         pub ty: IslandType,
+        #[serde(rename = "ref")]
+        pub reference: Option<String>,
         pub tags: Vec<String>,
         #[serde(default)]
         pub license: License,
@@ -271,6 +275,10 @@ fn load_all_islands(
         if island.date.is_none() && island.state == IslandStateStr::Finished {
             island.state = IslandStateStr::WorkInProgress;
         }
+        if island.reference.is_some() {
+            island.ty = IslandType::External;
+            island.license = License::Repost;
+        }
 
         for tag in &island.tags {
             all_tags
@@ -307,6 +315,7 @@ fn load_all_islands(
                                 .date
                                 .map(|t| DateTime::from_str(&t.to_string()).unwrap()),
                             ty: island.ty,
+                            reference: island.reference,
                             state: unsafe { std::mem::transmute::<_, IslandState>(island.state) },
                             banner: island.banner,
                             license: island.license,

@@ -12,6 +12,7 @@ pub enum IslandType {
     Article,
     Achievement,
     Note,
+    External,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize_repr, Type, PartialEq, Eq)]
@@ -63,6 +64,7 @@ pub struct IslandMeta {
     pub desc: Option<String>,
     pub date: Option<DateTime<FixedOffset>>,
     pub ty: IslandType,
+    pub reference: Option<String>,
     pub state: IslandState,
     pub banner: bool,
     pub license: License,
@@ -78,6 +80,7 @@ pub struct IslandMetaTagged {
     pub desc: Option<String>,
     pub date: Option<DateTime<FixedOffset>>,
     pub ty: IslandType,
+    pub reference: Option<String>,
     pub tags: Vec<TagData>,
     pub license: License,
     pub state: IslandState,
@@ -94,6 +97,7 @@ impl IslandMetaTagged {
             desc: meta.desc,
             date: meta.date,
             ty: meta.ty,
+            reference: meta.reference,
             tags,
             license: meta.license,
             state: meta.state,
