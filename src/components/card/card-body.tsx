@@ -21,7 +21,7 @@ export default function CardBody({ island, content }: { island: IslandMeta, cont
                 <div className="w-2 h-1 bg-light-contrast dark:bg-dark-contrast ml-3" />
             </div>
             {
-                island.ty == "article" &&
+                (island.ty == "article" || island.ty == "achievement") &&
                 <Text className={clsx(
                     { "opacity-50 italic": !island.desc }
                 )} style={{ width: "calc(100% - 80px)" }}>
