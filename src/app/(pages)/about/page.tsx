@@ -7,13 +7,11 @@ import AboutSection from "./about-section"
 import Projects from "./projects"
 import GiscusSection from "@/components/giscus-section"
 import Text from "@/components/text"
-import { fetchLinkExchange, wrappedFetch } from "@/data/api"
+import { wrappedFetch } from "@/data/api"
 import NetworkErrorable from "@/components/network-errorable"
 import Markdown from "@/components/markdown"
 import { frontendEndpoint } from "@/data/endpoints"
 import { ProjectData } from "@/data/model"
-import LinkNoPrefetch from "@/components/link-no-prefetch"
-import LinkExchange from "./link-exchange"
 import { Suspense } from "react"
 
 export const metadata: Metadata = {
@@ -22,7 +20,6 @@ export const metadata: Metadata = {
 
 export default async function Page() {
     const selfIntro = await wrappedFetch<string>(frontendEndpoint("/self-intro.md"), "GET")
-    const linkExchange = await fetchLinkExchange()
     const projects = await wrappedFetch<ProjectData[]>(frontendEndpoint("/projects.json"), "GET")
 
     return (
@@ -44,22 +41,13 @@ export default async function Page() {
                         </NetworkErrorable>
                     </OutlinedBox>
                 </div>
-                <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
-                <AboutSection title="友链">
-                    <Text className="font-sh-sans italic text-light-dark-neutral">
-                        想加上自己的可以来<LinkNoPrefetch href={"https://github.com/443eb9/aetheric-cargo"}><u>这里</u></LinkNoPrefetch> ヾ(≧▽≦*)o
-                    </Text>
-                    <NetworkErrorable resp={linkExchange}>
-                        {data => <LinkExchange links={data} />}
-                    </NetworkErrorable>
-                </AboutSection>
-                <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
+                <EndpointDottedSegment thickness={1} dotSize={5} style="solid" />
                 <AboutSection title="一些项目">
                     <NetworkErrorable resp={projects}>
                         {data => <Projects projects={data} />}
                     </NetworkErrorable>
                 </AboutSection>
-                <EndpointDottedSegment thickness={1} dotSize={5} style="solid"></EndpointDottedSegment>
+                <EndpointDottedSegment thickness={1} dotSize={5} style="solid" />
                 <AboutSection title="留言板">
                     <GiscusSection className="mt-4"></GiscusSection>
                 </AboutSection>

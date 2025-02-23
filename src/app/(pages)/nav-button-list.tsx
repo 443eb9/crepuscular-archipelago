@@ -3,7 +3,7 @@ import OutlinedButton from "@/components/outlined-button"
 import Text from "@/components/text"
 import { LinkProps } from "next/link"
 
-export default function NavButtons({ className }: { className?: string }) {
+export default function NavButtonList({ className }: { className?: string }) {
     function NavButton({ title, ...props }: { title: string } & LinkProps) {
         return (
             <LinkNoPrefetch {...props} className={`font-sh-serif font-bold ${className}`}>

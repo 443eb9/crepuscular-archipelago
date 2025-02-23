@@ -5,7 +5,7 @@ import Text from "@/components/text"
 import { LinkExchangeData } from "@/data/model"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import FriendDialog from "./friend-dialog"
+import FriendDialog from "../about/friend-dialog"
 import { findClassNameAmong } from "@/data/utils"
 import LinkNoPrefetch from "@/components/link-no-prefetch"
 import { AnimatePresence } from "motion/react"
@@ -30,7 +30,7 @@ export default function LinkExchange({ links }: { links: LinkExchangeData[] }) {
     }, [curDialog])
 
     return (
-        <div className="w-full mt-4 grid-cols-1 grid md:grid-cols-2 gap-5">
+        <div className="w-full grid-cols-1 grid md:grid-cols-2 gap-5">
             {
                 links.map((link, i) => {
                     return (

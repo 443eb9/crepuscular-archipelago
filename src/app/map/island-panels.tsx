@@ -8,7 +8,7 @@ import Text from "@/components/text"
 import { useContext, useEffect } from "react"
 import { visitingIslandContext } from "./islands-map"
 import InlinedArticle from "./inlined-article"
-import NavButtons from "../(pages)/nav-buttons"
+import NavButtonList from "../(pages)/nav-button-list"
 import { QueryParams } from "@/data/search-param-util"
 import ContentWrapper from "@/components/content-wrapper"
 import { findClassNameAmong } from "@/data/utils"
@@ -84,7 +84,7 @@ export default function IslandPanels({
             }
             <div className="flex w-full justify-center">
                 <OutlinedBox className="absolute p-1 top-2 backdrop-blur-md pointer-events-auto flex">
-                    <NavButtons className="w-16 h-12 p-1" />
+                    <NavButtonList className="w-16 h-12 p-1" />
                 </OutlinedBox>
             </div>
             <div className="absolute left-0 bottom-0">

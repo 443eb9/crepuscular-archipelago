@@ -1,10 +1,11 @@
-import NavButtons from "./nav-buttons"
 import DropdownNav from "./dropdown-nav"
 import Text from "@/components/text"
 import LinkNoPrefetch from "@/components/link-no-prefetch"
 import { HTMLAttributes } from "react"
+import ExpandableNavButtons from "./expandable-nav-buttons"
 
 export default function GlobalNavBar(props: HTMLAttributes<HTMLDivElement>) {
+
     return (
         <div
             {...props}
@@ -17,7 +18,9 @@ export default function GlobalNavBar(props: HTMLAttributes<HTMLDivElement>) {
                 <DropdownNav className="block md:hidden" />
             </div>
             <div className="hidden md:flex gap-2 flex-wrap justify-end">
-                <NavButtons className="w-20 h-10" />
+                <div className="relative flex gap-2">
+                    <ExpandableNavButtons />
+                </div>
             </div>
         </div>
     )

@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
-import NavButtons from './(pages)/nav-buttons'
+import NavButtonList from './(pages)/nav-button-list'
+import ExpandableNavButtons from './(pages)/expandable-nav-buttons'
 
 export const metadata: Metadata = {
 	title: "443eb9#C - Crepuscular Archipelago",
@@ -26,9 +27,12 @@ export default async function Page() {
 					</p>
 				</div>
 			</div>
-			<div className="absolute w-[100%] h-[40%] md:w-[80%] md:h-auto left-[10%] bottom-[20%] flex md:justify-center">
+			<div className="absolute w-[100%] h-[40%] md:w-[80%] md:h-auto left-[10%] bottom-[20%] flex">
 				<div className="flex flex-col md:flex-row gap-4 md:gap-10 flex-wrap flex-shrink">
-					<NavButtons className="w-20 h-10 md:w-40 md:h-20 text-lg md:text-3xl" />
+					<NavButtonList className="md:hidden w-20 h-10 text-lg" />
+				</div>
+				<div className="hidden md:flex gap-4">
+					<ExpandableNavButtons className='w-40 h-20 text-3xl' expandAbove />
 				</div>
 			</div>
 		</main>

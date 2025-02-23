@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { IoMenuSharp } from "react-icons/io5"
-import NavButtons from "./nav-buttons"
+import NavButtonList from "./nav-button-list"
 import OutlinedBox from "@/components/outlined-box"
 
 export default function DropdownNav({ className }: { className?: string }) {
@@ -18,7 +18,7 @@ export default function DropdownNav({ className }: { className?: string }) {
                     right: "calc(100% - 30px)"
                 }}
             >
-                <NavButtons className="text-nowrap w-20 h-10" />
+                <NavButtonList className="text-nowrap w-20 h-10" />
             </OutlinedBox>
         </div>
     )
