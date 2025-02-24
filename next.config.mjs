@@ -17,7 +17,7 @@ const nextConfig = {
             },
         ],
         // TODO remove this once memory usage reduces.
-        unoptimized: true,
+        // unoptimized: true,
     },
 };
 

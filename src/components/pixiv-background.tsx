@@ -41,7 +41,7 @@ export default function PixivBackground() {
             />
             {
                 meta &&
-                <div className="absolute right-0 bottom-0 z-10 flex flex-col">
+                <div className="fixed right-0 bottom-0 z-10 flex flex-col">
                     <LinkNoPrefetch
                         href={meta.src}
                         target="_blank"
