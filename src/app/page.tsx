@@ -27,7 +27,7 @@ export default async function Page() {
 					</p>
 				</div>
 			</div>
-			<div className="absolute w-[100%] h-[40%] md:w-[80%] md:h-auto left-[10%] bottom-[20%] flex">
+			<div className="absolute h-[40%] md:w-[80%] md:h-auto left-[10%] bottom-[20%] flex">
 				<div className="flex flex-col md:flex-row gap-4 md:gap-10 flex-wrap flex-shrink">
 					<NavButtonList className="md:hidden w-20 h-10 text-lg" />
 				</div>

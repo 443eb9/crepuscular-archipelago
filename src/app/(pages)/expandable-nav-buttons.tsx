@@ -24,21 +24,21 @@ export default function ExpandableNavButtons({ className, expandAbove }: { class
         }
     }, [])
 
-    const NavButton = ({ content, target, children, submenus }: { content: string, target?: string, children?: ReactNode, submenus?: number }) => {
+    const NavButton = ({ content, href, target, children, submenus }: { content: string, href?: string, target?: string, children?: ReactNode, submenus?: number }) => {
         return (
-            <button
-                className={`relative backdrop-blur-md ${suppressPanelClose}`}
+            <div
+                className={`relative ${suppressPanelClose}`}
                 onClick={() => {
-                    if (!target) {
+                    if (!href) {
                         setExpand(expand == content ? undefined : content)
                     }
                 }}
             >
-                <OutlinedButton className={`w-20 h-10 ${className}`}>
+                <OutlinedButton className={`w-20 h-10 backdrop-blur-md ${className}`}>
                     {
-                        target
+                        href
                             ?
-                            <LinkNoPrefetch href={target}>
+                            <LinkNoPrefetch href={href} target={target}>
                                 <Text elem="h3">{content}</Text>
                             </LinkNoPrefetch>
                             : <Text elem="h3">{content}</Text>
@@ -50,22 +50,23 @@ export default function ExpandableNavButtons({ className, expandAbove }: { class
                         {children}
                     </div>
                 }
-            </button>
+            </div>
         )
     }
     return (
         <>
-            <NavButton content="首页" target="/" />
+            <NavButton content="首页" href="/" />
             <NavButton content="内容" submenus={3}>
-                <NavButton content="地图" target="/map" />
-                <NavButton content="动态" target="/updates" />
-                <NavButton content="泡沫" target="/foams" />
+                <NavButton content="地图" href="/map" />
+                <NavButton content="动态" href="/updates" />
+                <NavButton content="泡沫" href="/foams" />
             </NavButton>
             <NavButton content="元数据" submenus={3}>
-                <NavButton content="关于" target="/about" />
-                <NavButton content="友链" target="friends" />
-                <NavButton content="设置" target="settings" />
+                <NavButton content="关于" href="/about" />
+                <NavButton content="友链" href="/friends" />
+                <NavButton content="设置" href="/settings" />
             </NavButton>
+            <NavButton content="开往" href="https://www.travellings.cn/go.html" target="_blank" />
         </>
     )
 }
