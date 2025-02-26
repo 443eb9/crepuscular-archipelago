@@ -20,12 +20,11 @@ export default function Image({ scale, containerProps, ...props }: { scale: numb
             className={`flex justify-center ${containerProps?.className}`}
         >
             {
-                containerWidth &&
+                (containerWidth != undefined) &&
                 <NextImage
                     {...props}
                     width={containerWidth * scale}
                     height={0}
-                    placeholder="empty"
                 />
             }
         </span>

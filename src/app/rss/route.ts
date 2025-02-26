@@ -1,4 +1,5 @@
 import { fetchIslandsMeta } from "@/data/api"
+import { IslandMeta } from "@/data/model"
 import { searchParamsToQueryParams } from "@/data/search-param-util"
 import RSS from "rss"
 
@@ -15,15 +16,30 @@ export async function GET(request: Request) {
         webMaster: "443eb9@gmail.com",
     })
 
+    const getUrl = (island: IslandMeta) => {
+        switch (island.ty) {
+            case "article":
+                return `https://443eb9.dev/island/${island.id}`
+            case "achievement":
+            case "note":
+                return "https://443eb9.dev/updates"
+            case "external":
+                return island.reference!
+        }
+    }
+
     const blogs = await fetchIslandsMeta(0, params.len, params.tags, params.advf)
     if (blogs.ok) {
         blogs.data.reverse().forEach(island => {
-            const title = island.subtitle ? `${island.title} - ${island.subtitle}` : island.title
+            let title = island.subtitle ? `${island.title} - ${island.subtitle}` : island.title
+            if (island.ty == "external") {
+                title = "[EXTERNAL] " + title
+            }
 
             feed.item({
                 title: title,
                 description: island.desc ?? "N/A",
-                url: island.ty == "article" ? `https://443eb9.dev/island/${island.id}` : "https://443eb9.dev/updates",
+                url: getUrl(island),
                 date: island.date ? island.date : "",
                 categories: [island.ty, island.state],
             })
