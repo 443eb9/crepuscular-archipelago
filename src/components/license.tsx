@@ -3,13 +3,14 @@ import { LicenseType } from "@/data/model";
 import Image from "next/image";
 import { HTMLAttributes } from "react";
 import LinkNoPrefetch from "./link-no-prefetch";
+import Text from "./text";
 
 export default function License({
     license, iconWidth, iconHeight, ...props
 }: {
     license: LicenseType, iconWidth: number, iconHeight: number
 } & HTMLAttributes<HTMLDivElement>) {
-    if (license == "Repost") { return <></> }
+    if (license == "Repost") { return <Text noFont className="font-neon italic">Repost</Text> }
 
     return (
         <div
