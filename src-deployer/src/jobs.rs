@@ -11,16 +11,16 @@ use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use clokwerk::{Scheduler, SyncJob};
 use futures_lite::future::block_on;
-use image::{imageops::FilterType, GenericImageView, ImageFormat};
+use image::{GenericImageView, ImageFormat, imageops::FilterType};
 use reqwest::{
-    header::{HeaderMap, HeaderName, HeaderValue},
     Client, StatusCode,
+    header::{HeaderMap, HeaderName, HeaderValue},
 };
 use serde::{Deserialize, Serialize};
 use tokio::time::timeout;
 use zip::ZipArchive;
 
-use crate::utils::{create_process_io, retrieve_bytes_logged, ProcessLoggingIo};
+use crate::utils::{ProcessLoggingIo, create_process_io, retrieve_bytes_logged};
 
 const DEFAULT_UA: &str =
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0";
@@ -207,12 +207,12 @@ impl Job for RepoUpdater {
         let local_commit = read_to_string(".next/commit");
         log::info!("Local commit: {:?}", local_commit.as_ref().ok());
 
-        let artifact_list_resp = self
-            .client
-            .get(Self::ARTIFACTS_API_URL)
-            .timeout(Duration::from_secs(300))
-            .send()
-            .await?;
+        let artifact_list_resp = futures_lite::future::block_on(
+            self.client
+                .get(Self::ARTIFACTS_API_URL)
+                .timeout(Duration::from_secs(300))
+                .send(),
+        )?;
         resp_check_ok!(artifact_list_resp);
 
         let artifacts = artifact_list_resp.json::<ArtifactList>().await?;
