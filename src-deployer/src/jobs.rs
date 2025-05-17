@@ -282,7 +282,7 @@ impl Job for PixivIllustFetcher {
         let first_artwork_id_pos = ranking_page.find(DATA_ID_START_PAT).ok_or_else(|| {
             format!(
                 "Unable to find the id of first valid artwork in page. {}",
-                ranking_page
+                Self::PIXIV_RANKING_PAGE
             )
         })? + DATA_ID_START_PAT.len();
         let end_first_artwork_id_pos = ranking_page[first_artwork_id_pos..]
@@ -290,7 +290,7 @@ impl Job for PixivIllustFetcher {
             .ok_or_else(|| {
             format!(
                 "Unable to find the end position of id of first valid artwork in page. {}",
-                ranking_page
+                Self::PIXIV_RANKING_PAGE
             )
         })? + first_artwork_id_pos;
 
@@ -311,7 +311,7 @@ impl Job for PixivIllustFetcher {
             .ok_or_else(|| {
                 format!(
                     "Unable to find link to original artwork in page. {}",
-                    artwork_page
+                    artwork_page_url
                 )
             })?;
         let end_original_artwork_link_pos = artwork_page[original_artwork_link_pos..]
@@ -319,7 +319,7 @@ impl Job for PixivIllustFetcher {
             .ok_or_else(|| {
                 format!(
                     "Unable to find end of link to original artwork in page. {}",
-                    artwork_page
+                    artwork_page_url
                 )
             })?
             + original_artwork_link_pos;
@@ -334,11 +334,11 @@ impl Job for PixivIllustFetcher {
         const TITLE_END_PAT: &str = " - pixiv";
         let title_pos = artwork_page
             .find(TITLE_START_PAT)
-            .ok_or_else(|| format!("Unable to find title pos in page. {}", artwork_page))?
+            .ok_or_else(|| format!("Unable to find title pos in page. {}", artwork_page_url))?
             + TITLE_START_PAT.len();
         let end_title_pos = artwork_page[title_pos..]
             .find(TITLE_END_PAT)
-            .ok_or_else(|| format!("Unable to find end of title pos in page. {}", artwork_page))?
+            .ok_or_else(|| format!("Unable to find end of title pos in page. {}", artwork_page_url))?
             + title_pos;
         let split_title = artwork_page[title_pos..end_title_pos]
             .split(" - ")
