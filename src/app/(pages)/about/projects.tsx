@@ -1,5 +1,6 @@
 import EmphasizedBox from "@/components/decos/emphasized-box"
 import NetworkErrorable from "@/components/network-errorable"
+import Text from "@/components/text"
 import { fetchGithubProjectStat } from "@/data/api"
 import { ProjectData } from "@/data/model"
 
@@ -15,22 +16,26 @@ export default async function Projects({ projects }: { projects: ProjectData[] }
                             <div className="flex justify-between items-center">
                                 <div>
                                     <a className="text-2xl font-bold" target="_blank" href={`https://github.com/${project.owner}/${project.name}`}>{project.name}</a>
-                                    <NetworkErrorable resp={response}>
-                                        {data =>
-                                            <div>
-                                                <h3>Language: {data.language}</h3>
-                                                <h3>{data.stargazers_count} Star(s)</h3>
-                                                <div className="flex gap-5">
-                                                    <div className="">
-                                                        Created at {new Date(data.created_at).toLocaleDateString()}
+                                    {
+                                        project.isPublic
+                                            ? <NetworkErrorable resp={response}>
+                                                {data =>
+                                                    <div>
+                                                        <h3>Language: {data.language}</h3>
+                                                        <h3>{data.stargazers_count} Star(s)</h3>
+                                                        <div className="flex gap-5">
+                                                            <div className="">
+                                                                Created at {new Date(data.created_at).toLocaleDateString()}
+                                                            </div>
+                                                            <div className="">
+                                                                Updated at {new Date(data.updated_at).toLocaleDateString()}
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div className="">
-                                                        Updated at {new Date(data.updated_at).toLocaleDateString()}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }
-                                    </NetworkErrorable>
+                                                }
+                                            </NetworkErrorable>
+                                            : <Text className="font-bender" noFont>Private Project</Text>
+                                    }
                                 </div>
                                 <div className="text-light-dark-neutral text-3xl font-bold italic mr-2">{project.owner}</div>
                             </div>

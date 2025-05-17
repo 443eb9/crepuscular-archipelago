@@ -61,6 +61,7 @@ export type LinkExchangeData = {
 export type ProjectData = {
     owner: string,
     name: string,
+    isPublic: boolean,
 }
 
 export type Bookmarks = {
