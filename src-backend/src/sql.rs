@@ -90,7 +90,7 @@ pub async fn query_island_count_filtered(
 pub async fn query_island_meta(pool: &SqlitePool, id: u32) -> Result<IslandMetaTagged> {
     let (meta, tags) = join!(
         sqlx::query_as::<_, IslandMeta>(
-            "SELECT id, title, subtitle, desc, ty, reference, date, license, state, banner, is_encrypted FROM islands
+            "SELECT id, title, subtitle, desc, ty, reference, date, background, license, state, banner, is_encrypted FROM islands
             WHERE id = ?"
         )
         .bind(id)
@@ -120,7 +120,7 @@ pub async fn query_islands_meta(
 
     let metas = sqlx::query_as::<_,IslandMeta>(
         "
-            SELECT id, title, subtitle, desc, ty, reference, date, license, state, banner, is_encrypted FROM islands
+            SELECT id, title, subtitle, desc, ty, reference, date, background, license, state, banner, is_encrypted FROM islands
             JOIN island_tags ON id = island_id
             WHERE id BETWEEN ? AND ?
             GROUP BY id
@@ -192,6 +192,7 @@ pub async fn query_islands_meta_filtered(
                             ty,
                             reference,
                             date,
+                            background,
                             license,
                             state,
                             banner,
@@ -217,6 +218,7 @@ pub async fn query_islands_meta_filtered(
                     ty,
                     reference,
                     date,
+                    background,
                     license,
                     state,
                     banner,
@@ -240,6 +242,7 @@ pub async fn query_islands_meta_filtered(
                         ty,
                         reference,
                         date,
+                        background,
                         license,
                         state,
                         banner,
@@ -260,6 +263,7 @@ pub async fn query_islands_meta_filtered(
                     ty,
                     reference,
                     date,
+                    background,
                     license,
                     state,
                     banner,

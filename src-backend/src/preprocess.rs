@@ -1,14 +1,14 @@
 use std::{collections::HashMap, fs::create_dir_all, str::FromStr};
 
 use aes_gcm::{
-    aead::{consts::U12, Aead, Nonce},
-    aes::Aes256,
     Aes256Gcm, AesGcm, Key, KeyInit,
+    aead::{Aead, Nonce, consts::U12},
+    aes::Aes256,
 };
-use base64::{prelude::BASE64_STANDARD, Engine};
+use base64::{Engine, prelude::BASE64_STANDARD};
 use chrono::DateTime;
-use serde::{de::DeserializeOwned, Deserialize};
-use sqlx::{query, sqlite::SqliteConnectOptions, SqlitePool};
+use serde::{Deserialize, de::DeserializeOwned};
+use sqlx::{SqlitePool, query, sqlite::SqliteConnectOptions};
 
 use crate::{
     env::{get_island_cache_root, get_island_storage_root},
@@ -86,6 +86,7 @@ pub async fn init_cache_db(db: &SqlitePool) {
             ty           integer               not null,
             reference    text,
             date         text,
+            background   boolean default false not null,
             license      text,
             state        integer,
             banner       boolean default false not null,
@@ -149,13 +150,14 @@ pub async fn init_cache_db(db: &SqlitePool) {
     }
 
     for (island, content) in islands {
-        query("INSERT INTO islands (title, subtitle, desc, ty, reference, date, license, state, banner, is_encrypted, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+        query("INSERT INTO islands (title, subtitle, desc, ty, reference, date, background, license, state, banner, is_encrypted, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
             .bind(island.title)
             .bind(island.subtitle)
             .bind(island.desc)
             .bind(island.ty)
             .bind(island.reference)
             .bind(island.date)
+            .bind(island.background)
             .bind(island.license)
             .bind(island.state as u32)
             .bind(island.banner)
@@ -202,6 +204,8 @@ fn load_all_islands(
         pub desc: Option<String>,
         #[serde(default)]
         pub date: Option<toml::value::Datetime>,
+        #[serde(default)]
+        pub background: bool,
         pub ty: IslandType,
         #[serde(rename = "ref")]
         pub reference: Option<String>,
@@ -314,6 +318,7 @@ fn load_all_islands(
                             date: island
                                 .date
                                 .map(|t| DateTime::from_str(&t.to_string()).unwrap()),
+                            background: island.background,
                             ty: island.ty,
                             reference: island.reference,
                             state: unsafe { std::mem::transmute::<_, IslandState>(island.state) },

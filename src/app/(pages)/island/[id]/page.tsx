@@ -4,6 +4,7 @@ import ContentWrapper from "@/components/content-wrapper"
 import ArticleContainer from "../article-container"
 import NetworkErrorable from "@/components/network-errorable"
 import { processQueryParams, RawSearchParams } from "@/data/search-param-util"
+import { OSS } from "@/data/endpoints"
 
 export default async function Page({ searchParams, params }: { searchParams: Promise<RawSearchParams>, params: Promise<{ id: string }> }) {
     const queryParams = processQueryParams(await searchParams)
@@ -12,22 +13,29 @@ export default async function Page({ searchParams, params }: { searchParams: Pro
     const content = await fetchIsland(id)
 
     return (
-        <ContentWrapper className="flex-col gap-5">
-            <NetworkErrorable resp={meta}>
-                {
-                    meta => <NetworkErrorable resp={content}>
+        <NetworkErrorable resp={meta}>
+            {
+                meta =>
+                    <>
                         {
-                            content =>
-                                <ArticleContainer
-                                    meta={meta}
-                                    content={content.content}
-                                    params={queryParams}
-                                />
+                            meta.background &&
+                            <div className="fixed w-[100vw] h-[100vh] bg-cover bg-center -z-[1000] blur-md opacity-20" style={{ backgroundImage: `url("${OSS}/${meta.id}/BACKGROUND.png")` }} />
                         }
-                    </NetworkErrorable>
-                }
-            </NetworkErrorable>
-        </ContentWrapper>
+                        <ContentWrapper className="flex-col gap-5">
+                            <NetworkErrorable resp={content}>
+                                {
+                                    content =>
+                                        <ArticleContainer
+                                            meta={meta}
+                                            content={content.content}
+                                            params={queryParams}
+                                        />
+                                }
+                            </NetworkErrorable>
+                        </ContentWrapper>
+                    </>
+            }
+        </NetworkErrorable>
     )
 }
 

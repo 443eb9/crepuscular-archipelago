@@ -12,5 +12,5 @@ export async function GET(request: Request) {
     if (targetIsland == undefined) {
         return Response.redirect(frontendEndpoint(""))
     }
-    return Response.redirect(frontendEndpoint(`/islands/${targetIsland}`))
+    return Response.redirect(frontendEndpoint(`/island/${targetIsland}`))
 }

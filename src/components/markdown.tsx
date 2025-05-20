@@ -24,7 +24,7 @@ export default function Markdown({ body }: { body: string }) {
                 h5(props) { return <Text {...props} elem="h5" className="text-[.83em] my-[1.67em]" /> },
                 h6(props) { return <Text {...props} elem="h6" className="text-[.67em] my-[2.33em]" /> },
                 p(props) { return <Text {...props} elem="p" className="py-1 text-wrap break-words" /> },
-                img(props) { return <Image scale={0.5} src={props.src ?? ""} alt={props.src ?? ""} /> },
+                img(props) { return <Image scale={0.5} src={props.src ?? ""} alt={props.src ?? ""} className="my-2" /> },
                 video(props) {
                     return (
                         <span className="flex justify-center w-full">

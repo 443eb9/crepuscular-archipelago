@@ -1,7 +1,7 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 use serde_repr::Deserialize_repr;
-use sqlx::{prelude::Type, FromRow};
+use sqlx::{FromRow, prelude::Type};
 
 use crate::islands::IslandMapQuery;
 
@@ -63,6 +63,7 @@ pub struct IslandMeta {
     pub subtitle: Option<String>,
     pub desc: Option<String>,
     pub date: Option<DateTime<FixedOffset>>,
+    pub background: bool,
     pub ty: IslandType,
     pub reference: Option<String>,
     pub state: IslandState,
@@ -79,6 +80,7 @@ pub struct IslandMetaTagged {
     pub subtitle: Option<String>,
     pub desc: Option<String>,
     pub date: Option<DateTime<FixedOffset>>,
+    pub background: bool,
     pub ty: IslandType,
     pub reference: Option<String>,
     pub tags: Vec<TagData>,
@@ -96,6 +98,7 @@ impl IslandMetaTagged {
             subtitle: meta.subtitle,
             desc: meta.desc,
             date: meta.date,
+            background: meta.background,
             ty: meta.ty,
             reference: meta.reference,
             tags,

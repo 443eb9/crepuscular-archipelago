@@ -12,6 +12,7 @@ export type IslandMeta = {
     date: string | null,
     ty: IslandType,
     reference: string | null,
+    background: boolean,
     tags: TagData[],
     license: LicenseType,
     state: IslandStateType,
