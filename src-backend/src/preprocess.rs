@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs::create_dir_all, str::FromStr};
+use std::{collections::HashMap, fs::create_dir_all, path::Path, str::FromStr};
 
 use aes_gcm::{
     Aes256Gcm, AesGcm, Key, KeyInit,
@@ -253,6 +253,8 @@ fn load_all_islands(
             .parse::<u32>()
             .unwrap();
 
+        copy_all_media(id);
+
         let assets = std::fs::read_dir(entry.path()).unwrap();
         let content = assets
             .into_iter()
@@ -425,10 +427,32 @@ fn extract_frontmatter<T: DeserializeOwned>(body: &str) -> (T, String) {
 fn replace_image_urls(body: String) -> String {
     regex::Regex::new(r#"\.\/([0-9]+)\/"#)
         .unwrap()
-        .replace_all(&body, "https://oss.443eb9.dev/islandsmedia/$1/")
+        .replace_all(&body, "https://443eb9.dev/images/islands/$1/")
         .into()
 }
 
 fn bool_true() -> bool {
     true
+}
+
+fn copy_all_media(id: u32) {
+    let src_root = Path::new("src-media/islands")
+        .join(id.to_string())
+        .join(id.to_string());
+    let Ok(entries) = std::fs::read_dir(src_root) else {
+        log::info!("Skipping copying images of island {}", id);
+        return;
+    };
+
+    let dst_root = Path::new("public/images/islands").join(id.to_string());
+    let _ = std::fs::create_dir_all(&dst_root);
+
+    log::info!("Copying images of island {}", id);
+    for entry in entries {
+        let Ok(entry) = entry else {
+            continue;
+        };
+
+        std::fs::copy(entry.path(), dst_root.join(entry.file_name())).unwrap();
+    }
 }
