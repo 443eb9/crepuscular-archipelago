@@ -7,7 +7,6 @@ log
 pixiv-weekly.webp
 pixiv-weekly.json
 .idea
-public/images/islands
 
 # dependencies
 /node_modules
