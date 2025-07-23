@@ -11,6 +11,7 @@ actix-web = "4.5"
 aes-gcm = "0.10"
 async-stream = "0.3"
 base64 = "0.22"
+bincode = "2"
 bitflags = { version = "2", features = ["serde"] }
 chrono = { version = "0.4", features = ["serde"] }
 dotenvy = "0.15"

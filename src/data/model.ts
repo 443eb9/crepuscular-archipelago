@@ -17,7 +17,6 @@ export type IslandMeta = {
     license: LicenseType,
     state: IslandStateType,
     banner: boolean,
-    isEncrypted: boolean,
 }
 
 export type TagData = {
@@ -27,21 +26,15 @@ export type TagData = {
 }
 
 export type Island = {
+    content: SubIsland[],
+}
+
+export type SubIsland = {
     content: string,
+    isEncrypted: boolean,
 }
 
 export type IslandCount = {
-    count: number,
-}
-
-export type FoamData = {
-    id: number,
-    date: string,
-    content: string,
-    is_encrypted: boolean,
-}
-
-export type FoamCount = {
     count: number,
 }
 

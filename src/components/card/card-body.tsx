@@ -1,10 +1,10 @@
-import { IslandMeta } from "@/data/model"
+import { Island, IslandMeta } from "@/data/model"
 import DiagLines from "@/components/decos/diag-lines"
-import Markdown from "@/components/markdown"
 import Text from "@/components/text"
 import clsx from "clsx"
+import ArticleBody from "@/app/(pages)/island/article-body"
 
-export default function CardBody({ island, content }: { island: IslandMeta, content?: string }) {
+export default function CardBody({ island, content }: { island: IslandMeta, content?: Island }) {
     return (
         <div>
             {
@@ -30,7 +30,7 @@ export default function CardBody({ island, content }: { island: IslandMeta, cont
             }
             {
                 content &&
-                <Markdown body={content} />
+                <ArticleBody body={content} noOutline />
             }
         </div>
     )

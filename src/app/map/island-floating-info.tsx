@@ -1,6 +1,6 @@
 "use client"
 
-import { IslandMeta } from "@/data/model"
+import { Island, IslandMeta } from "@/data/model"
 import { useContext, useEffect, useState } from "react"
 import { Vector2 } from "three"
 import { useMotionValue } from "motion/react"
@@ -8,10 +8,11 @@ import OutlinedBox from "@/components/outlined-box"
 import Text from "@/components/text"
 import IslandCard from "../../components/card/island-card"
 import { fetchIsland } from "@/data/api"
-import { islandGridContext, visitingIslandContext } from "./islands-map"
+import { islandGridContext } from "./islands-map"
 import clsx from "clsx"
 import { QueryParams } from "@/data/search-param-util"
 import CanvasRelatedPanel from "./canvas-related-panel"
+import { visitingIslandContext } from "./island-panels"
 
 export default function IslandFloatingInfo({ regionId, island, center, params }: { regionId: number, island: IslandMeta, center: Vector2, params: QueryParams }) {
     const { focusingRegionId } = useContext(islandGridContext)
@@ -21,7 +22,7 @@ export default function IslandFloatingInfo({ regionId, island, center, params }:
 
     const visitingIsland = useContext(visitingIslandContext)
     const islandGrid = useContext(islandGridContext)
-    const [islandContent, setIslandContent] = useState<string | undefined>()
+    const [islandContent, setIslandContent] = useState<Island | undefined>()
 
     useEffect(() => {
         const update = async () => {
@@ -33,7 +34,7 @@ export default function IslandFloatingInfo({ regionId, island, center, params }:
                 if (island.ty == "note" && !islandContent) {
                     const content = await fetchIsland(island.id)
                     if (content.ok) {
-                        setIslandContent(content.data.content)
+                        setIslandContent(content.data)
                     }
                 }
             } else {
@@ -41,8 +42,11 @@ export default function IslandFloatingInfo({ regionId, island, center, params }:
             }
         }
 
-        window.setInterval(update, 100)
-    }, [regionId, islandContent, island.id])
+        const id = window.setInterval(update, 100)
+        return () => {
+            window.clearInterval(id)
+        }
+    }, [islandContent])
 
     return (
         <CanvasRelatedPanel

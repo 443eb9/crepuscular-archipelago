@@ -1,9 +1,10 @@
+use bincode::config::standard;
 use futures::{future::join_all, join};
 use sqlx::{Result, SqlitePool};
 
 use crate::{
     filter::{AdvancedFilter, TagsFilter},
-    models::{Foam, FoamCount, Island, IslandCount, IslandMeta, IslandMetaTagged, TagData},
+    models::{BinaryIsland, Island, IslandCount, IslandMeta, IslandMetaTagged, TagData},
 };
 
 pub async fn query_all_tags(pool: &SqlitePool) -> Result<Vec<TagData>> {
@@ -13,10 +14,14 @@ pub async fn query_all_tags(pool: &SqlitePool) -> Result<Vec<TagData>> {
 }
 
 pub async fn query_island_content(pool: &SqlitePool, id: u32) -> Result<Island> {
-    sqlx::query_as("SELECT id, content FROM islands WHERE id = ?")
+    let content: BinaryIsland = sqlx::query_as("SELECT id, content FROM islands WHERE id = ?")
         .bind(id)
         .fetch_one(pool)
-        .await
+        .await?;
+
+    Ok(bincode::decode_from_slice(&content.content, standard())
+        .unwrap()
+        .0)
 }
 
 pub async fn query_island_count(pool: &SqlitePool) -> Result<IslandCount> {
@@ -90,7 +95,7 @@ pub async fn query_island_count_filtered(
 pub async fn query_island_meta(pool: &SqlitePool, id: u32) -> Result<IslandMetaTagged> {
     let (meta, tags) = join!(
         sqlx::query_as::<_, IslandMeta>(
-            "SELECT id, title, subtitle, desc, ty, reference, date, background, license, state, banner, is_encrypted FROM islands
+            "SELECT id, title, subtitle, desc, ty, reference, date, background, license, state, banner FROM islands
             WHERE id = ?"
         )
         .bind(id)
@@ -120,7 +125,7 @@ pub async fn query_islands_meta(
 
     let metas = sqlx::query_as::<_,IslandMeta>(
         "
-            SELECT id, title, subtitle, desc, ty, reference, date, background, license, state, banner, is_encrypted FROM islands
+            SELECT id, title, subtitle, desc, ty, reference, date, background, license, state, banner FROM islands
             JOIN island_tags ON id = island_id
             WHERE id BETWEEN ? AND ?
             GROUP BY id
@@ -195,8 +200,7 @@ pub async fn query_islands_meta_filtered(
                             background,
                             license,
                             state,
-                            banner,
-                            is_encrypted
+                            banner
                         FROM islands
                         WHERE NOT EXISTS (
                             SELECT island_id, tag_id
@@ -221,8 +225,7 @@ pub async fn query_islands_meta_filtered(
                     background,
                     license,
                     state,
-                    banner,
-                    is_encrypted
+                    banner
                 FROM OrderedIslands
                 WHERE rn BETWEEN ? AND ?
                 ",
@@ -246,7 +249,6 @@ pub async fn query_islands_meta_filtered(
                         license,
                         state,
                         banner,
-                        is_encrypted,
                         ROW_NUMBER() OVER (ORDER BY id) AS rn
                     FROM islands
                     JOIN island_tags ON id = island_id
@@ -266,8 +268,7 @@ pub async fn query_islands_meta_filtered(
                     background,
                     license,
                     state,
-                    banner,
-                    is_encrypted
+                    banner
                 FROM FilteredIslands
                 WHERE rn BETWEEN ? AND ?
                 GROUP BY id
@@ -312,28 +313,4 @@ async fn query_island_tags(pool: &SqlitePool, id: u32) -> Result<Vec<TagData>> {
     .bind(id)
     .fetch_all(pool)
     .await?)
-}
-
-pub async fn query_foams_count(pool: &SqlitePool) -> Result<FoamCount> {
-    Ok(sqlx::query_as("SELECT COUNT(*) as count FROM foams")
-        .fetch_one(pool)
-        .await?)
-}
-
-pub async fn query_foams(pool: &SqlitePool, page: u32, length: u32) -> Result<Vec<Foam>> {
-    let total = query_foams_count(pool).await?.count;
-    let end = total - page * length;
-    let start = total
-        .checked_sub((page + 1) * length - 1)
-        .unwrap_or_default();
-    sqlx::query_as(
-        "
-            SELECT id, content, date, is_encrypted FROM foams
-            WHERE id BETWEEN ? AND ?
-        ",
-    )
-    .bind(start)
-    .bind(end)
-    .fetch_all(pool)
-    .await
 }

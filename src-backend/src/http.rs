@@ -118,16 +118,6 @@ pub async fn get_island_at(
     }
 }
 
-#[get("/api/get/foam/count")]
-pub async fn get_foams_count(pool: Data<SqlitePool>) -> impl Responder {
-    sql_query_request!(query_foams_count, &pool)
-}
-
-#[get("/api/get/foam/{page}/{len}")]
-pub async fn get_foams(pool: Data<SqlitePool>, params: Path<(u32, u32)>) -> impl Responder {
-    sql_query_request!(query_foams, &pool, params.0, params.1)
-}
-
 #[get("/api/get/memorizeDb")]
 pub async fn download_memorize_db() -> impl Responder {
     let root = std::env::var("ISLAND_STORAGE_ROOT").unwrap();

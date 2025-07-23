@@ -1,3 +1,4 @@
+use bincode::{Decode, Encode};
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 use serde_repr::Deserialize_repr;
@@ -69,7 +70,6 @@ pub struct IslandMeta {
     pub state: IslandState,
     pub banner: bool,
     pub license: License,
-    pub is_encrypted: bool,
 }
 
 #[derive(Debug, Default, Serialize)]
@@ -87,7 +87,6 @@ pub struct IslandMetaTagged {
     pub license: License,
     pub state: IslandState,
     pub banner: bool,
-    pub is_encrypted: bool,
 }
 
 impl IslandMetaTagged {
@@ -105,7 +104,6 @@ impl IslandMetaTagged {
             license: meta.license,
             state: meta.state,
             banner: meta.banner,
-            is_encrypted: meta.is_encrypted,
         }
     }
 
@@ -122,11 +120,22 @@ impl IslandMetaTagged {
     }
 }
 
-#[derive(Debug, Serialize, FromRow)]
+#[derive(Debug, Serialize, Encode, Decode)]
 #[serde(rename_all = "camelCase")]
 pub struct Island {
-    pub id: u32,
+    pub content: Vec<SubIsland>,
+}
+
+#[derive(Debug, Serialize, Encode, Decode)]
+#[serde(rename_all = "camelCase")]
+pub struct SubIsland {
     pub content: String,
+    pub is_encrypted: bool,
+}
+
+#[derive(Debug, Serialize, FromRow)]
+pub struct BinaryIsland {
+    pub content: Vec<u8>,
 }
 
 #[derive(Debug, Serialize, FromRow)]
@@ -147,19 +156,4 @@ pub struct IslandMapMeta {
     pub size: u32,
     pub per_page_regions: u32,
     pub page_cnt: u32,
-}
-
-#[derive(Serialize, FromRow)]
-#[serde(rename_all = "camelCase")]
-pub struct Foam {
-    pub id: u32,
-    pub date: DateTime<FixedOffset>,
-    pub content: String,
-    pub is_encrypted: bool,
-}
-
-#[derive(Debug, Serialize, FromRow)]
-#[serde(rename_all = "camelCase")]
-pub struct FoamCount {
-    pub count: u32,
 }

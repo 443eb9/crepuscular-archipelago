@@ -1,7 +1,7 @@
 use std::sync::Mutex;
 
 use actix_cors::Cors;
-use actix_web::{middleware::Logger, web::Data, App, HttpServer};
+use actix_web::{App, HttpServer, middleware::Logger, web::Data};
 
 mod env;
 mod filter;
@@ -33,8 +33,6 @@ async fn main() -> std::io::Result<()> {
             .service(http::get_island_map_noise_texture)
             .service(http::get_island_map_centers)
             .service(http::get_island_at)
-            .service(http::get_foams)
-            .service(http::get_foams_count)
             .service(http::download_memorize_db)
             .service(http::error_test)
     })

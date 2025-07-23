@@ -1,9 +1,11 @@
 "use client"
 
+import AnimVisibilityDiv from "@/components/anim/anim-visibility-div"
 import LinkNoPrefetch from "@/components/link-no-prefetch"
 import OutlinedButton from "@/components/outlined-button"
 import Text from "@/components/text"
 import { findClassNameAmong } from "@/data/utils"
+import { AnimatePresence } from "motion/react"
 import { ReactNode, useEffect, useState } from "react"
 
 const suppressPanelClose = "suppress-panel-close"
@@ -44,22 +46,23 @@ export default function ExpandableNavButtons({ className, expandAbove }: { class
                             : <Text elem="h3">{content}</Text>
                     }
                 </OutlinedButton>
-                {
-                    expand == content && submenus != undefined &&
-                    <div className="absolute flex flex-col gap-1" style={{ marginTop: expandAbove ? `calc(-${(submenus / 2) * 100}% - ${submenus * 4}px - 80px)` : "4px" }}>
-                        {children}
-                    </div>
-                }
+                <AnimatePresence>
+                    {
+                        expand == content && submenus != undefined &&
+                        <AnimVisibilityDiv className="absolute flex flex-col gap-1" style={{ marginTop: expandAbove ? `calc(-${(submenus / 2) * 100}% - ${submenus * 4}px - 80px)` : "4px" }}>
+                            {children}
+                        </AnimVisibilityDiv>
+                    }
+                </AnimatePresence>
             </div>
         )
     }
     return (
         <>
             <NavButton content="首页" href="/" />
-            <NavButton content="内容" submenus={3}>
+            <NavButton content="内容" submenus={2}>
                 <NavButton content="地图" href="/map" />
                 <NavButton content="动态" href="/updates" />
-                <NavButton content="泡沫" href="/foams" />
             </NavButton>
             <NavButton content="元数据" submenus={3}>
                 <NavButton content="关于" href="/about" />

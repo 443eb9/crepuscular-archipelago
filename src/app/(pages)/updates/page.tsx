@@ -49,7 +49,7 @@ export default async function Page(props: { searchParams: Promise<RawSearchParam
                                                                 return <IslandCard island={island} key={i} params={queryParams} />
                                                             case "note":
                                                                 return <NetworkErrorable resp={await fetchIsland(island.id)}>
-                                                                    {content => <IslandCard island={island} key={i} content={content.content} params={queryParams} />}
+                                                                    {content => <IslandCard island={island} key={i} content={content} params={queryParams} />}
                                                                 </NetworkErrorable>
                                                         }
                                                     }))

@@ -6,6 +6,7 @@ use aes_gcm::{
     aes::Aes256,
 };
 use base64::{Engine, prelude::BASE64_STANDARD};
+use bincode::config::standard;
 use chrono::DateTime;
 use serde::{Deserialize, de::DeserializeOwned};
 use sqlx::{SqlitePool, query, sqlite::SqliteConnectOptions};
@@ -13,7 +14,9 @@ use sqlx::{SqlitePool, query, sqlite::SqliteConnectOptions};
 use crate::{
     env::{get_island_cache_root, get_island_storage_root},
     islands::IslandMaps,
-    models::{Foam, IslandMeta, IslandMetaTagged, IslandState, IslandType, License, TagData},
+    models::{
+        Island, IslandMeta, IslandMetaTagged, IslandState, IslandType, License, SubIsland, TagData,
+    },
 };
 
 pub struct InitData {
@@ -90,8 +93,7 @@ pub async fn init_cache_db(db: &SqlitePool) {
             license      text,
             state        integer,
             banner       boolean default false not null,
-            is_encrypted Boolean default false,
-            content      text    default ""
+            content      blob    default ""
         );"#,
         r#"create table tags
         (
@@ -111,16 +113,6 @@ pub async fn init_cache_db(db: &SqlitePool) {
                     references tags,
             constraint island_tags_pk
                 primary key (island_id, tag_id)
-        );"#,
-        r#"create table foams
-        (
-            id           integer               not null
-                constraint meta_pk
-                    primary key autoincrement,
-            date         text,
-            is_encrypted Boolean default false,
-            is_deleted   integer default false,
-            content      text    default ""
         );"#,
     ];
 
@@ -150,7 +142,7 @@ pub async fn init_cache_db(db: &SqlitePool) {
     }
 
     for (island, content) in islands {
-        query("INSERT INTO islands (title, subtitle, desc, ty, reference, date, background, license, state, banner, is_encrypted, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+        query("INSERT INTO islands (title, subtitle, desc, ty, reference, date, background, license, state, banner, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
             .bind(island.title)
             .bind(island.subtitle)
             .bind(island.desc)
@@ -161,7 +153,6 @@ pub async fn init_cache_db(db: &SqlitePool) {
             .bind(island.license)
             .bind(island.state as u32)
             .bind(island.banner)
-            .bind(island.is_encrypted)
             .bind(content)
             .execute(db)
             .await
@@ -176,25 +167,11 @@ pub async fn init_cache_db(db: &SqlitePool) {
                 .unwrap();
         }
     }
-
-    log::info!("Start loading all foams...");
-    let foams = load_all_foams(&encryptor);
-    log::info!("Successfully loaded {} foams.", foams.len());
-
-    for foam in foams {
-        query("INSERT INTO foams (date, is_encrypted, content) VALUES (?, ?, ?)")
-            .bind(foam.date)
-            .bind(foam.is_encrypted)
-            .bind(foam.content)
-            .execute(db)
-            .await
-            .unwrap();
-    }
 }
 
 fn load_all_islands(
     encryptor: &ContentEncryptor,
-) -> (Vec<(IslandMetaTagged, String)>, Vec<TagData>) {
+) -> (Vec<(IslandMetaTagged, Vec<u8>)>, Vec<TagData>) {
     #[derive(Deserialize)]
     struct IslandToml {
         pub title: String,
@@ -216,8 +193,6 @@ fn load_all_islands(
         pub state: IslandStateStr,
         #[serde(default)]
         pub banner: bool,
-        #[serde(default)]
-        pub is_encrypted: bool,
     }
 
     #[derive(Deserialize, Debug, Default, PartialEq, Eq)]
@@ -272,9 +247,6 @@ fn load_all_islands(
 
         let (mut island, mut body) = extract_frontmatter::<IslandToml>(content);
         body = replace_image_urls(body);
-        if island.is_encrypted {
-            encryptor.encrypt(&mut body);
-        }
 
         if island.date.is_none() && island.state == IslandStateStr::Finished {
             island.state = IslandStateStr::WorkInProgress;
@@ -324,7 +296,6 @@ fn load_all_islands(
                             state: unsafe { std::mem::transmute::<_, IslandState>(island.state) },
                             banner: island.banner,
                             license: island.license,
-                            is_encrypted: island.is_encrypted,
                         },
                         island
                             .tags
@@ -339,7 +310,8 @@ fn load_all_islands(
                             })
                             .collect(),
                     ),
-                    content,
+                    bincode::encode_to_vec(apply_encryption(content, encryptor), standard())
+                        .unwrap(),
                 )
             })
             .collect(),
@@ -352,64 +324,6 @@ fn load_all_islands(
             })
             .collect(),
     )
-}
-
-fn load_all_foams(encryptor: &ContentEncryptor) -> Vec<Foam> {
-    #[derive(Deserialize)]
-    struct FoamToml {
-        pub date: toml::value::Datetime,
-        #[serde(default = "bool_true")]
-        pub is_encrypted: bool,
-    }
-
-    let dir = std::fs::read_dir(get_island_storage_root().join("foams")).unwrap();
-    let mut foams = Vec::new();
-
-    for entry in dir {
-        let Ok(entry) = entry else {
-            break;
-        };
-
-        let id = entry
-            .file_name()
-            .to_str()
-            .unwrap()
-            .to_string()
-            .parse::<u32>()
-            .unwrap();
-
-        let assets = std::fs::read_dir(entry.path()).unwrap();
-        let content = assets
-            .into_iter()
-            .filter_map(|entry| {
-                entry.ok().and_then(|entry| {
-                    entry
-                        .path()
-                        .extension()
-                        .is_some_and(|ext| ext == "md")
-                        .then(|| std::fs::read_to_string(entry.path()).ok())
-                        .flatten()
-                })
-            })
-            .collect::<Vec<_>>();
-        assert_eq!(content.len(), 1);
-        let content = &content[0];
-
-        let (foam, mut body) = extract_frontmatter::<FoamToml>(content);
-        body = replace_image_urls(body);
-        if foam.is_encrypted {
-            encryptor.encrypt(&mut body);
-        }
-
-        foams.push(Foam {
-            id,
-            date: DateTime::from_str(&foam.date.to_string()).unwrap(),
-            content: body,
-            is_encrypted: foam.is_encrypted,
-        });
-    }
-
-    foams
 }
 
 fn extract_frontmatter<T: DeserializeOwned>(body: &str) -> (T, String) {
@@ -429,6 +343,50 @@ fn replace_image_urls(body: String) -> String {
         .into()
 }
 
-fn bool_true() -> bool {
-    true
+fn apply_encryption(body: String, en: &ContentEncryptor) -> Island {
+    if body.is_empty() {
+        return Island {
+            content: Vec::new(),
+        };
+    }
+
+    const BEGIN_ENCRYPT: &'static str = "<!-- BEGIN ENCRYPT -->";
+    const END_ENCRYPT: &'static str = "<!-- END ENCRYPT -->";
+
+    let mut n = 0;
+    let mut result = Vec::new();
+    let mut last_end = 0;
+
+    while let Some(marker_begin) = body[last_end..].find(BEGIN_ENCRYPT) {
+        if n == 0 {
+            result.push(SubIsland {
+                content: body[..marker_begin].to_string(),
+                is_encrypted: false,
+            });
+        }
+
+        let begin = marker_begin + BEGIN_ENCRYPT.len() + last_end;
+        let end = body[begin..].find(END_ENCRYPT).expect(&format!(
+            "The {}th begin encrypt don't have a corresponding end encrypt",
+            n
+        )) + begin;
+        n += 1;
+        last_end = end + END_ENCRYPT.len();
+
+        let mut fragment = body[begin..end].to_string();
+        en.encrypt(&mut fragment);
+        result.push(SubIsland {
+            content: fragment,
+            is_encrypted: true,
+        });
+    }
+
+    if last_end < body.len() - 1 {
+        result.push(SubIsland {
+            content: body[last_end..].to_string(),
+            is_encrypted: false,
+        });
+    }
+
+    Island { content: result }
 }

@@ -1,7 +1,5 @@
-"use client"
-
 import OutlinedBox from "@/components/outlined-box"
-import { IslandMeta } from "@/data/model"
+import { Island, IslandMeta } from "@/data/model"
 import CardHeader from "./card-header"
 import clsx from "clsx"
 import CardBody from "./card-body"
@@ -10,7 +8,7 @@ import CardFooter from "./card-footer"
 import { QueryParams, queryParamsToSearchParams } from "@/data/search-param-util"
 import LinkNoPrefetch from "../link-no-prefetch"
 
-export default function IslandCard({ island, content, params, noLink }: { island: IslandMeta, content?: string, params: QueryParams, noLink?: boolean }) {
+export default function IslandCard({ island, content, params, noLink }: { island: IslandMeta, content?: Island, params: QueryParams, noLink?: boolean }) {
     if (island.state == "deleted") {
         return (
             <OutlinedBox className="border-dashed">

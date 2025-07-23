@@ -27,7 +27,7 @@ export default async function Page({ searchParams, params }: { searchParams: Pro
                                     content =>
                                         <ArticleContainer
                                             meta={meta}
-                                            content={content.content}
+                                            content={content}
                                             params={queryParams}
                                         />
                                 }
