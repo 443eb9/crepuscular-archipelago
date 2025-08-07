@@ -1,40 +1,17 @@
-"use client"
+import { TagData } from "@/data/model";
+import TitleText from "./text/title-text";
+import DiagLines from "./svg-deco/diag-lines";
 
-import Text from "./text"
-import { TagData } from "@/data/model"
-import clsx from "clsx"
-import OutlinedButton from "./outlined-button"
-import { usePathname } from "next/navigation"
-import { QueryParams, queryParamsToSearchParams } from "@/data/search-param-util"
-import LinkNoPrefetch from "./link-no-prefetch"
-
-export default function Tag({
-    tag, hideAmount, params, pathnameOverride
-}: Readonly<
-    { tag: TagData, hideAmount?: boolean, params: QueryParams, pathnameOverride?: string }
->) {
-    const pathname = pathnameOverride ?? usePathname()
-    const paramsAfterClick = {
-        ...params,
-        tags: params.tags ^ (1 << tag.id),
-    }
-
+export default function Tag({ tag }: { tag: TagData }) {
     return (
-        <LinkNoPrefetch href={`${pathname}?${queryParamsToSearchParams(paramsAfterClick).toString()}`}>
-            <OutlinedButton
-                className={clsx(`flex items-baseline gap-1 p-1`,
-                    {
-                        "bg-light-contrast dark:bg-dark-contrast text-dark-contrast dark:text-light-contrast":
-                            (params.tags >> tag.id & 1) == 1,
-                    }
-                )}
-            >
-                <Text className="text-sm">{tag.name}</Text>
-                {
-                    !hideAmount &&
-                    <Text className="font-neon text-sm">{tag.amount}</Text>
-                }
-            </OutlinedButton>
-        </LinkNoPrefetch>
+        <div className="relative flex border-2 border-dark-0 dark:border-light-0">
+            <div className="">
+                <div className="w-[6px] aspect-square bg-accent ml-1 mt-2" />
+            </div>
+            <div className="pl-2 pr-4 py-1">
+                <TitleText className="text-sm">{tag.name}</TitleText>
+            </div>
+            <DiagLines className="w-3" style={{ maskSize: "1200%", WebkitMaskSize: "1200%" }} />
+        </div>
     )
 }

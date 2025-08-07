@@ -5,14 +5,14 @@ export type RawSearchParams = {
     advf?: string,
 }
 
-export type QueryParams = {
+export type SearchParams = {
     page: number,
     len: number,
     tags: number,
     advf: number,
 }
 
-const DefaultQueryParams: QueryParams = {
+const DefaultQueryParams: SearchParams = {
     page: 0,
     len: 10,
     tags: 0,
@@ -24,8 +24,7 @@ function extractParam<T>(params: URLSearchParams, name: string, process?: (value
     return elem ? process ? process(elem) : elem as T : undefined
 }
 
-export function searchParamsToQueryParams(params: URLSearchParams): QueryParams {
-    const id = extractParam(params, "id", parseInt)
+export function processUrlSearchParams(params: URLSearchParams): SearchParams {
     const page = extractParam(params, "page", parseInt) ?? DefaultQueryParams.page
     const len = extractParam(params, "len", parseInt) ?? DefaultQueryParams.len
     const tags = extractParam(params, "tags", parseInt) ?? DefaultQueryParams.tags
@@ -33,7 +32,7 @@ export function searchParamsToQueryParams(params: URLSearchParams): QueryParams 
     return { page, len, tags, advf }
 }
 
-export function processQueryParams(params: RawSearchParams): QueryParams {
+export function processSearchParams(params: RawSearchParams): SearchParams {
     const page = parseInt(params.page ?? "0")
     const len = parseInt(params.len ?? "10")
     const tags = parseInt(params.tags ?? "0")
@@ -41,7 +40,7 @@ export function processQueryParams(params: RawSearchParams): QueryParams {
     return { page, len, tags, advf }
 }
 
-export function queryParamsToSearchParams(params: QueryParams) {
+export function queryParamsToSearchParams(params: SearchParams) {
     const defaultValues = DefaultQueryParams as { [key: string]: any }
 
     return new URLSearchParams(

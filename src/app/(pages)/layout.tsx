@@ -1,16 +1,9 @@
-import ContentWrapper from "@/components/content-wrapper"
-import GlobalNavBar from "./global-nav-bar"
-import Footer from "@/components/footer"
+import { ReactNode } from "react";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: ReactNode }) {
     return (
-        <div className="h-full" lang="en">
-            <GlobalNavBar className="fixed" />
-            <div className="h-20"></div>
+        <div className="max-w-[1080px]">
             {children}
-            <ContentWrapper className="my-5">
-                <Footer />
-            </ContentWrapper>
         </div>
     )
 }
