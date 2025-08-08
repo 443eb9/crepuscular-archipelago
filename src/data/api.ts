@@ -18,8 +18,8 @@ export async function fetchAllTags(): Promise<TagData[]> {
     return wrappedApiGet(`/get/allTags`)
 }
 
-export async function fetchIslandCount(key: { tags: number, asvf: number }): Promise<IslandCount> {
-    return wrappedApiGet(`/get/island/count/${key.tags}/${key.asvf}`)
+export async function fetchIslandCount({ tags, advf }: { tags: number, advf: number }): Promise<IslandCount> {
+    return wrappedApiGet(`/get/island/count/${tags}/${advf}`)
 }
 
 export async function fetchIslandMeta(id: number): Promise<IslandMeta> {

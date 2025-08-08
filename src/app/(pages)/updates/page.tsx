@@ -2,7 +2,11 @@
 
 import IslandCard from "@/components/cards/island-card"
 import NetworkFailable from "@/components/cards/network-failable"
+import EndDecoLine from "@/components/end-deco-line"
 import IslandFilter from "@/components/island-filter"
+import Pagination from "@/components/pagination"
+import RectDot from "@/components/rect-dot"
+import AsciiText from "@/components/text/ascii-text"
 import { fetchIslandsMeta } from "@/data/api"
 import { processUrlSearchParams } from "@/data/search-param-util"
 import { useSearchParams } from "next/navigation"
@@ -12,13 +16,29 @@ export default function Page() {
     const params = processUrlSearchParams(useSearchParams())
 
     return (
-        <div className="flex gap-10 p-10">
-            <div className="flex flex-col-reverse gap-12">
-                <NetworkFailable swrResp={useSWR(params, fetchIslandsMeta)} loading={<div></div>}>
-                    {
-                        data => data.map((island, i) => <IslandCard key={i} island={island} />)
-                    }
-                </NetworkFailable>
+        <div className="flex flex-grow gap-10 p-10">
+            <div className="flex flex-col gap-8">
+                <div className="flex flex-col-reverse flex-grow gap-12">
+                    <NetworkFailable swrResp={useSWR({ ...params }, fetchIslandsMeta)} loading={<div></div>}>
+                        {
+                            data => data.length == 0
+                                ? <div className="opacity-50">
+                                    <AsciiText className="flex font-bold italic text-2xl">No island satisfies the condition found :(</AsciiText>
+                                    <div className="flex">
+                                        <div className="w-20 h-[5px] bg-dark-0 dark:bg-light-0" />
+                                        <div className="flex gap-1 ml-2">
+                                            <RectDot size={5} cnt={5} />
+                                        </div>
+                                    </div>
+                                </div>
+                                : data.map((island, i) => <IslandCard key={i} island={island} />)
+                        }
+                    </NetworkFailable>
+                </div>
+                <EndDecoLine deco={<RectDot size={10} />} decoSize={10} lineThickness={1} decoGap={5} lineStyle="dashed" />
+                <div className="flex gap-2">
+                    <Pagination className="w-10" />
+                </div>
             </div>
             <div className="relative max-w-80 min-w-80">
                 <div className="fixed max-w-80 min-w-80">
