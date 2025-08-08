@@ -6,7 +6,7 @@ export default function OutlinedButton({ children, inv, ...props }: { children?:
             {...props}
             className={
                 `border-2
-                ${inv ? "bg-accent border-accent hover:border-dark-0 hover:dark:border-light-0" : "border-dark-0 dark:border-light-0 hover:bg-accent hover:border-accent"}
+                ${inv ? "bg-accent-0 border-accent-0 hover:border-dark-0 hover:dark:border-light-0" : "border-dark-0 dark:border-light-0 hover:bg-accent-0 hover:border-accent-0"}
                 ${props.className}`
             }
         >

@@ -24,7 +24,7 @@ export default function Tag({ tag }: { tag: TagData }) {
             inv={bitEnabled(params.tags, tag.id)}
         >
             <div className="">
-                <div className="w-[6px] aspect-square bg-accent ml-1 mt-2" />
+                <div className="w-[6px] aspect-square bg-accent-0 ml-1 mt-2" />
             </div>
             <div className="pl-2 pr-4 py-1">
                 <TitleText className="text-sm">{tag.name}</TitleText>

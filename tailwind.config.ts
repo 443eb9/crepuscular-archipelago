@@ -25,7 +25,8 @@ export default {
         "dark-1": "#404040",
         "light-1": "#e5e5e5",
         "light-dark-neutral": "#737373",
-        "accent": "#12aa9c",
+        "accent-0": "#12aa9c",
+        "accent-1": "#f75443"
       },
     },
   },

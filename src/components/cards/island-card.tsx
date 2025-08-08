@@ -27,7 +27,7 @@ export default function IslandCard({ island }: { island: IslandMeta }) {
                         <AsciiText className="text-sm italic -ml-1 font-bold" inv>Dst</AsciiText>
                     </div>
                 </div>
-                <div className="flex items-center w-full h-full bg-accent">
+                <div className="flex items-center w-full h-full bg-accent-0">
                     <AsciiText className="ml-2 font-bold">INVALID TICKET: Destination access denied.</AsciiText>
                 </div>
             </div>
@@ -71,7 +71,7 @@ export default function IslandCard({ island }: { island: IslandMeta }) {
         let acc = 0
         let i = 0
         let res = []
-        const colors = ["bg-light-0 dark:bg-dark-0", "bg-accent"]
+        const colors = ["bg-light-0 dark:bg-dark-0", "bg-accent-0"]
         while (true) {
             const t = Math.pow(Math.random(), 2) * 10
             if (acc + t > len) break
@@ -103,7 +103,7 @@ export default function IslandCard({ island }: { island: IslandMeta }) {
         >
             {
                 island.ty == "achievement"
-                    ? <AsciiText className="absolute -top-6 h-6 px-2 text-sm bg-accent content-center">Island Achievement</AsciiText>
+                    ? <AsciiText className="absolute -top-6 h-6 px-2 text-sm bg-accent-0 content-center">Island Achievement</AsciiText>
                     : <>
                         <RectDot size={16} className="absolute -left-4 -top-4" />
                         <div className="absolute flex gap-2 ml-2 -top-[10px]">
@@ -146,7 +146,7 @@ export default function IslandCard({ island }: { island: IslandMeta }) {
                                                 <AsciiText className="text-sm italic -ml-1 font-bold" inv>Dst</AsciiText>
                                             </div>
                                         </div>
-                                        <div className="flex items-center w-14 h-full bg-accent">
+                                        <div className="flex items-center w-14 h-full bg-accent-0">
                                             <AsciiText className="ml-2">#{island.id}</AsciiText>
                                         </div>
                                     </div>
@@ -180,7 +180,7 @@ export default function IslandCard({ island }: { island: IslandMeta }) {
                     {
                         island.ty != "external" && island.ty != "achievement" &&
                         <div>
-                            <div className="flex flex-col w-6 h-full justify-between bg-accent self-end">
+                            <div className="flex flex-col w-6 h-full justify-between bg-accent-0 self-end">
                                 <div className="flex-col w-4/5 self-end">
                                     <FakeBarCode len={50} />
                                 </div>
@@ -219,7 +219,7 @@ export default function IslandCard({ island }: { island: IslandMeta }) {
                         <div className="bg-dark-0 dark:bg-light-0 px-2">
                             <AsciiText className="font-bold" inv>{formattedState()}</AsciiText>
                         </div>
-                        <div className="bg-accent px-2">
+                        <div className="bg-accent-0 px-2">
                             <AsciiText inv>{formatDate(island.date ?? undefined)}</AsciiText>
                         </div>
                         <FocusRect className="h-6 aspect-square self-end mb-[1px]" />
