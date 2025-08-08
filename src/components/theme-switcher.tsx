@@ -2,10 +2,9 @@
 
 import { useTheme } from "next-themes"
 import { IoMoonSharp, IoSunnySharp } from "react-icons/io5"
-import { useEffect, useState } from "react"
-import OutlinedBox from "./outlined-box"
+import { HTMLAttributes, useEffect, useState } from "react"
 
-export default function ThemeSwither({ className }: { className?: string }) {
+export default function ThemeSwitcher(props: HTMLAttributes<HTMLButtonElement>) {
     const [mounted, setMounted] = useState(false)
     const { setTheme, resolvedTheme } = useTheme()
 
@@ -15,27 +14,25 @@ export default function ThemeSwither({ className }: { className?: string }) {
         return null
     }
 
-    const SwitcherButton = () => {
-        if (resolvedTheme == "light") {
-            return (
-                <button className={className} onClick={() => { setTheme("dark") }} >
-                    <IoSunnySharp className="text-4xl" />
-                </button>
-            )
-        }
-
-        if (resolvedTheme == "dark") {
-            return (
-                <button className={className} onClick={() => { setTheme("light") }} >
-                    <IoMoonSharp className="text-4xl" />
-                </button>
-            )
-        }
+    switch (resolvedTheme) {
+        case "dark": return (
+            <button
+                {...props}
+                className={"flex justify-center items-center " + props.className}
+                onClick={() => setTheme("light")}
+            >
+                <IoSunnySharp className="text-4xl text-light-0 hover:text-accent-0" />
+            </button>
+        )
+        case "light": return (
+            <button
+                {...props}
+                className={"flex justify-center items-center " + props.className}
+                onClick={() => setTheme("dark")}
+            >
+                <IoMoonSharp className="text-4xl text-dark-0 hover:text-accent-0" />
+            </button>
+        )
+        default: return null
     }
-
-    return (
-        <OutlinedBox className="p-4 flex justify-between items-center">
-            <SwitcherButton />
-        </OutlinedBox>
-    )
 }

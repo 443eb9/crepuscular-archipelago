@@ -20,8 +20,10 @@ export default function Page() {
                     }
                 </NetworkFailable>
             </div>
-            <div className="max-w-80 min-w-80">
-                <IslandFilter />
+            <div className="relative max-w-80 min-w-80">
+                <div className="fixed max-w-80 min-w-80">
+                    <IslandFilter />
+                </div>
             </div>
         </div>
     )

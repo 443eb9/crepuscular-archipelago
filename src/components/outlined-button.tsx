@@ -1,6 +1,6 @@
 import { HTMLAttributes, ReactNode } from "react"
 
-export default function OutlinedButton({ children, inv, ...props }: { children?: ReactNode, inv?: boolean } & HTMLAttributes<HTMLButtonElement>) {
+export default function OutlinedButton({ inv, ...props }: { inv?: boolean } & HTMLAttributes<HTMLButtonElement>) {
     return (
         <button
             {...props}
@@ -10,7 +10,7 @@ export default function OutlinedButton({ children, inv, ...props }: { children?:
                 ${props.className}`
             }
         >
-            {children}
+            {props.children}
         </button>
     )
 }
