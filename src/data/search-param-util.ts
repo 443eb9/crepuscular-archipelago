@@ -40,7 +40,7 @@ export function processSearchParams(params: RawSearchParams): SearchParams {
     return { page, len, tags, advf }
 }
 
-export function queryParamsToSearchParams(params: SearchParams) {
+export function searchParamsToUrl(params: SearchParams) {
     const defaultValues = DefaultQueryParams as { [key: string]: any }
 
     return new URLSearchParams(

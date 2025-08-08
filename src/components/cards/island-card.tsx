@@ -200,7 +200,7 @@ export default function IslandCard({ island }: { island: IslandMeta }) {
                     island.ty != "achievement" &&
                     <div className="flex flex-col -mt-2">
                         <AsciiText className="self-end text-[8pt] opacity-50 italic">Permission Authorized</AsciiText>
-                        <EndDecoLine deco={<RectDot size={2} />} decoSize={2} decoGap={4} lineThickness={1} />
+                        <EndDecoLine deco={<RectDot size={3} />} decoSize={3} decoGap={4} lineThickness={1} lineStyle="dashed" />
                     </div>
                 }
                 <div className="flex justify-between items-end">

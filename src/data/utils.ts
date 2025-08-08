@@ -122,3 +122,9 @@ export function setAdvancedFilter(filter: number, ty: AdvancedFilterType, state:
         case "exclude-deleted": return setBit(filter, 7, state)
     }
 }
+
+export function constructPath(pathname: string, params: URLSearchParams) {
+    return params.size == 0
+        ? pathname
+        : `${pathname}?${params.toString()}`
+}
