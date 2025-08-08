@@ -26,10 +26,10 @@ export type TagData = {
 }
 
 export type Island = {
-    content: SubIsland[],
+    content: SubIslandData[],
 }
 
-export type SubIsland = {
+export type SubIslandData = {
     content: string,
     isEncrypted: boolean,
 }

@@ -1,10 +1,10 @@
-import { Island, SubIsland } from "@/data/model";
+import { Island, SubIslandData } from "@/data/model";
 import { decrypt } from "@/data/utils";
 import { useEffect, useState } from "react";
 import Markdown from "./markdown";
 
 export default function IslandBody({ island }: { island: Island }) {
-    function SubIslandBody({ subIsland }: { subIsland: SubIsland }) {
+    function SubIslandBody({ subIsland }: { subIsland: SubIslandData }) {
         const [decrypted, setDecrypted] = useState<string | undefined>()
 
         useEffect(() => {

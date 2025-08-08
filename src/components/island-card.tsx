@@ -1,23 +1,24 @@
-import { Island, IslandMeta } from "@/data/model";
-import RectDot from "../rect-dot";
-import TitleText from "../text/title-text";
-import BodyText from "../text/body-text";
-import CornerDecoBox from "../corner-deco-box";
-import AsciiText from "../text/ascii-text";
-import EndDecoLine from "../end-deco-line";
-import FocusRect from "../svg-deco/focus-rect";
-import Tag from "../tag";
-import { formatDate } from "@/data/utils";
-import WarnCage from "../svg-deco/warn-cage";
-import CcIcons from "../svg-deco/cc-icons";
-import { OSS } from "@/data/endpoints";
-import DotGrid from "../svg-deco/dot-grid";
-import IslandBody from "../island-body";
-import NetworkFailable from "./network-failable";
-import useSWR from "swr";
-import { fetchIsland } from "@/data/api";
+"use client"
 
-export default function IslandCard({ island }: { island: IslandMeta }) {
+import { Island, IslandMeta } from "@/data/model";
+import RectDot from "./rect-dot";
+import TitleText from "./text/title-text";
+import BodyText from "./text/body-text";
+import CornerDecoBox from "./corner-deco-box";
+import AsciiText from "./text/ascii-text";
+import EndDecoLine from "./end-deco-line";
+import FocusRect from "./svg-deco/focus-rect";
+import Tag from "./tag";
+import { formatDate } from "@/data/utils";
+import CcIcons from "./svg-deco/cc-icons";
+import { OSS } from "@/data/endpoints";
+import IslandBody from "./island-body";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import * as motion from "motion/react-client";
+import { AnimatePresence } from "motion/react";
+
+export default function IslandCard({ island, content }: { island: IslandMeta, content?: Island }) {
     if (island.state == "deleted") {
         return (
             <div className="flex h-16">
@@ -85,6 +86,9 @@ export default function IslandCard({ island }: { island: IslandMeta }) {
         return res
     }
 
+    const router = useRouter()
+    const [loaded, setLoaded] = useState<boolean | null>(null)
+
     return (
         <CornerDecoBox
             deco={
@@ -101,6 +105,36 @@ export default function IslandCard({ island }: { island: IslandMeta }) {
             bl={<DecoLeft />}
             br={<DecoRight />}
         >
+            <AnimatePresence>
+                {
+                    loaded != null &&
+                    <motion.div
+                        key={0}
+                        initial={{ width: "0" }}
+                        animate={{ width: "100%", transition: { duration: 0.5, ease: "easeOut" } }}
+                        className="absolute z-10 h-full flex justify-start items-center m-[1px] bg-dark-0 dark:bg-light-0"
+                    >
+                        <div className="flex flex-col ml-4 w-full overflow-hidden">
+                            <AsciiText className="text-2xl w-full italic font-bold whitespace-nowrap" inv>Loading Destination...</AsciiText>
+                            <AsciiText className="text-lg" inv>#{island.id}</AsciiText>
+                        </div>
+                    </motion.div>
+                }
+                {
+                    loaded == true &&
+                    <motion.div
+                        key={1}
+                        initial={{ width: "0" }}
+                        animate={{ width: "100%", transition: { duration: 0.5, ease: "easeOut" } }}
+                        className="absolute z-20 h-full flex justify-start items-center m-[1px] bg-accent-0"
+                    >
+                        <div className="flex flex-col ml-4 w-full overflow-hidden">
+                            <AsciiText className="text-2xl w-full italic font-bold whitespace-nowrap" inv>Destination Loaded</AsciiText>
+                            <AsciiText className="text-lg" inv>#{island.id}</AsciiText>
+                        </div>
+                    </motion.div>
+                }
+            </AnimatePresence>
             {
                 island.ty == "achievement"
                     ? <AsciiText className="absolute -top-6 h-6 px-2 text-sm bg-accent-0 content-center">Island Achievement</AsciiText>
@@ -127,7 +161,16 @@ export default function IslandCard({ island }: { island: IslandMeta }) {
                     </>
             }
             <div className={`flex flex-col gap-2 p-4 ${island.ty == "article" || island.ty == "note" ? "min-h-[240px]" : ""}`}>
-                <div className="flex flex-grow justify-between gap-2">
+                <div
+                    className="flex flex-grow justify-between gap-2 cursor-pointer"
+                    onClick={async () => {
+                        const path = `/island/${island.id}`
+                        setLoaded(false)
+                        await fetch(path)
+                        setLoaded(true)
+                        setTimeout(() => router.push(path), 1000)
+                    }}
+                >
                     <div className="flex flex-col flex-grow gap-2">
                         {
                             island.banner &&
@@ -168,9 +211,7 @@ export default function IslandCard({ island }: { island: IslandMeta }) {
                                                 : <AsciiText className="opacity-50">No description available</AsciiText>
                                         }
                                     </div>
-                                    case "note": return <NetworkFailable swrResp={useSWR({ id: island.id }, fetchIsland)} loading={<div></div>}>
-                                        {data => <IslandBody island={data} />}
-                                    </NetworkFailable>
+                                    case "note": return content ? <IslandBody island={content} /> : null
                                     case "achievement":
                                     case "external":
                                 }

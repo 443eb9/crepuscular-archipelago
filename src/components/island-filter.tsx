@@ -4,8 +4,6 @@ import Tag from "@/components/tag"
 import { usePathname, useSearchParams } from "next/navigation"
 import { advancedFilterEnabled, extractBits, setAdvancedFilter, toggleAdvancedFilter } from "@/data/utils"
 import BodyText from "./text/body-text"
-import NetworkFailable from "./cards/network-failable"
-import useSWR from "swr"
 import { fetchAllTags } from "@/data/api"
 import Link from "next/link"
 import { processUrlSearchParams, searchParamsToUrl } from "@/data/search-param-util"
@@ -19,8 +17,9 @@ import EndDecoLine from "./end-deco-line"
 import RectDot from "./rect-dot"
 import FocusRect from "./svg-deco/focus-rect"
 import DiagLines from "./svg-deco/diag-lines"
+import { TagData } from "@/data/model"
 
-export default function IslandFilter() {
+export default function IslandFilter({ allTags }: { allTags: TagData[] }) {
     const pathname = usePathname()
     const params = processUrlSearchParams(useSearchParams())
 
@@ -41,11 +40,9 @@ export default function IslandFilter() {
                         <FocusRect className="h-4 aspect-square" />
                     </div>
                     <div className="flex flex-wrap gap-1">
-                        <NetworkFailable swrResp={useSWR({}, fetchAllTags)} loading={<div></div>}>
-                            {data => data.map((tag, index) =>
-                                <Tag key={index} tag={tag} />
-                            )}
-                        </NetworkFailable>
+                        {allTags.map((tag, index) =>
+                            <Tag key={index} tag={tag} />
+                        )}
                     </div>
                     <EndDecoLine className="pt-3 pb-1" deco={<RectDot size={3} />} decoSize={3} lineThickness={1} decoGap={4} lineStyle="dashed" />
                     <div className="flex gap-2 items-center">

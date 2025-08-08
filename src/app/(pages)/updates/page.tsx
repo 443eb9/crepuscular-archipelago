@@ -1,25 +1,21 @@
-"use client"
-
-import IslandCard from "@/components/cards/island-card"
-import NetworkFailable from "@/components/cards/network-failable"
+import IslandCard from "@/components/island-card"
+import NetworkFailable from "@/components/network-failable"
 import EndDecoLine from "@/components/end-deco-line"
 import IslandFilter from "@/components/island-filter"
 import Pagination from "@/components/pagination"
 import RectDot from "@/components/rect-dot"
 import AsciiText from "@/components/text/ascii-text"
-import { fetchIslandsMeta } from "@/data/api"
-import { processUrlSearchParams } from "@/data/search-param-util"
-import { useSearchParams } from "next/navigation"
-import useSWR from "swr"
+import { fetchAllTags, fetchIslandCount, fetchIslandsMeta } from "@/data/api"
+import { processSearchParams, RawSearchParams } from "@/data/search-param-util"
 
-export default function Page() {
-    const params = processUrlSearchParams(useSearchParams())
+export default async function Page({ searchParams }: { searchParams: Promise<RawSearchParams> }) {
+    const params = processSearchParams(await searchParams)
 
     return (
         <div className="flex flex-grow gap-10 p-10">
             <div className="flex flex-col gap-8">
                 <div className="flex flex-col-reverse flex-grow gap-12">
-                    <NetworkFailable swrResp={useSWR({ ...params }, fetchIslandsMeta)} loading={<div></div>}>
+                    <NetworkFailable promise={fetchIslandsMeta(params.page, params.len, params.tags, params.advf)} loading={<div></div>}>
                         {
                             data => data.length == 0
                                 ? <div className="opacity-50">
@@ -37,12 +33,16 @@ export default function Page() {
                 </div>
                 <EndDecoLine deco={<RectDot size={10} />} decoSize={10} lineThickness={1} decoGap={5} lineStyle="dashed" />
                 <div className="flex gap-2">
-                    <Pagination className="w-10" />
+                    <NetworkFailable promise={fetchIslandCount(params.tags, params.advf)} loading={<div></div>}>
+                        {data => <Pagination className="w-10" total={data.count} />}
+                    </NetworkFailable>
                 </div>
             </div>
             <div className="relative max-w-80 min-w-80">
                 <div className="fixed max-w-80 min-w-80">
-                    <IslandFilter />
+                    <NetworkFailable promise={fetchAllTags()} loading={<div></div>}>
+                        {data => <IslandFilter allTags={data} />}
+                    </NetworkFailable>
                 </div>
             </div>
         </div>
