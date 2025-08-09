@@ -72,7 +72,7 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
         let acc = 0
         let i = 0
         let res = []
-        const colors = ["bg-light-0 dark:bg-dark-0", "bg-accent-0"]
+        const colors = ["bg-accent-0", "bg-light-0 dark:bg-dark-0"]
         while (true) {
             const t = Math.pow(Math.random(), 2) * 10
             if (acc + t > len) break
@@ -109,27 +109,24 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                 {
                     loaded != null &&
                     <motion.div
-                        key={0}
                         initial={{ width: "0" }}
                         animate={{ width: "100%", transition: { duration: 0.5, ease: "easeOut" } }}
                         className="absolute z-10 h-full flex justify-start items-center m-[1px] bg-dark-0 dark:bg-light-0"
                     >
-                        <div className="flex flex-col ml-4 w-full overflow-hidden">
-                            <AsciiText className="text-2xl w-full italic font-bold whitespace-nowrap" inv>Loading Destination...</AsciiText>
-                            <AsciiText className="text-lg" inv>#{island.id}</AsciiText>
-                        </div>
-                    </motion.div>
-                }
-                {
-                    loaded == true &&
-                    <motion.div
-                        key={1}
-                        initial={{ width: "0" }}
-                        animate={{ width: "100%", transition: { duration: 0.5, ease: "easeOut" } }}
-                        className="absolute z-20 h-full flex justify-start items-center m-[1px] bg-accent-0"
-                    >
-                        <div className="flex flex-col ml-4 w-full overflow-hidden">
-                            <AsciiText className="text-2xl w-full italic font-bold whitespace-nowrap" inv>Destination Loaded</AsciiText>
+                        <div className="flex flex-col ml-4 overflow-hidden">
+                            <div className="relative">
+                                {
+                                    loaded &&
+                                    <motion.div
+                                        initial={{ width: "0" }}
+                                        animate={{ width: "100%", transition: { duration: 0.5, ease: "easeOut" } }}
+                                        className="absolute overflow-hidden"
+                                    >
+                                        <AsciiText className="text-2xl w-full italic font-bold whitespace-nowrap bg-accent-0" inv>Destination Loaded</AsciiText>
+                                    </motion.div>
+                                }
+                                <AsciiText className="text-2xl w-full italic font-bold whitespace-nowrap" inv>Loading Destination...</AsciiText>
+                            </div>
                             <AsciiText className="text-lg" inv>#{island.id}</AsciiText>
                         </div>
                     </motion.div>
@@ -222,7 +219,7 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                         island.ty != "external" && island.ty != "achievement" &&
                         <div>
                             <div className="flex flex-col w-6 h-full justify-between bg-accent-0 self-end">
-                                <div className="flex-col w-4/5 self-end">
+                                <div className="flex-col w-4/5 self-end pr-[2px] pt-[2px] h-[50px]">
                                     <FakeBarCode len={50} />
                                 </div>
                                 <div className="flex flex-col gap-2">

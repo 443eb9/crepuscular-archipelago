@@ -12,10 +12,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<Raw
     const params = processSearchParams(await searchParams)
 
     return (
-        <div className="flex flex-grow gap-10 p-10">
+        <div className="flex flex-grow gap-10 px-10 pt-4">
             <div className="flex flex-col gap-8">
                 <div className="flex flex-col-reverse flex-grow gap-12">
-                    <NetworkFailable promise={fetchIslandsMeta(params.page, params.len, params.tags, params.advf)} loading={<div></div>}>
+                    <NetworkFailable
+                        promise={fetchIslandsMeta(params.page, params.len, params.tags, params.advf)}
+                        loading={<AsciiText className="flex flex-grow w-full">Loading...</AsciiText>}
+                    >
                         {
                             data => data.length == 0
                                 ? <div className="opacity-50">
@@ -40,7 +43,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Raw
             </div>
             <div className="relative max-w-80 min-w-80">
                 <div className="fixed max-w-80 min-w-80">
-                    <NetworkFailable promise={fetchAllTags()} loading={<div></div>}>
+                    <NetworkFailable promise={fetchAllTags()} loading={<IslandFilter allTags={[]} />}>
                         {data => <IslandFilter allTags={data} />}
                     </NetworkFailable>
                 </div>
