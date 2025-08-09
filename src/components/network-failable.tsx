@@ -1,11 +1,27 @@
 import { Response } from "@/data/api";
 import { ReactNode, Suspense } from "react";
 import AsciiText from "./text/ascii-text";
+import CornerDecoBox from "./corner-deco-box";
+import RectDot from "./rect-dot";
 
 export default function NetworkFailable<T>({ promise, loading, children }: { promise: Promise<Response<T>>, loading: ReactNode, children: (data: T) => ReactNode }) {
     const Handler = async () => {
         const resp = await promise
-        if (!resp.ok) return <AsciiText className="">{resp.err}</AsciiText>
+        if (!resp.ok) return (
+            <CornerDecoBox
+                deco={{ node: <RectDot size={10} /> }}
+                decoSize={10}
+                decoGap={10}
+                lineThickness={1}
+                noOutline
+            >
+                <div className="bg-dark-0 dark:bg-light-0 p-2 flex flex-col gap-2">
+                    <AsciiText className="" inv>{resp.err}</AsciiText>
+                    <div className="w-full h-1 bg-accent-0" />
+                </div>
+            </CornerDecoBox>
+        )
+
         return children(resp.data)
     }
 

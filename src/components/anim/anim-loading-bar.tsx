@@ -2,9 +2,9 @@
 
 import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
-import { ReactNode, useEffect, useState } from "react";
+import { HTMLAttributes, ReactNode, useEffect, useState } from "react";
 
-export default function AnimLoadingBar({ children }: { children?: ReactNode }) {
+export default function AnimLoadingBar(props: HTMLAttributes<HTMLDivElement>) {
     const [state, setState] = useState(true)
 
     useEffect(() => {
@@ -16,7 +16,7 @@ export default function AnimLoadingBar({ children }: { children?: ReactNode }) {
     }, [state])
 
     return (
-        <div className="relative flex w-full h-10">
+        <div {...props} className={"relative flex w-full " + props.className}>
             <div className="absolute w-full h-full bg-dark-0 dark:bg-light-0" />
             <div className="absolute z-20 w-full h-full flex justify-center items-center">
                 <div className="absolute flex w-[calc(100%-7px)] h-[calc(100%-5px)]" style={{ justifyContent: state ? "flex-start" : "flex-end" }}>
@@ -32,7 +32,7 @@ export default function AnimLoadingBar({ children }: { children?: ReactNode }) {
                         }
                     </AnimatePresence>
                     <div className="absolute flex items-center w-full h-full z-20">
-                        {children}
+                        {props.children}
                     </div>
                 </div>
             </div>

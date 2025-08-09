@@ -23,7 +23,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Raw
                 <div className="flex flex-col-reverse flex-grow gap-12">
                     <NetworkFailable
                         promise={fetchIslandsMeta(params.page, params.len, params.tags, params.advf)}
-                        loading={<AnimLoadingBar><AsciiText className="italic px-2" inv>Fetching islands list...</AsciiText></AnimLoadingBar>}
+                        loading={<AnimLoadingBar className="h-10"><AsciiText className="italic px-2" inv>Fetching islands list...</AsciiText></AnimLoadingBar>}
                     >
                         {
                             data => data.length == 0
@@ -44,7 +44,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Raw
                 <div className="flex gap-2">
                     <NetworkFailable
                         promise={fetchIslandCount(params.tags, params.advf)}
-                        loading={<AnimLoadingBar><AsciiText className="italic px-2" inv>Fetching islands count...</AsciiText></AnimLoadingBar>}
+                        loading={<AnimLoadingBar className="h-10"><AsciiText className="italic px-2" inv>Fetching islands count...</AsciiText></AnimLoadingBar>}
                     >
                         {data => <Pagination className="w-10" total={data.count} />}
                     </NetworkFailable>
