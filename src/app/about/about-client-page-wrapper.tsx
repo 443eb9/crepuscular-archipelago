@@ -5,6 +5,7 @@ import ContentWrapper from "@/components/content-wrapper";
 import Footer from "@/components/footer";
 import GiscusSection from "@/components/giscus-section";
 import Markdown from "@/components/markdown";
+import NavBar from "@/components/nav-bar";
 import { NetworkFailableSync } from "@/components/network-failable";
 import OutlinedBox from "@/components/outlined-box";
 import OutlinedButton from "@/components/outlined-button";
@@ -13,38 +14,45 @@ import BodyText from "@/components/text/body-text";
 import TitleText from "@/components/text/title-text";
 import { Response } from "@/data/api";
 import { ProjectData, SelfTitleData } from "@/data/model";
+import { AnimatePresence } from "motion/react";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FiGithub } from "react-icons/fi";
 import { IoMailOutline } from "react-icons/io5";
+import * as motion from "motion/react-client";
 
 export default function AboutClientPageWrapper({
     selfIntro, projects, projectGhStats, titles, emoticons
 }: {
     selfIntro: Response<string>, projects: Response<ProjectData[]>, projectGhStats?: Response<any>[], titles: Response<SelfTitleData[]>, emoticons: Response<string[]>
 }) {
-    const [notFirstLoad, setNotFirstLoad] = useState<number[]>([])
     const [page, setPage] = useState(0)
+    const [navBar, setNavBar] = useState(true)
 
-    const shouldSuppress = (i: number) => {
-        return notFirstLoad.includes(i)
-    }
-
-    const pages = useMemo(() => [
-        <SelfIntro text={selfIntro} emoticons={emoticons} />,
+    const pages = [
+        <SelfIntro text={selfIntro} titles={titles} emoticons={emoticons} />,
         <Projects projects={projects} projectGhStats={projectGhStats} />,
-    ], [notFirstLoad])
+    ]
 
     useEffect(() => {
         const scrollHandler = (ev: WheelEvent) => {
             if (window.scrollY > 0) return
 
             const offset = ev.deltaY > 0 ? 1 : -1
+            const newPage = page + offset
 
-            setPage(Math.max(0, Math.min(pages.length - 1, page + offset)))
+            if (navBar && offset == 1) {
+                setNavBar(false)
+                return
+            }
 
-            if (!notFirstLoad.includes(page)) {
-                setNotFirstLoad([...notFirstLoad, page])
+            if (newPage == -1) {
+                setNavBar(true)
+                return
+            }
+
+            if (newPage >= 0 && newPage < pages.length) {
+                setPage(newPage)
             }
         }
 
@@ -52,25 +60,42 @@ export default function AboutClientPageWrapper({
         return () => {
             window.removeEventListener("wheel", scrollHandler)
         }
-    }, [page])
+    }, [page, navBar])
+
+    const currentPage = useMemo(() => pages[page], [page])
 
     return (
-        <div className="">
-            <div className="flex w-[100vw] h-[100vh] items-center justify-center">
-                <div className="w-[80%] h-[80%] max-w-[1920px] max-h-[1080px]">
-                    {pages[page]}
+        <>
+            <AnimatePresence>
+                {
+                    navBar &&
+                    <motion.div
+                        initial={{ top: "-100%" }}
+                        animate={{ top: "0", transition: { duration: 0.2, ease: "easeOut" } }}
+                        exit={{ top: "-100%", transition: { duration: 0.2, ease: "easeOut" } }}
+                        className="absolute"
+                    >
+                        <NavBar />
+                    </motion.div>
+                }
+            </AnimatePresence>
+            <div className="">
+                <div className="flex w-[100vw] h-[100vh] items-center justify-center">
+                    <div className="w-[80%] h-[80%] max-w-[1920px] max-h-[1080px]">
+                        {currentPage}
+                    </div>
                 </div>
+                {
+                    page == pages.length - 1 &&
+                    <>
+                        <ContentWrapper>
+                            <GiscusSection className="w-full" />
+                        </ContentWrapper>
+                        <Footer />
+                    </>
+                }
             </div>
-            {
-                page == pages.length - 1 &&
-                <>
-                    <ContentWrapper>
-                        <GiscusSection className="w-full" />
-                    </ContentWrapper>
-                    <Footer />
-                </>
-            }
-        </div>
+        </>
     )
 }
 
@@ -80,7 +105,7 @@ function Title({ title }: { title: string }) {
     )
 }
 
-function SelfIntro({ text, emoticons }: { text: Response<string>, emoticons: Response<string[]> }) {
+function SelfIntro({ text, titles, emoticons }: { text: Response<string>, titles: Response<SelfTitleData[]>, emoticons: Response<string[]> }) {
     function SocialMediaButton({ children, href }: { children: React.ReactNode, href: string }) {
         return (
             <Link href={href}>
@@ -104,6 +129,16 @@ function SelfIntro({ text, emoticons }: { text: Response<string>, emoticons: Res
                             <div className="flex gap-2 items-center text-xl">
                                 <IoMailOutline className="text-dark-0 dark:text-light-0" />
                                 <AsciiText>443eb9@gmail.com</AsciiText>
+                            </div>
+                            <div className="">
+                                <NetworkFailableSync response={titles}>
+                                    {data => data.map((title, i) =>
+                                        <div key={i} className="flex gap-1 text-sm">
+                                            <AsciiText style={{ opacity: 1 - title.progress }}>Future</AsciiText>
+                                            <AsciiText>{title.title}</AsciiText>
+                                        </div>
+                                    )}
+                                </NetworkFailableSync>
                             </div>
                             <div className="flex mt-2">
                                 <SocialMediaButton href={"https://github.com/443eb9"}><FiGithub className="text-lg text-dark-0 dark:text-light-0" /></SocialMediaButton>
