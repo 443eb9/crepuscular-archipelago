@@ -7,17 +7,18 @@ import RectDot from "@/components/rect-dot"
 import AsciiText from "@/components/text/ascii-text"
 import { fetchAllTags, fetchIslandCount, fetchIslandsMeta } from "@/data/api"
 import { processSearchParams, RawSearchParams } from "@/data/search-param-util"
+import AnimLoadingBar from "@/components/anim/anim-loading-bar"
 
 export default async function Page({ searchParams }: { searchParams: Promise<RawSearchParams> }) {
     const params = processSearchParams(await searchParams)
 
     return (
         <div className="flex flex-grow gap-10 px-10 pt-4">
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col flex-grow gap-8">
                 <div className="flex flex-col-reverse flex-grow gap-12">
                     <NetworkFailable
                         promise={fetchIslandsMeta(params.page, params.len, params.tags, params.advf)}
-                        loading={<AsciiText className="flex flex-grow w-full">Loading...</AsciiText>}
+                        loading={<AnimLoadingBar><AsciiText className="italic px-2" inv>Fetching islands list...</AsciiText></AnimLoadingBar>}
                     >
                         {
                             data => data.length == 0
@@ -36,7 +37,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<Raw
                 </div>
                 <EndDecoLine deco={<RectDot size={10} />} decoSize={10} lineThickness={1} decoGap={5} lineStyle="dashed" />
                 <div className="flex gap-2">
-                    <NetworkFailable promise={fetchIslandCount(params.tags, params.advf)} loading={<div></div>}>
+                    <NetworkFailable
+                        promise={fetchIslandCount(params.tags, params.advf)}
+                        loading={<AnimLoadingBar><AsciiText className="italic px-2" inv>Fetching islands count...</AsciiText></AnimLoadingBar>}
+                    >
                         {data => <Pagination className="w-10" total={data.count} />}
                     </NetworkFailable>
                 </div>
