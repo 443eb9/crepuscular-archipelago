@@ -19,7 +19,9 @@ export default function Layout({ children }: { children: ReactNode }) {
                     </div>
                     <div className="relative">
                         <ThemeSwitcher className="absolute w-10 aspect-square -right-12" />
-                        <NavBar />
+                        <div className="flex gap-2">
+                            <NavBar />
+                        </div>
                     </div>
                 </ContentWrapper>
             </div >
