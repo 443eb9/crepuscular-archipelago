@@ -41,7 +41,7 @@ export default function IslandFilter({ allTags }: { allTags: TagData[] }) {
                     </div>
                     <div className="flex flex-wrap gap-1">
                         {allTags.map((tag, index) =>
-                            <Tag key={index} tag={tag} />
+                            <Tag key={index} tag={tag} highlightIfActivate />
                         )}
                     </div>
                     <EndDecoLine className="pt-3 pb-1" deco={<RectDot size={3} />} decoSize={3} lineThickness={1} decoGap={4} lineStyle="dashed" />

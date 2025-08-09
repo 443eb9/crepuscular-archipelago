@@ -54,7 +54,7 @@ export default async function Page({ searchParams, params }: { searchParams: Pro
                                     </div>
                                     <TitleText className="text-xl">{island.title}</TitleText>
                                 </div>
-                                <div className="gap-2">
+                                <div className="flex gap-2">
                                     {island.tags.map((tag, i) => <Tag key={i} tag={tag} />)}
                                 </div>
                             </div>

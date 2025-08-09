@@ -209,7 +209,7 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                     <div className="flex gap-2">
                         <div className="flex gap-4">
                             {
-                                island.tags.map((tag, i) => <Tag key={i} tag={tag} />)
+                                island.tags.map((tag, i) => <Tag key={i} tag={tag} highlightIfActivate />)
                             }
                         </div>
                         <div className="flex flex-col justify-between">
