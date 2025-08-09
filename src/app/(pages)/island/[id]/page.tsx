@@ -4,17 +4,21 @@ import NetworkFailable from "@/components/network-failable"
 import OutlinedBox from "@/components/outlined-box"
 import RectDot from "@/components/rect-dot"
 import SubIsland from "@/components/sub-island"
+import ArrowRight from "@/components/svg-deco/arrow-right"
 import CcIcons from "@/components/svg-deco/cc-icons"
 import DiagLines from "@/components/svg-deco/diag-lines"
 import Tag from "@/components/tag"
 import AsciiText from "@/components/text/ascii-text"
 import TitleText from "@/components/text/title-text"
 import { fetchIsland, fetchIslandMeta } from "@/data/api"
-import { formatDate, formatLicense, formatState } from "@/data/utils"
+import { processSearchParams, RawSearchParams, searchParamsToUrl } from "@/data/search-param-util"
+import { constructPath, formatDate, formatLicense, formatState } from "@/data/utils"
 import { Metadata } from "next"
+import Link from "next/link"
 
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+export default async function Page({ searchParams, params }: { searchParams: Promise<RawSearchParams>, params: Promise<{ id: string }> }) {
     const id = Number.parseInt((await params).id)
+    const urlParams = searchParamsToUrl(processSearchParams(await searchParams))
 
     return (
         <div className="flex flex-col gap-4">
@@ -36,6 +40,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                             <div className="flex flex-col justify-between">
                                 <div className="">
                                     <div className="flex h-8">
+                                        <Link href={constructPath("/updates", urlParams)}>
+                                            <ArrowRight className="w-8 h-8 -scale-x-100 -scale-y-75 mr-1 -ml-1"></ArrowRight>
+                                        </Link>
                                         <div className="relative">
                                             <div className="flex justify-center items-center h-full aspect-square bg-dark-0 dark:bg-light-0">
                                                 <AsciiText className="text-sm font-bold" inv>#</AsciiText>
