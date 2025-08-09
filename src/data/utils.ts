@@ -1,6 +1,7 @@
 import { Vector2 } from "three";
 import { OSS } from "./endpoints"
 import { createDecipheriv } from "crypto";
+import { IslandStateType, IslandType, LicenseType } from "./model";
 
 export function formatDate(date: string | undefined) {
     if (!date) {
@@ -8,6 +9,31 @@ export function formatDate(date: string | undefined) {
     }
     const d = new Date(date)
     return `${d.getFullYear()}/${d.getMonth()}/${d.getDay()}`
+}
+
+export function formatState(ty: IslandType, state: IslandStateType) {
+    if (ty == "external") return "External"
+
+    switch (state) {
+        case "deleted": return "Deleted"
+        case "workInProgress": return "Work In Progress"
+        case "finished": return "Finished"
+        case "longTermProject": return "Long-Term Project"
+        case "deprecated": return "Deprecated"
+    }
+}
+
+export function formatLicense(license: LicenseType): ("by" | "cc" | "nc" | "nd" | "sa" | "zero")[] {
+    switch (license) {
+        case "CC_BY": return ["cc", "by"]
+        case "CC_BY_SA": return ["cc", "by", "sa"]
+        case "CC_BY_NC": return ["cc", "by", "nc"]
+        case "CC_BY_NC_SA": return ["cc", "by", "nc", "sa"]
+        case "CC_BY_ND": return ["cc", "by", "nd"]
+        case "CC_BY_NC_ND": return ["cc", "by", "nc", "nd"]
+        case "CC0": return ["zero"]
+        case "Repost": return []
+    }
 }
 
 export function bannerUrl(id: number) {

@@ -8,6 +8,11 @@ import AsciiText from "@/components/text/ascii-text"
 import { fetchAllTags, fetchIslandCount, fetchIslandsMeta } from "@/data/api"
 import { processSearchParams, RawSearchParams } from "@/data/search-param-util"
 import AnimLoadingBar from "@/components/anim/anim-loading-bar"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+    title: "Updates - Crepuscular Archipelago",
+}
 
 export default async function Page({ searchParams }: { searchParams: Promise<RawSearchParams> }) {
     const params = processSearchParams(await searchParams)

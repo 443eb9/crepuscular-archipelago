@@ -9,7 +9,7 @@ import AsciiText from "./text/ascii-text";
 import EndDecoLine from "./end-deco-line";
 import FocusRect from "./svg-deco/focus-rect";
 import Tag from "./tag";
-import { formatDate } from "@/data/utils";
+import { formatDate, formatLicense, formatState } from "@/data/utils";
 import CcIcons from "./svg-deco/cc-icons";
 import { OSS } from "@/data/endpoints";
 import IslandBody from "./island-body";
@@ -35,39 +35,6 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
         )
     }
 
-    const formattedState = () => {
-        if (island.ty == "external") return "External"
-
-        switch (island.state) {
-            case "deleted": return "Deleted"
-            case "workInProgress": return "Work In Progress"
-            case "finished": return "Finished"
-            case "longTermProject": return "Long-Term Project"
-            case "deprecated": return "Deprecated"
-        }
-    }
-
-    const DecoRight = () =>
-        <div className="relative flex items-center justify-center">
-            <RectDot size={10} className="absolute" />
-            <RectDot size={20} inv />
-        </div>
-
-    const DecoLeft = () => <div className=""></div>
-
-    const formattedLicense = (): ("by" | "cc" | "nc" | "nd" | "sa" | "zero")[] => {
-        switch (island.license) {
-            case "CC_BY": return ["cc", "by"]
-            case "CC_BY_SA": return ["cc", "by", "sa"]
-            case "CC_BY_NC": return ["cc", "by", "nc"]
-            case "CC_BY_NC_SA": return ["cc", "by", "nc", "sa"]
-            case "CC_BY_ND": return ["cc", "by", "nd"]
-            case "CC_BY_NC_ND": return ["cc", "by", "nc", "nd"]
-            case "CC0": return ["zero"]
-            case "Repost": return []
-        }
-    }
-
     const FakeBarCode = ({ len }: { len: number }) => {
         let acc = 0
         let i = 0
@@ -91,19 +58,11 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
 
     return (
         <CornerDecoBox
-            deco={
-                <div className="relative flex items-center justify-center">
-                    <RectDot size={10} className="absolute" />
-                    <RectDot size={40} inv />
-                </div>
-            }
-            decoSize={20}
+            decoSize={10}
             lineThickness={2}
-            decoGap={0}
-            tl={<DecoLeft />}
-            tr={<DecoRight />}
-            bl={<DecoLeft />}
-            br={<DecoRight />}
+            decoGap={10}
+            tr={{ node: <RectDot size={10} /> }}
+            br={{ node: <RectDot size={10} /> }}
         >
             <AnimatePresence>
                 {
@@ -122,7 +81,7 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                                         animate={{ width: "100%", transition: { duration: 0.5, ease: "easeOut" } }}
                                         className="absolute overflow-hidden"
                                     >
-                                        <AsciiText className="text-2xl w-full italic font-bold whitespace-nowrap bg-accent-0" inv>Destination Loaded</AsciiText>
+                                        <AsciiText className="text-2xl w-full italic font-bold whitespace-nowrap bg-accent-0" inv>Success</AsciiText>
                                     </motion.div>
                                 }
                                 <AsciiText className="text-2xl w-full italic font-bold whitespace-nowrap" inv>Loading Destination...</AsciiText>
@@ -224,7 +183,7 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <div className="flex flex-col gap-2 self-center mt-2">
-                                        {formattedLicense().map((license, i) => <CcIcons key={i} ty={license} inv className="w-4 aspect-square" />)}
+                                        {formatLicense(island.license).map((license, i) => <CcIcons key={i} ty={license} inv className="w-4 aspect-square" />)}
                                     </div>
                                     <div className="flex flex-col gap-1 self-end mb-1 mr-1">
                                         <RectDot inv size={6} cnt={4} />
@@ -255,10 +214,10 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                     </div>
                     <div className="flex gap-2">
                         <div className="bg-dark-0 dark:bg-light-0 px-2">
-                            <AsciiText className="font-bold" inv>{formattedState()}</AsciiText>
+                            <AsciiText className="font-bold text-center" inv>{formatState(island.ty, island.state)}</AsciiText>
                         </div>
                         <div className="bg-accent-0 px-2">
-                            <AsciiText inv>{formatDate(island.date ?? undefined)}</AsciiText>
+                            <AsciiText className="text-center" inv>{formatDate(island.date ?? undefined)}</AsciiText>
                         </div>
                         <FocusRect className="h-6 aspect-square self-end mb-[1px]" />
                     </div>
