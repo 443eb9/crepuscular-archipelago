@@ -1,5 +1,5 @@
 import IslandCard from "@/components/island-card"
-import NetworkFailable from "@/components/network-failable"
+import { NetworkFailable } from "@/components/network-failable"
 import EndDecoLine from "@/components/end-deco-line"
 import IslandFilter from "@/components/island-filter"
 import Pagination from "@/components/pagination"

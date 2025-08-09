@@ -1,6 +1,6 @@
 import CornerDecoBox from "@/components/corner-deco-box"
 import GiscusSection from "@/components/giscus-section"
-import NetworkFailable from "@/components/network-failable"
+import { NetworkFailable } from "@/components/network-failable"
 import OutlinedBox from "@/components/outlined-box"
 import RectDot from "@/components/rect-dot"
 import SubIsland from "@/components/sub-island"

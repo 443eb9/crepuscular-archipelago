@@ -59,7 +59,7 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
     const params = useSearchParams()
 
     return (
-        <AnimEnterBlink durationRange={[5, 30]} blinkCountRange={[3, 6]}>
+        <AnimEnterBlink>
             <CornerDecoBox
                 decoSize={10}
                 lineThickness={2}
