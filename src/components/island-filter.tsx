@@ -86,7 +86,7 @@ export default function IslandFilter({ allTags }: { allTags: TagData[] }) {
                         />
                     </div>
                     <Link href={`${pathname}?${searchParamsToUrl({ ...params, tags: 0, advf: 0 }).toString()}`}>
-                        <OutlinedButton className="w-full h-8 mt-2">
+                        <OutlinedButton className="justify-center items-center w-full h-8 mt-2">
                             <BodyText>重置</BodyText>
                         </OutlinedButton>
                     </Link>

@@ -14,7 +14,7 @@ export default function OutlinedButton({ inv, animTo, ...props }: { inv?: boolea
         <button
             {...props}
             className={
-                `relative border-2
+                `flex relative border-2
                 ${inv ? "bg-accent-0 border-accent-0 hover:border-dark-0 hover:dark:border-light-0" : "border-dark-0 dark:border-light-0"}
                 ${props.className}`
             }
@@ -24,7 +24,7 @@ export default function OutlinedButton({ inv, animTo, ...props }: { inv?: boolea
             <div className="absolute w-full h-full flex -z-10" style={{ justifyContent: _animTo == "left" ? "end" : "start", alignItems: _animTo == "top" ? "end" : "start" }}>
                 <AnimatePresence>
                     {
-                        hover &&
+                        hover && !inv &&
                         <motion.div
                             initial={{ width: horizontal ? "0%" : "100%", height: horizontal ? "100%" : "0%" }}
                             animate={{ width: horizontal ? "100%" : "100%", height: horizontal ? "100%" : "100%", transition: { duration: 0.2, ease: "easeOut" } }}
