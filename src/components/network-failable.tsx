@@ -17,10 +17,13 @@ const Err = ({ err }: { err: string }) => <CornerDecoBox
     </div>
 </CornerDecoBox>
 
-export function NetworkFailable<T>({ promise, loading, children }: { promise: Promise<Response<T>>, loading: ReactNode, children: (data: T) => ReactNode }) {
+export function NetworkFailable<T>({ promise, loading, onErr, children }: { promise: Promise<Response<T>>, loading: ReactNode, onErr?: () => void, children: (data: T) => ReactNode }) {
     const Handler = async () => {
         const resp = await promise
-        if (!resp.ok) return <Err err={resp.err} />
+        if (!resp.ok) {
+            onErr?.()
+            return <Err err={resp.err} />
+        }
 
         return children(resp.data)
     }
@@ -28,7 +31,10 @@ export function NetworkFailable<T>({ promise, loading, children }: { promise: Pr
     return <Suspense fallback={loading}><Handler /></Suspense>
 }
 
-export function NetworkFailableSync<T>({ response, children }: { response: Response<T>, children: (data: T) => ReactNode }) {
-    if (!response.ok) return <Err err={response.err} />
+export function NetworkFailableSync<T>({ response, onErr, children }: { response: Response<T>, onErr?: () => void, children: (data: T) => ReactNode }) {
+    if (!response.ok) {
+        onErr?.()
+        return <Err err={response.err} />
+    }
     return children(response.data)
 }

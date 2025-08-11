@@ -45,11 +45,11 @@ export default function NavBarButtons() {
 
     return data.map((item, i) =>
         <div
+            key={i}
             onMouseEnter={() => setHoveredIndex(i)}
             onMouseLeave={() => setHoveredIndex(null)}
         >
             <OutlinedButton
-                key={i}
                 className="flex justify-center items-center w-20 h-10"
                 animTo="bottom"
             >

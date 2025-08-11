@@ -1,10 +1,9 @@
 use std::{convert::Infallible, sync::Mutex};
 
 use actix_web::{
-    get,
+    HttpResponse, Responder, get,
     http::header::{ContentDisposition, ContentType},
     web::{Data, Path},
-    HttpResponse, Responder,
 };
 use async_stream::stream;
 use chrono::{Timelike, Utc};

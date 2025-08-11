@@ -15,14 +15,15 @@ import { processSearchParams, RawSearchParams, searchParamsToUrl } from "@/data/
 import { constructPath, formatDate, formatLicense, formatState } from "@/data/utils"
 import { Metadata } from "next"
 import Link from "next/link"
+import { notFound } from "next/navigation"
 
 export default async function Page({ searchParams, params }: { searchParams: Promise<RawSearchParams>, params: Promise<{ id: string }> }) {
     const id = Number.parseInt((await params).id)
     const urlParams = searchParamsToUrl(processSearchParams(await searchParams))
 
     return (
-        <div className="flex flex-col gap-4">
-            <NetworkFailable promise={fetchIslandMeta(id)} loading={<div></div>}>
+        <div className="flex flex-col w-full gap-4">
+            <NetworkFailable promise={fetchIslandMeta(id)} loading={<div></div>} onErr={notFound}>
                 {island =>
                     <CornerDecoBox
                         decoSize={10}
@@ -78,16 +79,18 @@ export default async function Page({ searchParams, params }: { searchParams: Pro
                     </CornerDecoBox>
                 }
             </NetworkFailable>
-            <NetworkFailable promise={fetchIsland(id)} loading={<div></div>}>
+            <NetworkFailable promise={fetchIsland(id)} loading={<div></div>} onErr={notFound}>
                 {data =>
-                    <OutlinedBox className="flex flex-col p-10">
-                        {
-                            data.content.map((subIsland, i) => <SubIsland key={i} subIsland={subIsland} />)
-                        }
-                    </OutlinedBox>
+                    <>
+                        <OutlinedBox className="flex flex-col p-10">
+                            {
+                                data.content.map((subIsland, i) => <SubIsland key={i} subIsland={subIsland} />)
+                            }
+                        </OutlinedBox>
+                        <GiscusSection />
+                    </>
                 }
             </NetworkFailable>
-            <GiscusSection />
         </div>
     )
 }
