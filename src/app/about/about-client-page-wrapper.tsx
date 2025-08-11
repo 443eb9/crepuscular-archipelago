@@ -70,9 +70,9 @@ export default function AboutClientPageWrapper({
                 {
                     navBar &&
                     <motion.div
-                        initial={{ top: "-100%" }}
+                        initial={{ top: "-48px" }}
                         animate={{ top: "0", transition: { duration: 0.2, ease: "easeOut" } }}
-                        exit={{ top: "-100%", transition: { duration: 0.2, ease: "easeOut" } }}
+                        exit={{ top: "-48px", transition: { duration: 0.2, ease: "easeOut" } }}
                         className="absolute"
                     >
                         <NavBar />
