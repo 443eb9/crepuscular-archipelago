@@ -1,4 +1,3 @@
-import { Vector2 } from "three";
 import { OSS } from "./endpoints"
 import { createDecipheriv } from "crypto";
 import { IslandStateType, IslandType, LicenseType } from "./model";
@@ -42,11 +41,6 @@ export function bannerUrl(id: number) {
 
 export function lerp(x: number, y: number, t: number) {
     return x * (1 - t) + y * t
-}
-
-export type Transform = {
-    translation: Vector2,
-    scale: number,
 }
 
 export type StatefulContext<T> = {

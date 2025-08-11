@@ -5,7 +5,9 @@
     "npm:@giscus/react@^3.1.0": "3.1.0_react@19.1.1_react-dom@19.1.1__react@19.1.1",
     "npm:@types/node@20": "20.17.12",
     "npm:@types/react-dom@19.1.7": "19.1.7_@types+react@19.1.9",
+    "npm:@types/react-syntax-highlighter@^15.5.13": "15.5.13",
     "npm:@types/react@19.1.9": "19.1.9",
+    "npm:@types/rss@^0.0.32": "0.0.32",
     "npm:eslint-config-next@15.4.6": "15.4.6_eslint@9.32.0_typescript@5.9.2_@typescript-eslint+parser@8.39.0__eslint@9.32.0__typescript@5.9.2_eslint-plugin-import@2.32.0__eslint@9.32.0",
     "npm:eslint@9": "9.32.0",
     "npm:motion@^12.23.12": "12.23.12_react@19.1.1_react-dom@19.1.1__react@19.1.1",
@@ -548,12 +550,23 @@
       ],
       "tarball": "https://registry.npmmirror.com/@types/react-dom/-/react-dom-19.1.7.tgz"
     },
+    "@types/react-syntax-highlighter@15.5.13": {
+      "integrity": "sha512-uLGJ87j6Sz8UaBAooU0T6lWJ0dBmjZgN1PZTrj05TNql2/XpC6+4HhMT5syIdFUUt+FASfCeLLv4kBygNU+8qA==",
+      "dependencies": [
+        "@types/react"
+      ],
+      "tarball": "https://registry.npmmirror.com/@types/react-syntax-highlighter/-/react-syntax-highlighter-15.5.13.tgz"
+    },
     "@types/react@19.1.9": {
       "integrity": "sha512-WmdoynAX8Stew/36uTSVMcLJJ1KRh6L3IZRx1PZ7qJtBqT3dYTgyDTx8H1qoRghErydW7xw9mSJ3wS//tCRpFA==",
       "dependencies": [
         "csstype"
       ],
       "tarball": "https://registry.npmmirror.com/@types/react/-/react-19.1.9.tgz"
+    },
+    "@types/rss@0.0.32": {
+      "integrity": "sha512-2oKNqKyUY4RSdvl5eZR1n2Q9yvw3XTe3mQHsFPn9alaNBxfPnbXBtGP8R0SV8pK1PrVnLul0zx7izbm5/gF5Qw==",
+      "tarball": "https://registry.npmmirror.com/@types/rss/-/rss-0.0.32.tgz"
     },
     "@types/trusted-types@2.0.7": {
       "integrity": "sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==",
@@ -4483,7 +4496,9 @@
         "npm:@giscus/react@^3.1.0",
         "npm:@types/node@20",
         "npm:@types/react-dom@19.1.7",
+        "npm:@types/react-syntax-highlighter@^15.5.13",
         "npm:@types/react@19.1.9",
+        "npm:@types/rss@^0.0.32",
         "npm:eslint-config-next@15.4.6",
         "npm:eslint@9",
         "npm:motion@^12.23.12",
