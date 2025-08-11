@@ -14,32 +14,16 @@ import CcIcons from "./svg-deco/cc-icons";
 import { OSS } from "@/data/endpoints";
 import IslandBody from "./island-body";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import * as motion from "motion/react-client";
-import { AnimatePresence, useMotionValue } from "motion/react";
+import { AnimatePresence } from "motion/react";
 import AnimEnterBlink from "./anim/anim-enter-blink";
 
 export default function IslandCard({ island, content }: { island: IslandMeta, content?: Island }) {
-    if (island.state == "deleted") {
-        return (
-            <div className="flex h-16">
-                <div className="relative">
-                    <div className="absolute bg-dark-0 dark:bg-light-0 h-full w-2 -left-5" />
-                    <div className="flex justify-center items-center h-full aspect-square bg-dark-0 dark:bg-light-0">
-                        <AsciiText className="text-sm italic -ml-1 font-bold" inv>Dst</AsciiText>
-                    </div>
-                </div>
-                <div className="flex items-center w-full h-full bg-accent-0">
-                    <AsciiText className="ml-2 font-bold">INVALID TICKET: Destination access denied.</AsciiText>
-                </div>
-            </div>
-        )
-    }
-
     const FakeBarCode = ({ len }: { len: number }) => {
         let acc = 0
         let i = 0
-        let res = []
+        const res = []
         const colors = ["bg-accent-0", "bg-light-0 dark:bg-dark-0"]
         while (true) {
             const t = Math.pow(Math.random(), 2) * 10
@@ -57,6 +41,22 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
     const router = useRouter()
     const [loaded, setLoaded] = useState<boolean | null>(null)
     const params = useSearchParams()
+
+    if (island.state == "deleted") {
+        return (
+            <div className="flex h-16">
+                <div className="relative">
+                    <div className="absolute bg-dark-0 dark:bg-light-0 h-full w-2 -left-5" />
+                    <div className="flex justify-center items-center h-full aspect-square bg-dark-0 dark:bg-light-0">
+                        <AsciiText className="text-sm italic -ml-1 font-bold" inv>Dst</AsciiText>
+                    </div>
+                </div>
+                <div className="flex items-center w-full h-full bg-accent-0">
+                    <AsciiText className="ml-2 font-bold">INVALID TICKET: Destination access denied.</AsciiText>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <AnimEnterBlink>

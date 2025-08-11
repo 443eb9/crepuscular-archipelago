@@ -1,5 +1,5 @@
 import { apiEndpoint } from "./endpoints"
-import { Island, IslandCount, IslandMapMeta, IslandMapQueryResult, IslandMapRegionCenters, IslandMeta, LinkExchangeData, TagData } from "./model"
+import { GithubRepoStat, Island, IslandCount, IslandMapMeta, IslandMapQueryResult, IslandMapRegionCenters, IslandMeta, LinkExchangeData, TagData } from "./model"
 
 export type Response<T> = {
     ok: true,
@@ -89,6 +89,6 @@ export async function fetchLinkExchange(): Promise<Response<LinkExchangeData[]>>
     return wrappedFetch("https://raw.githubusercontent.com/443eb9/aetheric-cargo/main/partitions/friends.json", "GET")
 }
 
-export async function fetchGithubProjectStat(owner: string, name: string): Promise<Response<any>> {
+export async function fetchGithubProjectStat(owner: string, name: string): Promise<Response<GithubRepoStat>> {
     return wrappedFetch(`https://api.github.com/repos/${owner}/${name}`, "GET")
 }

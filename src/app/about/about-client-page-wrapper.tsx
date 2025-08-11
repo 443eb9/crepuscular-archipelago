@@ -13,7 +13,7 @@ import AsciiText from "@/components/text/ascii-text";
 import BodyText from "@/components/text/body-text";
 import TitleText from "@/components/text/title-text";
 import { Response } from "@/data/api";
-import { ProjectData, SelfTitleData } from "@/data/model";
+import { GithubRepoStat, ProjectData, SelfTitleData } from "@/data/model";
 import { AnimatePresence } from "motion/react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -24,14 +24,14 @@ import * as motion from "motion/react-client";
 export default function AboutClientPageWrapper({
     selfIntro, projects, projectGhStats, titles, emoticons
 }: {
-    selfIntro: Response<string>, projects: Response<ProjectData[]>, projectGhStats?: Response<any>[], titles: Response<SelfTitleData[]>, emoticons: Response<string[]>
+    selfIntro: Response<string>, projects: Response<ProjectData[]>, projectGhStats?: Response<GithubRepoStat>[], titles: Response<SelfTitleData[]>, emoticons: Response<string[]>
 }) {
     const [page, setPage] = useState(0)
     const [navBar, setNavBar] = useState(true)
 
     const pages = [
-        <SelfIntro text={selfIntro} titles={titles} emoticons={emoticons} />,
-        <Projects projects={projects} projectGhStats={projectGhStats} />,
+        <SelfIntro key={0} text={selfIntro} titles={titles} emoticons={emoticons} />,
+        <Projects key={1} projects={projects} projectGhStats={projectGhStats} />,
     ]
 
     useEffect(() => {
@@ -181,7 +181,8 @@ function SelfIntro({ text, titles, emoticons }: { text: Response<string>, titles
     )
 }
 
-function Projects({ projects, projectGhStats }: { projects: Response<ProjectData[]>, projectGhStats: Response<any>[] | undefined }) {
+
+function Projects({ projects, projectGhStats }: { projects: Response<ProjectData[]>, projectGhStats: Response<GithubRepoStat>[] | undefined }) {
     return (
         <NetworkFailableSync response={projects}>
             {
