@@ -5,7 +5,6 @@ import { Metadata } from "next";
 import AboutClientPageWrapper from "./about-client-page-wrapper";
 import { Suspense } from "react";
 
-
 export const metadata: Metadata = {
     title: "About - Crepuscular Archipelago",
 }

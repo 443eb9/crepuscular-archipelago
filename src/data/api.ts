@@ -1,6 +1,5 @@
 import { apiEndpoint } from "./endpoints"
 import { Island, IslandCount, IslandMapMeta, IslandMapQueryResult, IslandMapRegionCenters, IslandMeta, LinkExchangeData, TagData } from "./model"
-import { LinkExchangeCache } from "./dummy-data"
 
 export type Response<T> = {
     ok: true,
@@ -87,12 +86,7 @@ export function fetchIslandMapRegionCenters(page: number): Promise<Response<Isla
 }
 
 export async function fetchLinkExchange(): Promise<Response<LinkExchangeData[]>> {
-    if (process.env.NODE_ENV == "production") {
-        return wrappedFetch("https://raw.githubusercontent.com/443eb9/aetheric-cargo/main/partitions/friends.json", "GET")
-    } else {
-        // Network issue
-        return { ok: true, data: LinkExchangeCache }
-    }
+    return wrappedFetch("https://raw.githubusercontent.com/443eb9/aetheric-cargo/main/partitions/friends.json", "GET")
 }
 
 export async function fetchGithubProjectStat(owner: string, name: string): Promise<Response<any>> {

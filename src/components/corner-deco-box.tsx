@@ -1,7 +1,7 @@
 import { HTMLAttributes, ReactNode } from "react";
 
 type CornerDecoProps = {
-    node: ReactNode,
+    node?: ReactNode,
     lineStyle?: "dashed" | "dotted" | "double" | "groove" | "hidden" | "inset" | "none" | "outset" | "ridge" | "solid"
 }
 
@@ -13,12 +13,12 @@ export default function CornerDecoBox({
 ) {
     const half = decoSize / 2
 
-    const _tl = tl ?? deco
-    const _tr = tr ?? deco
-    const _bl = bl ?? deco
-    const _br = br ?? deco
+    const _tl = tl?.node ?? deco?.node
+    const _tr = tr?.node ?? deco?.node
+    const _bl = bl?.node ?? deco?.node
+    const _br = br?.node ?? deco?.node
 
-    const compute = (a: CornerDecoProps | undefined, b: CornerDecoProps | undefined) => {
+    const compute = (a: ReactNode | undefined, b: ReactNode | undefined) => {
         if (a && b) {
             return [`calc(100% - ${decoGap * 2}px)`, `${decoGap}px`]
         } else if (a) {
@@ -40,17 +40,17 @@ export default function CornerDecoBox({
             {
                 !noOutline &&
                 <>
-                    <div className="absolute border-dark-0 dark:border-light-0" style={{ borderTopWidth: `${lineThickness}px`, width: top[0], left: top[1] }} />
-                    <div className="absolute border-dark-0 dark:border-light-0" style={{ borderRightWidth: `${lineThickness}px`, height: right[0], top: right[1], right: "0" }} />
-                    <div className="absolute border-dark-0 dark:border-light-0" style={{ borderBottomWidth: `${lineThickness}px`, width: bottom[0], left: bottom[1], bottom: "0" }} />
-                    <div className="absolute border-dark-0 dark:border-light-0" style={{ borderLeftWidth: `${lineThickness}px`, height: left[0], top: left[1] }} />
+                    <div className="absolute border-dark-0 dark:border-light-0" style={{ borderTopWidth: `${lineThickness}px`, borderStyle: tl?.lineStyle ?? deco?.lineStyle, width: top[0], left: top[1] }} />
+                    <div className="absolute border-dark-0 dark:border-light-0" style={{ borderRightWidth: `${lineThickness}px`, borderStyle: tr?.lineStyle ?? deco?.lineStyle, height: right[0], top: right[1], right: "0" }} />
+                    <div className="absolute border-dark-0 dark:border-light-0" style={{ borderBottomWidth: `${lineThickness}px`, borderStyle: br?.lineStyle ?? deco?.lineStyle, width: bottom[0], left: bottom[1], bottom: "0" }} />
+                    <div className="absolute border-dark-0 dark:border-light-0" style={{ borderLeftWidth: `${lineThickness}px`, borderStyle: bl?.lineStyle ?? deco?.lineStyle, height: left[0], top: left[1] }} />
                 </>
             }
 
-            <div style={{ position: "absolute", left: `-${half}px`, top: `-${half}px` }}>{_tl?.node}</div>
-            <div style={{ position: "absolute", right: `-${half}px`, top: `-${half}px` }}>{_tr?.node}</div>
-            <div style={{ position: "absolute", left: `-${half}px`, bottom: `-${half}px` }}>{_bl?.node}</div>
-            <div style={{ position: "absolute", right: `-${half}px`, bottom: `-${half}px` }}>{_br?.node}</div>
+            <div style={{ position: "absolute", left: `-${half}px`, top: `-${half}px` }}>{_tl}</div>
+            <div style={{ position: "absolute", right: `-${half}px`, top: `-${half}px` }}>{_tr}</div>
+            <div style={{ position: "absolute", left: `-${half}px`, bottom: `-${half}px` }}>{_bl}</div>
+            <div style={{ position: "absolute", right: `-${half}px`, bottom: `-${half}px` }}>{_br}</div>
 
             {props.children}
         </div>

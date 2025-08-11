@@ -50,6 +50,7 @@ export type LinkExchangeData = {
     link: string,
     message: string,
     dialog?: FriendDialogData[],
+    background?: string,
 }
 
 export type ProjectData = {
