@@ -11,6 +11,9 @@ export default function NavBarButtons() {
             <OutlinedButton className="w-20 h-10 flex justify-center items-center" animTo="bottom">
                 <TitleText><Link href="/about">关于</Link></TitleText>
             </OutlinedButton>
+            <OutlinedButton className="w-20 h-10 flex justify-center items-center" animTo="bottom">
+                <TitleText><Link href="/about">友链</Link></TitleText>
+            </OutlinedButton>
         </>
     )
 }

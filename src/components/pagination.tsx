@@ -24,11 +24,14 @@ export default function Pagination({ total, ...props }: { total: number } & HTML
             }
             inv={params.page == page}
         >
-            <AsciiText className="flex items-center font-bender text-2xl font-bold">
-                <Link href={constructPath(pathname, searchParamsToUrl({ ...params, page }))}>
+            <Link
+                className="w-full h-full flex items-center justify-center"
+                href={constructPath(pathname, searchParamsToUrl({ ...params, page }))}
+            >
+                <AsciiText className="text-2xl font-bold">
                     {page}
-                </Link>
-            </AsciiText>
+                </AsciiText>
+            </Link>
         </OutlinedButton>
     ))
 
