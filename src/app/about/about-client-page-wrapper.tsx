@@ -120,10 +120,10 @@ function SelfIntro({ text, titles, emoticons }: { text: Response<string>, titles
         <div className="flex gap-2">
             <AnimEnterBlink className="relative flex flex-col gap-2" >
                 <Title title="INFORMATION" />
-                <OutlinedBox className="flex font-bender p-4">
+                <OutlinedBox className="flex p-4">
                     <div className="w-full h-full">
                         <OutlinedBox className="w-full aspect-square bg-cover" style={{ backgroundImage: "url(https://avatars.githubusercontent.com/u/50186452)" }}></OutlinedBox>
-                        <div className="flex flex-col mt-4">
+                        <div className="flex flex-col gap-1 mt-2">
                             <AsciiText className="font-bold text-4xl">443eb9#C</AsciiText>
                             <TitleText className="text-lg">中国 浙江</TitleText>
                             <div className="flex gap-2 items-center text-xl">
@@ -133,9 +133,18 @@ function SelfIntro({ text, titles, emoticons }: { text: Response<string>, titles
                             <div className="">
                                 <NetworkFailableSync response={titles}>
                                     {data => data.map((title, i) =>
-                                        <div key={i} className="flex gap-1 text-sm">
-                                            <AsciiText style={{ opacity: 1 - title.progress }}>Future</AsciiText>
-                                            <AsciiText>{title.title}</AsciiText>
+                                        <div key={i} className="relative flex gap-1 text-sm bg-dark-0 dark:bg-light-0">
+                                            <AnimatePresence>
+                                                <motion.div
+                                                    initial={{ width: "0%" }}
+                                                    animate={{ width: `${title.progress * 100}%`, transition: { duration: 0.2, ease: "easeOut" } }}
+                                                    className="absolute h-full w-full bg-accent-0"
+                                                />
+                                            </AnimatePresence>
+                                            <div className="flex gap-1 px-1">
+                                                <AsciiText inv style={{ opacity: 1 - title.progress }}>Future</AsciiText>
+                                                <AsciiText inv>{title.title}</AsciiText>
+                                            </div>
                                         </div>
                                     )}
                                 </NetworkFailableSync>
