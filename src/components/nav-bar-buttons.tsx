@@ -40,7 +40,7 @@ const data: { text: string, href?: string, submenus?: { text: string, href: stri
     },
 ]
 
-export default function NavBarButtons() {
+export default function NavBarButtons({ flipped }: { flipped?: boolean }) {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
     return data.map((item, i) =>
@@ -55,8 +55,10 @@ export default function NavBarButtons() {
             >
                 {
                     item.href
-                        ? <Link className="w-full h-full flex justify-center items-center" href={item.href}><TitleText>{item.text}</TitleText></Link>
-                        : <TitleText>{item.text}</TitleText>
+                        ? <Link className="w-full h-full flex justify-center items-center" href={item.href}>
+                            <TitleText style={{ scale: flipped ? "1 -1" : undefined }}>{item.text}</TitleText>
+                        </Link>
+                        : <TitleText style={{ scale: flipped ? "1 -1" : undefined }}>{item.text}</TitleText>
                 }
                 <AnimatePresence>
                     {
@@ -69,7 +71,7 @@ export default function NavBarButtons() {
                         >
                             {item.submenus.map((submenu, i) =>
                                 <Link key={i} href={submenu.href} className="min-w-20 min-h-10 flex justify-center items-center">
-                                    <TitleText>{submenu.text}</TitleText>
+                                    <TitleText style={{ scale: flipped ? "1 -1" : undefined }}>{submenu.text}</TitleText>
                                 </Link>
                             )}
                         </motion.div>

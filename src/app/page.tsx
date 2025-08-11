@@ -1,6 +1,5 @@
+import { redirect, RedirectType } from "next/navigation";
+
 export default function Home() {
-	return (
-		<div className="">
-		</div>
-	);
+	redirect("/updates", RedirectType.push)
 }
