@@ -4,10 +4,12 @@ import { IslandStateType, IslandType, LicenseType } from "./model";
 
 export function formatDate(date: string | undefined) {
     if (!date) {
-        return "未来"
+        return "Future"
     }
+
     const d = new Date(date)
-    return `${d.getFullYear()}/${d.getMonth()}/${d.getDay()}`
+    console.log(d.getMonth())
+    return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`
 }
 
 export function formatState(ty: IslandType, state: IslandStateType) {
