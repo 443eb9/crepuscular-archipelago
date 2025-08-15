@@ -5,7 +5,7 @@ import IslandFilter from "@/components/island-filter"
 import Pagination from "@/components/pagination"
 import RectDot from "@/components/rect-dot"
 import AsciiText from "@/components/text/ascii-text"
-import { fetchAllTags, fetchIslandCount, fetchIslandsMeta } from "@/data/api"
+import { fetchAllTags, fetchIsland, fetchIslandCount, fetchIslandsMeta } from "@/data/api"
 import { processSearchParams, RawSearchParams } from "@/data/search-param-util"
 import AnimLoadingBar from "@/components/anim/anim-loading-bar"
 import { Metadata } from "next"
@@ -41,7 +41,18 @@ export default async function Page({ searchParams }: { searchParams: Promise<Raw
                                         </div>
                                     </div>
                                 </div>
-                                : data.map((island, i) => <IslandCard key={i} island={island} />)
+                                : data.map((island, i) => {
+                                    switch (island.ty) {
+                                        case "article":
+                                        case "achievement":
+                                        case "external":
+                                            return <IslandCard key={i} island={island} />
+                                        case "note":
+                                            return <NetworkFailable promise={fetchIsland(island.id)} loading={<></>}>
+                                                {data => <IslandCard key={i} island={island} content={data} />}
+                                            </NetworkFailable>
+                                    }
+                                })
                         }
                     </NetworkFailable>
                 </div>

@@ -42,6 +42,18 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
     const [loaded, setLoaded] = useState<boolean | null>(null)
     const params = useSearchParams()
 
+    const handleIslandEntrance = async () => {
+        const path = island.ty == "external" ? island.reference : constructPath(`/island/${island.id}`, params)
+        if (!path) {
+            return
+        }
+
+        setLoaded(false)
+        await fetch(path)
+        setLoaded(true)
+        setTimeout(() => router.push(path), 1000)
+    }
+
     if (island.state == "deleted") {
         return (
             <div className="flex h-16">
@@ -122,17 +134,7 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                 <div className={`flex flex-col gap-2 p-4 ${island.ty == "article" || island.ty == "note" ? "min-h-[240px]" : ""}`}>
                     <div
                         className="flex flex-grow justify-between gap-2 cursor-pointer"
-                        onClick={async () => {
-                            const path = island.ty == "external" ? island.reference : constructPath(`/island/${island.id}`, params)
-                            if (!path) {
-                                return
-                            }
-
-                            setLoaded(false)
-                            await fetch(path)
-                            setLoaded(true)
-                            setTimeout(() => router.push(path), 1000)
-                        }}
+                        onClick={island.ty != "note" ? handleIslandEntrance : undefined}
                     >
                         <div className="flex flex-col flex-grow gap-2">
                             {
@@ -157,7 +159,12 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                                             </div>
                                         </div>
                                 }
-                                <TitleText className="text-lg">{island.title}</TitleText>
+                                <TitleText
+                                    className="text-lg"
+                                    onClick={island.ty == "note" ? handleIslandEntrance : undefined}
+                                >
+                                    {island.title}
+                                </TitleText>
                             </div>
                             {(
                                 () => {
