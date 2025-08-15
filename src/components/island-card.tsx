@@ -114,7 +114,7 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                             <div className="absolute flex gap-2 ml-2 -top-[10px]">
                                 <RectDot size={10} cnt={5} />
                             </div>
-                            <div className="absolute w-[6px] h-48 bg-dark-0 dark:bg-light-0 -right-3 top-4" />
+                            <div className="absolute w-[6px] h-48 bg-dark-0 dark:bg-light-0 -right-3 top-4 max-h-[60%]" />
                             <div className="absolute flex flex-col items-center w-4 -left-4 border border-dashed border-dark-0 dark:border-light-0">
                                 <AsciiText className="text-[8pt] m-4 font-bold" style={{ writingMode: "vertical-lr", rotate: "180deg" }}>
                                     {(
@@ -133,7 +133,7 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                 }
                 <div className={`flex flex-col gap-2 p-4 ${island.ty == "article" || island.ty == "note" ? "min-h-[240px]" : ""}`}>
                     <div
-                        className="flex flex-grow justify-between gap-2 cursor-pointer"
+                        className={`flex flex-grow justify-between gap-2 ${island.ty != "note" ? "cursor-pointer": ""}`}
                         onClick={island.ty != "note" ? handleIslandEntrance : undefined}
                     >
                         <div className="flex flex-col flex-grow gap-2">
@@ -160,7 +160,7 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                                         </div>
                                 }
                                 <TitleText
-                                    className="text-lg"
+                                    className={`text-lg ${island.ty == "note" ? "cursor-pointer": ""}`}
                                     onClick={island.ty == "note" ? handleIslandEntrance : undefined}
                                 >
                                     {island.title}
