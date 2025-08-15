@@ -71,7 +71,7 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
     }
 
     return (
-        <AnimEnterBlink>
+        <AnimEnterBlink key={island.id}>
             <CornerDecoBox
                 decoSize={10}
                 lineThickness={2}

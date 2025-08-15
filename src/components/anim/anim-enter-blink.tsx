@@ -41,7 +41,7 @@ export default function AnimEnterBlink({
         opacity.set(0)
         animTriggered.current = false
         enterHandler()
-    })
+    }, [props.key])
 
     useEffect(() => {
         if (suppress) return
