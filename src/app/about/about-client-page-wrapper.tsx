@@ -16,87 +16,129 @@ import { Response } from "@/data/api";
 import { GithubRepoStat, ProjectData, SelfTitleData } from "@/data/model";
 import { AnimatePresence } from "motion/react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { FiGithub } from "react-icons/fi";
 import { IoMailOutline } from "react-icons/io5";
 import * as motion from "motion/react-client";
+import { findClassNameAmong, isScrolledToBottom } from "@/data/utils";
+
+const preventPageSwitch = "prevent-page-switch"
 
 export default function AboutClientPageWrapper({
     selfIntro, projects, projectGhStats, titles, emoticons
 }: {
     selfIntro: Response<string>, projects: Response<ProjectData[]>, projectGhStats?: Response<GithubRepoStat>[], titles: Response<SelfTitleData[]>, emoticons: Response<string[]>
 }) {
-    const [page, setPage] = useState(0)
-    const [navBar, setNavBar] = useState(true)
+    function MobilePage() {
+        return (
+            <>
+                <NavBar />
+                <div className="flex flex-col gap-8 mx-2 pt-20">
+                    <SelfIntro text={selfIntro} titles={titles} emoticons={emoticons} />
+                    <Projects projects={projects} projectGhStats={projectGhStats} />
+                    <GiscusSection />
+                </div>
+            </>
+        )
+    }
 
-    const pages = [
-        <SelfIntro key={0} text={selfIntro} titles={titles} emoticons={emoticons} />,
-        <Projects key={1} projects={projects} projectGhStats={projectGhStats} />,
-    ]
+    function DesktopPage() {
+        const [page, setPage] = useState(0)
+        const [navBar, setNavBar] = useState(true)
+
+        const pages = [
+            <SelfIntro key={0} text={selfIntro} titles={titles} emoticons={emoticons} />,
+            <Projects key={1} projects={projects} projectGhStats={projectGhStats} />,
+        ]
+
+        useEffect(() => {
+            const scrollHandler = (ev: WheelEvent) => {
+                const prevent = findClassNameAmong(ev.target as HTMLElement, preventPageSwitch)
+                if (!(!prevent || isScrolledToBottom(prevent))) {
+                    return
+                }
+
+                if (window.scrollY > 0) return
+
+                const offset = ev.deltaY > 0 ? 1 : -1
+                const newPage = page + offset
+
+                if (navBar && offset == 1) {
+                    setNavBar(false)
+                    return
+                }
+
+                if (newPage == -1) {
+                    setNavBar(true)
+                    return
+                }
+
+                if (newPage >= 0 && newPage < pages.length) {
+                    setPage(newPage)
+                }
+            }
+
+            if (window.innerWidth > 768) {
+                window.addEventListener("wheel", scrollHandler)
+            }
+
+            return () => {
+                window.removeEventListener("wheel", scrollHandler)
+            }
+        }, [page, navBar])
+
+        const currentPage = useMemo(() => pages[page], [page])
+
+        return (
+            <>
+                <AnimatePresence>
+                    {
+                        navBar &&
+                        <motion.div
+                            initial={{ top: "-48px" }}
+                            animate={{ top: "0", transition: { duration: 0.2, ease: "easeOut" } }}
+                            exit={{ top: "-48px", transition: { duration: 0.2, ease: "easeOut" } }}
+                            className="absolute"
+                        >
+                            <NavBar />
+                        </motion.div>
+                    }
+                </AnimatePresence>
+                <div>
+                    <div className="flex w-[100vw] h-[100vh] items-center justify-center">
+                        <div className="w-[80%] h-[80%] max-w-[1280px] max-h-[720px]">
+                            {currentPage}
+                        </div>
+                    </div>
+                    {
+                        page == pages.length - 1 &&
+                        <>
+                            <ContentWrapper>
+                                <GiscusSection className="w-full" />
+                            </ContentWrapper>
+                            <Footer />
+                        </>
+                    }
+                </div>
+            </>
+        )
+    }
+
+    const [node, setNode] = useState<ReactNode | null>(null)
 
     useEffect(() => {
-        const scrollHandler = (ev: WheelEvent) => {
-            if (window.scrollY > 0) return
-
-            const offset = ev.deltaY > 0 ? 1 : -1
-            const newPage = page + offset
-
-            if (navBar && offset == 1) {
-                setNavBar(false)
-                return
-            }
-
-            if (newPage == -1) {
-                setNavBar(true)
-                return
-            }
-
-            if (newPage >= 0 && newPage < pages.length) {
-                setPage(newPage)
-            }
+        const handleResize = () => {
+            setNode(window.innerWidth > 768 ? <DesktopPage /> : <MobilePage />)
         }
+        handleResize()
 
-        window.addEventListener("wheel", scrollHandler)
+        window.addEventListener("resize", handleResize)
         return () => {
-            window.removeEventListener("wheel", scrollHandler)
+            window.removeEventListener("resize", handleResize)
         }
-    }, [page, navBar])
+    }, [])
 
-    const currentPage = useMemo(() => pages[page], [page])
-
-    return (
-        <>
-            <AnimatePresence>
-                {
-                    navBar &&
-                    <motion.div
-                        initial={{ top: "-48px" }}
-                        animate={{ top: "0", transition: { duration: 0.2, ease: "easeOut" } }}
-                        exit={{ top: "-48px", transition: { duration: 0.2, ease: "easeOut" } }}
-                        className="absolute"
-                    >
-                        <NavBar />
-                    </motion.div>
-                }
-            </AnimatePresence>
-            <div className="">
-                <div className="flex w-[100vw] h-[100vh] items-center justify-center">
-                    <div className="w-[80%] h-[80%] max-w-[1920px] max-h-[1080px]">
-                        {currentPage}
-                    </div>
-                </div>
-                {
-                    page == pages.length - 1 &&
-                    <>
-                        <ContentWrapper>
-                            <GiscusSection className="w-full" />
-                        </ContentWrapper>
-                        <Footer />
-                    </>
-                }
-            </div>
-        </>
-    )
+    return node
 }
 
 function Title({ title }: { title: string }) {
@@ -117,7 +159,7 @@ function SelfIntro({ text, titles, emoticons }: { text: Response<string>, titles
     }
 
     return (
-        <div className="flex gap-2">
+        <div className="flex flex-col md:flex-row gap-8 md:gap-2 w-full h-full">
             <AnimEnterBlink className="relative flex flex-col gap-2" >
                 <Title title="INFORMATION" />
                 <OutlinedBox className="flex p-4">
@@ -169,9 +211,9 @@ function SelfIntro({ text, titles, emoticons }: { text: Response<string>, titles
                     <BodyText className="text-right">——2024.8.15留</BodyText>
                 </OutlinedBox>
             </AnimEnterBlink>
-            <AnimEnterBlink className="relative" >
+            <AnimEnterBlink className="relative w-full h-full" >
                 <Title title="SELF INTRODUCTION" />
-                <OutlinedBox className="w-full p-4">
+                <OutlinedBox className={`md:w-full h-full p-2 md:p-4 md:overflow-scroll ${preventPageSwitch}`}>
                     <NetworkFailableSync response={text}>
                         {data => <Markdown body={data} />}
                     </NetworkFailableSync>

@@ -49,15 +49,19 @@ export type StatefulContext<T> = {
     setter: (value: T) => void,
 }
 
-export function findClassNameAmong(target: HTMLElement, className: string): boolean {
+export function findClassNameAmong(target: HTMLElement, className: string): HTMLElement | null {
     while (!target.classList.contains(className)) {
         if (target.parentElement == null) {
-            return false
+            return null
         } else {
             target = target.parentElement
         }
     }
-    return true
+    return target
+}
+
+export function isScrolledToBottom(e: HTMLElement) {
+    return Math.abs(e.scrollHeight - e.scrollTop - e.clientHeight) < 1
 }
 
 export function extractBits(bits: number): number[] {
