@@ -60,6 +60,10 @@ export function findClassNameAmong(target: HTMLElement, className: string): HTML
     return target
 }
 
+export function isScrolledToTop(e: HTMLElement) {
+    return e.scrollTop < 1
+}
+
 export function isScrolledToBottom(e: HTMLElement) {
     return Math.abs(e.scrollHeight - e.scrollTop - e.clientHeight) < 1
 }

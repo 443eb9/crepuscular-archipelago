@@ -20,7 +20,9 @@ import { ReactNode, useEffect, useMemo, useState } from "react";
 import { FiGithub } from "react-icons/fi";
 import { IoMailOutline } from "react-icons/io5";
 import * as motion from "motion/react-client";
-import { findClassNameAmong, isScrolledToBottom } from "@/data/utils";
+import { findClassNameAmong, isScrolledToBottom, isScrolledToTop } from "@/data/utils";
+import GitHubCalendar from 'react-github-calendar';
+import { useTheme } from "next-themes";
 
 const preventPageSwitch = "prevent-page-switch"
 
@@ -54,13 +56,15 @@ export default function AboutClientPageWrapper({
         useEffect(() => {
             const scrollHandler = (ev: WheelEvent) => {
                 const prevent = findClassNameAmong(ev.target as HTMLElement, preventPageSwitch)
-                if (!(!prevent || isScrolledToBottom(prevent))) {
-                    return
-                }
 
                 if (window.scrollY > 0) return
 
                 const offset = ev.deltaY > 0 ? 1 : -1
+                if (prevent) {
+                    if (offset == 1 && !isScrolledToBottom(prevent)) return
+                    if (offset == -1 && !isScrolledToTop(prevent)) return
+                }
+
                 const newPage = page + offset
 
                 if (navBar && offset == 1) {
@@ -183,7 +187,7 @@ function SelfIntro({ text, titles, emoticons }: { text: Response<string>, titles
                                                     className="absolute h-full w-full bg-accent-0"
                                                 />
                                             </AnimatePresence>
-                                            <div className="flex gap-1 px-1">
+                                            <div className="flex gap-1 px-1 z-[1]">
                                                 <AsciiText inv style={{ opacity: 1 - title.progress }}>Future</AsciiText>
                                                 <AsciiText inv>{title.title}</AsciiText>
                                             </div>
@@ -225,57 +229,71 @@ function SelfIntro({ text, titles, emoticons }: { text: Response<string>, titles
 
 
 function Projects({ projects, projectGhStats }: { projects: Response<ProjectData[]>, projectGhStats: Response<GithubRepoStat>[] | undefined }) {
-    return (
-        <NetworkFailableSync response={projects}>
-            {
-                data =>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-8 mt-4">
-                        {
-                            data.map((project, i) => {
-                                if (!projectGhStats) {
-                                    return null
-                                }
+    const { resolvedTheme } = useTheme()
 
-                                return (
-                                    <AnimEnterBlink key={i} className="relative">
-                                        <Title title={`SHOWCASE PROJECT #${i}`} />
-                                        <OutlinedBox className="w-full h-full">
-                                            <div className="flex justify-between items-center m-2">
-                                                <div>
-                                                    <AsciiText className="text-2xl font-bold" >
-                                                        <Link target="_blank" href={`https://github.com/${project.owner}/${project.name}`}>{project.name}</Link>
-                                                    </AsciiText>
-                                                    {
-                                                        project.isPublic
-                                                            ? <NetworkFailableSync response={projectGhStats[i]}>
-                                                                {
-                                                                    data =>
-                                                                        <div>
-                                                                            <AsciiText>Language: {data.language}</AsciiText>
-                                                                            <AsciiText>{data.stargazers_count} Star(s)</AsciiText>
-                                                                            <div className="flex gap-5">
-                                                                                <AsciiText className="">
-                                                                                    Created at {new Date(data.created_at).toLocaleDateString()}
-                                                                                </AsciiText>
-                                                                                <AsciiText className="">
-                                                                                    Updated at {new Date(data.updated_at).toLocaleDateString()}
-                                                                                </AsciiText>
+    return (
+        <div className="flex flex-col h-full gap-8">
+            <NetworkFailableSync response={projects}>
+                {
+                    data =>
+                        <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-8 mt-4 overflow-y-scroll pt-4  ${preventPageSwitch}`}>
+                            {
+                                data.map((project, i) => {
+                                    if (!projectGhStats) {
+                                        return null
+                                    }
+
+                                    return (
+                                        <AnimEnterBlink key={i} className="relative flex">
+                                            <Title title={`SHOWCASE PROJECT #${i}`} />
+                                            <OutlinedBox className="flex-grow">
+                                                <div className="flex justify-between items-center m-2">
+                                                    <div>
+                                                        <AsciiText className="text-2xl font-bold" >
+                                                            <Link target="_blank" href={`https://github.com/${project.owner}/${project.name}`}>{project.name}</Link>
+                                                        </AsciiText>
+                                                        {
+                                                            project.isPublic
+                                                                ? <NetworkFailableSync response={projectGhStats[i]}>
+                                                                    {
+                                                                        data =>
+                                                                            <div>
+                                                                                <AsciiText>Language: {data.language}</AsciiText>
+                                                                                <AsciiText>{data.stargazers_count} Star(s)</AsciiText>
+                                                                                <div className="flex gap-5">
+                                                                                    <AsciiText className="">
+                                                                                        Created at {new Date(data.created_at).toLocaleDateString()}
+                                                                                    </AsciiText>
+                                                                                    <AsciiText className="">
+                                                                                        Updated at {new Date(data.updated_at).toLocaleDateString()}
+                                                                                    </AsciiText>
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
-                                                                }
-                                                            </NetworkFailableSync>
-                                                            : <AsciiText>Private Project</AsciiText>
-                                                    }
+                                                                    }
+                                                                </NetworkFailableSync>
+                                                                : <AsciiText>Private Project</AsciiText>
+                                                        }
+                                                    </div>
+                                                    <AsciiText className="opacity-50 text-3xl font-bold italic mr-2">{project.owner}</AsciiText>
                                                 </div>
-                                                <AsciiText className="opacity-50 text-3xl font-bold italic mr-2">{project.owner}</AsciiText>
-                                            </div>
-                                        </OutlinedBox>
-                                    </AnimEnterBlink>
-                                )
-                            })
-                        }
-                    </div>
-            }
-        </NetworkFailableSync>
+                                            </OutlinedBox>
+                                        </AnimEnterBlink>
+                                    )
+                                })
+                            }
+                        </div>
+                }
+            </NetworkFailableSync>
+            <div className="relative h-52">
+                <Title title="GITHUB CONTRIBUTIONS" />
+                <OutlinedBox className="flex justify-center items-center h-full">
+                    <GitHubCalendar
+                        username="443eb9"
+                        colorScheme={resolvedTheme == "light" ? "dark" : "light"}
+                        style={{ color: resolvedTheme == "light" ? "#f5f5f5" : "#171717" }}
+                    />
+                </OutlinedBox>
+            </div>
+        </div>
     )
 }

@@ -5,13 +5,14 @@ import ContentWrapper from "./content-wrapper";
 import AsciiText from "./text/ascii-text";
 import ThemeSwitcher from "./theme-switcher";
 import NavBarButtons from "./nav-bar-buttons";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { IoMenuSharp } from "react-icons/io5";
 import * as motion from "motion/react-client";
 import OutlinedBox from "./outlined-box";
 
 export default function NavBar() {
     const [expanded, setExpanded] = useState(false)
+    const bottomRef = useRef<HTMLDivElement>(null)
 
     return (
         <>
@@ -41,14 +42,14 @@ export default function NavBar() {
             </motion.div>
             <motion.div
                 layout
-                className="fixed md:hidden flex items-center self-center mb-2 backdrop-blur-md z-10 min-h-14"
+                className="fixed md:hidden flex items-center self-center backdrop-blur-md z-10 min-h-14 w-full"
                 style={{
-                    width: "calc(100% - 16px)",
-                    bottom: expanded ? 0 : "-64px",
+                    bottom: bottomRef.current ? expanded ? 0 : `-${bottomRef.current.clientHeight}px` : "-100%",
                 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
+                ref={bottomRef}
             >
-                <OutlinedBox className="flex flex-grow gap-2 py-1 px-2 -scale-y-100">
+                <OutlinedBox className="flex flex-grow flex-wrap gap-2 py-1 px-2 -scale-y-100 border-x-0 border-t-0">
                     <NavBarButtons flipped />
                 </OutlinedBox>
             </motion.div>

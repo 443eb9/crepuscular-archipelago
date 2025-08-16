@@ -64,7 +64,7 @@ export default function NavBarButtons({ flipped }: { flipped?: boolean }) {
                     {
                         hoveredIndex == i && item.submenus &&
                         <motion.div
-                            className="absolute w-20 top-full flex flex-col bg-accent-0 overflow-clip border-2 border-t-0"
+                            className="absolute w-20 top-full flex flex-col bg-accent-0 overflow-clip border-2 border-t-0 border-dark-0 dark:border-light-0"
                             initial={{ height: "0" }}
                             animate={{ height: "auto", transition: { delay: 0.18 } }}
                             exit={{ height: "0" }}

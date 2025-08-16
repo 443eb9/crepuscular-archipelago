@@ -16,6 +16,7 @@
     "npm:next@latest": "15.4.6_react@19.1.1_react-dom@19.1.1__react@19.1.1",
     "npm:postcss@8": "8.5.6",
     "npm:react-dom@19.1.1": "19.1.1_react@19.1.1",
+    "npm:react-github-calendar@^4.5.9": "4.5.9_react@19.1.1",
     "npm:react-icons@^5.5.0": "5.5.0_react@19.1.1",
     "npm:react-markdown@^10.1.0": "10.1.0_@types+react@19.1.9_react@19.1.1",
     "npm:react-swipeable@^7.0.2": "7.0.2_react@19.1.1",
@@ -1217,6 +1218,10 @@
         "is-data-view"
       ],
       "tarball": "https://registry.npmmirror.com/data-view-byte-offset/-/data-view-byte-offset-1.0.1.tgz"
+    },
+    "date-fns@4.1.0": {
+      "integrity": "sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==",
+      "tarball": "https://registry.npmmirror.com/date-fns/-/date-fns-4.1.0.tgz"
     },
     "debug@3.2.7": {
       "integrity": "sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==",
@@ -3507,6 +3512,14 @@
       "integrity": "sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==",
       "tarball": "https://registry.npmmirror.com/queue-microtask/-/queue-microtask-1.2.3.tgz"
     },
+    "react-activity-calendar@2.7.13_react@19.1.1": {
+      "integrity": "sha512-1ZHVgK8QJxtwG52EmcQrxhUQyN1Bv+819IPTTDAGp7Hme3h9IX2thDZJG+KnVbNQ3cjh8DQdfX4wWsTHIw75ug==",
+      "dependencies": [
+        "date-fns",
+        "react"
+      ],
+      "tarball": "https://registry.npmmirror.com/react-activity-calendar/-/react-activity-calendar-2.7.13.tgz"
+    },
     "react-dom@19.1.1_react@19.1.1": {
       "integrity": "sha512-Dlq/5LAZgF0Gaz6yiqZCf6VCcZs1ghAJyrsu84Q/GT0gV+mCxbfmKNoGRKBYMJ8IEdGPqu49YWXD02GCknEDkw==",
       "dependencies": [
@@ -3514,6 +3527,14 @@
         "scheduler"
       ],
       "tarball": "https://registry.npmmirror.com/react-dom/-/react-dom-19.1.1.tgz"
+    },
+    "react-github-calendar@4.5.9_react@19.1.1": {
+      "integrity": "sha512-5Ks2vGbR4KieM0vO49hJKy6hLKpFo7kbtOg+Z67qz83VeJy094okTGLt9+k2oryN5PKfjn5sJr0UObXSvNgcNw==",
+      "dependencies": [
+        "react",
+        "react-activity-calendar"
+      ],
+      "tarball": "https://registry.npmmirror.com/react-github-calendar/-/react-github-calendar-4.5.9.tgz"
     },
     "react-icons@5.5.0_react@19.1.1": {
       "integrity": "sha512-MEFcXdkP3dLo8uumGI5xN3lDFNsRtrjbOEKDLD7yv76v4wpnEq2Lt2qeHaQOr34I/wPN3s3+N08WkQ+CW37Xiw==",
@@ -4514,6 +4535,7 @@
         "npm:next@15.4.6",
         "npm:postcss@8",
         "npm:react-dom@19.1.1",
+        "npm:react-github-calendar@^4.5.9",
         "npm:react-icons@^5.5.0",
         "npm:react-markdown@^10.1.0",
         "npm:react-swipeable@^7.0.2",
