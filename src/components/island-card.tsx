@@ -214,9 +214,9 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                             <EndDecoLine deco={<RectDot size={3} />} decoSize={3} decoGap={4} lineThickness={1} lineStyle="dashed" />
                         </div>
                     }
-                    <div className="flex justify-between items-end">
+                    <div className="flex justify-between gap-2 items-end">
                         <div className="flex gap-2">
-                            <div className="flex gap-4">
+                            <div className="flex gap-x-4 gap-y-2 flex-wrap">
                                 {
                                     island.tags.map((tag, i) => <Tag key={i} tag={tag} highlightIfActivate />)
                                 }

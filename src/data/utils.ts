@@ -8,7 +8,6 @@ export function formatDate(date: string | undefined) {
     }
 
     const d = new Date(date)
-    console.log(d.getMonth())
     return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`
 }
 

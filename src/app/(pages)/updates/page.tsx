@@ -48,7 +48,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Raw
                                         case "external":
                                             return <IslandCard key={i} island={island} />
                                         case "note":
-                                            return <NetworkFailable promise={fetchIsland(island.id)} loading={<></>}>
+                                            return <NetworkFailable key={i} promise={fetchIsland(island.id)} loading={<></>}>
                                                 {data => <IslandCard key={i} island={island} content={data} />}
                                             </NetworkFailable>
                                     }
