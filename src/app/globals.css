@@ -3,27 +3,28 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "SourceHanSerif";
-  src: url('../../public/fonts/SourceHanSerifCN-Regular.woff2');
+	font-family: "SourceHanSerif";
+	src: url('../../public/fonts/SourceHanSerifCN-Regular.woff2');
 }
 
 @font-face {
-  font-family: "Bender";
-  src: url('../../public/fonts/Jovanny\ Lemonad\ -\ Bender.otf');
+	font-family: "Bender";
+	src: url('../../public/fonts/Jovanny\ Lemonad\ -\ Bender.otf');
 }
 
 @font-face {
-  font-family: "SourceHanSans";
-  src: url('../../public/fonts/SourceHanSansCN-Regular.woff2');
+	font-family: "SourceHanSans";
+	src: url('../../public/fonts/SourceHanSansCN-Regular.woff2');
 }
 
 @font-face {
-  font-family: "MonaspaceNeon";
-  src: url('../../public/fonts/MonaspaceNeon-Regular.woff2');
+	font-family: "MonaspaceNeon";
+	src: url('../../public/fonts/MonaspaceNeon-Regular.woff2');
 }
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: content-box;
+	margin: 0;
+	padding: 0;
+	box-sizing: content-box;
+	overscroll-behavior: none;
 }

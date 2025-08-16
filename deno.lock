@@ -18,6 +18,7 @@
     "npm:react-dom@19.1.1": "19.1.1_react@19.1.1",
     "npm:react-icons@^5.5.0": "5.5.0_react@19.1.1",
     "npm:react-markdown@^10.1.0": "10.1.0_@types+react@19.1.9_react@19.1.1",
+    "npm:react-swipeable@^7.0.2": "7.0.2_react@19.1.1",
     "npm:react-syntax-highlighter@^15.6.1": "15.6.1_react@19.1.1",
     "npm:react@19.1.1": "19.1.1",
     "npm:rehype-katex@^7.0.1": "7.0.1",
@@ -3544,6 +3545,13 @@
       ],
       "tarball": "https://registry.npmmirror.com/react-markdown/-/react-markdown-10.1.0.tgz"
     },
+    "react-swipeable@7.0.2_react@19.1.1": {
+      "integrity": "sha512-v1Qx1l+aC2fdxKa9aKJiaU/ZxmJ5o98RMoFwUqAAzVWUcxgfHFXDDruCKXhw6zIYXm6V64JiHgP9f6mlME5l8w==",
+      "dependencies": [
+        "react"
+      ],
+      "tarball": "https://registry.npmmirror.com/react-swipeable/-/react-swipeable-7.0.2.tgz"
+    },
     "react-syntax-highlighter@15.6.1_react@19.1.1": {
       "integrity": "sha512-OqJ2/vL7lEeV5zTJyG7kmARppUjiB9h9udl4qHQjjgEos66z00Ia0OckwYfRxCSFrW8RJIBnsBwQsHZbVPspqg==",
       "dependencies": [
@@ -4508,6 +4516,7 @@
         "npm:react-dom@19.1.1",
         "npm:react-icons@^5.5.0",
         "npm:react-markdown@^10.1.0",
+        "npm:react-swipeable@^7.0.2",
         "npm:react-syntax-highlighter@^15.6.1",
         "npm:react@19.1.1",
         "npm:rehype-katex@^7.0.1",

@@ -7,7 +7,6 @@ import { AnimatePresence } from "motion/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import * as motion from "motion/react-client";
-import OutlinedBox from "@/components/outlined-box";
 import BodyText from "@/components/text/body-text";
 import CornerDecoBox from "@/components/corner-deco-box";
 import RectDot from "@/components/rect-dot";
@@ -15,9 +14,19 @@ import Link from "next/link";
 import DiagLines from "@/components/svg-deco/diag-lines";
 import OutlinedButton from "@/components/outlined-button";
 import { useRouter } from "next/navigation";
+import { useSwipeable } from "react-swipeable";
 
 export default function FriendsClientPageWrapper({ linkExchange }: { linkExchange: LinkExchangeData[] }) {
     const [select, setSelect] = useState(0)
+    const swipeHandler = useSwipeable({
+        onSwiped: (data) => {
+            const offset = data.deltaX < 0 ? 1 : -1
+            const newSelect = select + offset
+            if (newSelect >= 0 && newSelect < linkExchange.length) {
+                setSelect(newSelect)
+            }
+        }
+    })
 
     useEffect(() => {
         const scrollHandler = (ev: WheelEvent) => {
@@ -67,30 +76,32 @@ export default function FriendsClientPageWrapper({ linkExchange }: { linkExchang
                 <OutlinedButton className="w-16 flex justify-center items-center" onClick={() => router.back()}>
                     <AsciiText>Back</AsciiText>
                 </OutlinedButton>
-                {linkExchange.map((link, i) =>
-                    <div key={i} className="relative flex flex-col gap-1 cursor-pointer" onClick={() => setSelect(i)}>
-                        <div className="relative w-12 h-12">
-                            <Image src={link.avatar} alt={`${link.name} avatar`} fill unoptimized />
+                <div className="flex w-full gap-2 overflow-x-scroll overflow-y-clip">
+                    {linkExchange.map((link, i) =>
+                        <div key={i} className="relative flex flex-col gap-1 cursor-pointer" onClick={() => setSelect(i)}>
+                            <div className="relative w-12 h-12">
+                                <Image src={link.avatar} alt={`${link.name} avatar`} fill unoptimized />
+                            </div>
+                            <AnimatePresence>
+                                {
+                                    i == select &&
+                                    <motion.div
+                                        initial={{ width: "0%" }}
+                                        animate={{ width: "100%", transition: { duration: 0.2, ease: "easeOut" } }}
+                                        exit={{ width: "0%", transition: { duration: 0.2, ease: "easeOut" } }}
+                                        className="flex items-center overflow-clip h-1"
+                                    >
+                                        <div className="relative w-full aspect-square scale-y-[30%] blur-sm">
+                                            <Image src={link.avatar} alt={`${link.name} avatar`} fill unoptimized />
+                                        </div>
+                                    </motion.div>
+                                }
+                            </AnimatePresence>
                         </div>
-                        <AnimatePresence>
-                            {
-                                i == select &&
-                                <motion.div
-                                    initial={{ width: "0%" }}
-                                    animate={{ width: "100%", transition: { duration: 0.2, ease: "easeOut" } }}
-                                    exit={{ width: "0%", transition: { duration: 0.2, ease: "easeOut" } }}
-                                    className="flex items-center overflow-clip h-1"
-                                >
-                                    <div className="relative w-full aspect-square scale-y-[30%] blur-sm">
-                                        <Image src={link.avatar} alt={`${link.name} avatar`} fill unoptimized />
-                                    </div>
-                                </motion.div>
-                            }
-                        </AnimatePresence>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
-            <div className="flex justify-center items-center w-full h-full">
+            <div className="flex justify-center items-center w-[100vw] h-[100vh]" {...swipeHandler}>
                 <AnimatePresence>
                     <LargeView link={selectedLink} />
                 </AnimatePresence>
@@ -103,7 +114,7 @@ function LargeView({ link }: { link: LinkExchangeData }) {
     return (
         <motion.div
             key={link.name}
-            className="flex justify-center items-center gap-2"
+            className="flex justify-center items-center gap-2 w-[90%] md:w-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { duration: 0.2, ease: "easeOut" } }}
             exit={{ opacity: 0, transition: { duration: 0.2, ease: "easeOut" } }}
@@ -116,9 +127,9 @@ function LargeView({ link }: { link: LinkExchangeData }) {
                 lineThickness={1}
                 decoSize={10}
                 decoGap={10}
-                className="flex gap-2 items-center w-[540px] py-2"
+                className="flex gap-2 items-center w-full md:w-[540px] py-2"
             >
-                <div className="relative w-24 h-24 m-4">
+                <div className="relative min-w-24 min-h-24 m-4">
                     <Image src={link.avatar} alt={`${link.name} avatar`} fill unoptimized />
                     <div className="absolute bg-accent-0 w-2 aspect-square -right-4" />
                 </div>
@@ -136,7 +147,7 @@ function LargeView({ link }: { link: LinkExchangeData }) {
                     </AsciiText>
                 </div>
             </CornerDecoBox>
-            <DiagLines className="w-14 h-14 aspect-square" style={{ maskSize: "200%", WebkitMaskSize: "200%" }} />
+            <DiagLines className="hidden md:block w-14 h-14 aspect-square" style={{ maskSize: "200%", WebkitMaskSize: "200%" }} />
         </motion.div>
     )
 }
