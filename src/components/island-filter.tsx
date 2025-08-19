@@ -2,7 +2,7 @@
 
 import Tag from "@/components/tag"
 import { usePathname, useSearchParams } from "next/navigation"
-import { advancedFilterEnabled, extractBits, setAdvancedFilter, toggleAdvancedFilter } from "@/data/utils"
+import { advancedFilterEnabled, constructPath, extractBits, setAdvancedFilter, toggleAdvancedFilter } from "@/data/utils"
 import BodyText from "./text/body-text"
 import { fetchAllTags } from "@/data/api"
 import Link from "next/link"
@@ -78,7 +78,7 @@ export default function IslandFilter({ allTags }: { allTags: TagData[] }) {
                                 { name: "已弃坑", filter: toggleAdvancedFilter(params.advf, "exclude-deprecated") },
                                 { name: "已删除", filter: toggleAdvancedFilter(params.advf, "exclude-deleted") },
                             ].map(node =>
-                                <Link href={`${pathname}?${searchParamsToUrl({ ...params, advf: node.filter })}`} key={node.name}>
+                                <Link href={constructPath(pathname, searchParamsToUrl({ ...params, advf: node.filter }))} key={node.name}>
                                     <BodyText>{node.name}</BodyText>
                                 </Link>
                             )}

@@ -18,7 +18,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Raw
     const params = processSearchParams(await searchParams)
 
     return (
-        <div className="flex flex-grow gap-10 px-2 md:px-10 pt-4">
+        <div className="flex flex-grow gap-10 px-2 md:px-10 pt-6">
             <div className="flex flex-col flex-grow gap-8">
                 <div className="md:hidden my-4">
                     <NetworkFailable promise={fetchAllTags()} loading={<IslandFilter allTags={[]} />}>

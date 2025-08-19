@@ -18,6 +18,7 @@ import { useState } from "react";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
 import AnimEnterBlink from "./anim/anim-enter-blink";
+import OutlinedBox from "./outlined-box";
 
 export default function IslandCard({ island, content }: { island: IslandMeta, content?: Island }) {
     const FakeBarCode = ({ len }: { len: number }) => {
@@ -115,8 +116,8 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                                 <RectDot size={10} cnt={5} />
                             </div>
                             <div className="absolute w-[6px] h-48 bg-dark-0 dark:bg-light-0 -right-3 top-4 max-h-[60%]" />
-                            <div className="absolute flex flex-col items-center w-4 -left-4 border border-dashed border-dark-0 dark:border-light-0">
-                                <AsciiText className="text-[8pt] m-4 font-bold" style={{ writingMode: "vertical-lr", rotate: "180deg" }}>
+                            <div className="absolute flex flex-col items-center w-4 -left-4">
+                                <AsciiText className="text-[8pt] py-4 font-bold border-r-[1px] border-dashed border-dark-0 dark:border-light-0" style={{ writingMode: "vertical-lr", rotate: "180deg" }}>
                                     {(
                                         () => {
                                             switch (island.ty) {
@@ -139,10 +140,10 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                         <div className="flex flex-col flex-grow gap-2">
                             {
                                 island.banner &&
-                                <div className="">
+                                <OutlinedBox className="w-full aspect-[10/3]">
                                     <AsciiText className="absolute bg-dark-0 dark:bg-light-0 px-2 text-[8pt]" inv>DESTINATION PREVIEW</AsciiText>
-                                    <img src={`${OSS}/${island.id}/BANNER.avif`} className="border border-dark-0 dark:border-light-0" />
-                                </div>
+                                    <img src={`${OSS}/${island.id}/BANNER.avif`}/>
+                                </OutlinedBox>
                             }
                             <div className="flex gap-2 min-h-8">
                                 {
