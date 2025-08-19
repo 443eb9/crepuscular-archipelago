@@ -28,7 +28,7 @@ export default function NavBar() {
                     <div className="hidden md:block relative">
                         <ThemeSwitcher className="md:absolute w-10 aspect-square md:-right-12" />
                         <div className="flex gap-2">
-                            <NavBarButtons />
+                            <NavBarButtons width={80} height={40} />
                         </div>
                     </div>
                     <div className="md:hidden flex mt-2 gap-1">
@@ -50,7 +50,7 @@ export default function NavBar() {
                 ref={bottomRef}
             >
                 <OutlinedBox className="flex flex-grow flex-wrap gap-2 py-1 px-2 -scale-y-100 border-x-0 border-t-0">
-                    <NavBarButtons flipped />
+                    <NavBarButtons flipped width={80} height={40} />
                 </OutlinedBox>
             </motion.div>
         </>

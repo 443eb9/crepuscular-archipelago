@@ -16,7 +16,7 @@ const data: { text: string, href?: string, submenus?: { text: string, href: stri
                 href: "/map",
             },
             {
-                text: "动态",
+                text: "日志",
                 href: "/updates",
             },
         ],
@@ -29,7 +29,7 @@ const data: { text: string, href?: string, submenus?: { text: string, href: stri
                 href: "/about",
             },
             {
-                text: "友链",
+                text: "邻域",
                 href: "/friends",
             },
         ],
@@ -40,7 +40,7 @@ const data: { text: string, href?: string, submenus?: { text: string, href: stri
     },
 ]
 
-export default function NavBarButtons({ flipped }: { flipped?: boolean }) {
+export default function NavBarButtons({ flipped, width, height }: { flipped?: boolean, width: number, height: number }) {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
     return data.map((item, i) =>
@@ -50,8 +50,12 @@ export default function NavBarButtons({ flipped }: { flipped?: boolean }) {
             onMouseLeave={() => setHoveredIndex(null)}
         >
             <OutlinedButton
-                className="flex justify-center items-center w-20 h-10"
+                className="flex justify-center items-center"
                 animTo="bottom"
+                style={{
+                    width: `${width}px`,
+                    height: `${height}px`,
+                }}
             >
                 {
                     item.href
@@ -64,13 +68,26 @@ export default function NavBarButtons({ flipped }: { flipped?: boolean }) {
                     {
                         hoveredIndex == i && item.submenus &&
                         <motion.div
-                            className="absolute w-20 top-full flex flex-col bg-accent-0 overflow-clip border-2 border-t-0 border-dark-0 dark:border-light-0"
+                            className="absolute top-full flex flex-col bg-accent-0 overflow-clip border-2 border-t-0 border-dark-0 dark:border-light-0 z-[1]"
                             initial={{ height: "0" }}
                             animate={{ height: "auto", transition: { delay: 0.18 } }}
                             exit={{ height: "0" }}
+                            style={{
+                                width: `${width}px`,
+                            }}
                         >
                             {item.submenus.map((submenu, i) =>
-                                <Link key={i} href={submenu.href} className="min-w-20 min-h-10 flex justify-center items-center">
+                                <Link
+                                    key={i}
+                                    href={submenu.href}
+                                    className="flex justify-center items-center"
+                                    style={{
+                                        minWidth: `${width}px`,
+                                        maxWidth: `${width}px`,
+                                        minHeight: `${height}px`,
+                                        maxHeight: `${height}px`,
+                                    }}
+                                >
                                     <TitleText style={{ scale: flipped ? "1 -1" : undefined }}>{submenu.text}</TitleText>
                                 </Link>
                             )}

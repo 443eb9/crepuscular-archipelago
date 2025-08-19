@@ -17,6 +17,7 @@ export default {
         "bender": ["Bender"],
         "sh-sans": ["SourceHanSans"],
         "neon": ["MonaspaceNeon"],
+        "pixel": ["FusionPixel"],
       },
       colors: {
         "warn": "#ffff00",

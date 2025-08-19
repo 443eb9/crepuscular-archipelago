@@ -141,7 +141,7 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                                 island.banner &&
                                 <div className="">
                                     <AsciiText className="absolute bg-dark-0 dark:bg-light-0 px-2 text-[8pt]" inv>DESTINATION PREVIEW</AsciiText>
-                                    <img src={`${OSS}/${island.id}/BANNER.png`} className="border border-dark-0 dark:border-light-0" />
+                                    <img src={`${OSS}/${island.id}/BANNER.avif`} className="border border-dark-0 dark:border-light-0" />
                                 </div>
                             }
                             <div className="flex gap-2 min-h-8">

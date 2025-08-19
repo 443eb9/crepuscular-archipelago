@@ -22,6 +22,11 @@
 	src: url('../../public/fonts/MonaspaceNeon-Regular.woff2');
 }
 
+@font-face {
+	font-family: "FusionPixel";
+	src: url('../../public/fonts/fusion-pixel-10px-proportional-zh_hans.ttf.woff2');
+}
+
 * {
 	margin: 0;
 	padding: 0;
