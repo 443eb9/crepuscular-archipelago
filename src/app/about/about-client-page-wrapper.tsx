@@ -23,6 +23,7 @@ import * as motion from "motion/react-client";
 import { findClassNameAmong, isScrolledToBottom, isScrolledToTop } from "@/data/utils";
 import GitHubCalendar from 'react-github-calendar';
 import { useTheme } from "next-themes";
+import { RiBilibiliLine } from "react-icons/ri";
 
 const preventPageSwitch = "prevent-page-switch"
 
@@ -195,8 +196,9 @@ function SelfIntro({ text, titles, emoticons }: { text: Response<string>, titles
                                     )}
                                 </NetworkFailableSync>
                             </div>
-                            <div className="flex mt-2">
+                            <div className="flex mt-2 gap-2 flex-wrap">
                                 <SocialMediaButton href={"https://github.com/443eb9"}><FiGithub className="text-lg text-dark-0 dark:text-light-0" /></SocialMediaButton>
+                                <SocialMediaButton href={"https://space.bilibili.com/401786213"}><RiBilibiliLine className="text-lg text-dark-0 dark:text-light-0" /></SocialMediaButton>
                             </div>
                             <div className="flex grow items-center">
                                 <NetworkFailableSync response={emoticons}>
