@@ -15,11 +15,17 @@ import DiagLines from "@/components/svg-deco/diag-lines";
 import OutlinedButton from "@/components/outlined-button";
 import { useRouter } from "next/navigation";
 import { useSwipeable } from "react-swipeable";
+import { findClassNameAmong } from "@/data/utils";
+
+const preventPageSwitch = "prevent-page-switch"
 
 export default function FriendsClientPageWrapper({ linkExchange }: { linkExchange: LinkExchangeData[] }) {
     const [select, setSelect] = useState(0)
+
     const swipeHandler = useSwipeable({
-        onSwiped: (data) => {
+        onSwiped: data => {
+            if (data.event.target && findClassNameAmong(data.event.target as HTMLElement, preventPageSwitch)) return
+
             const offset = data.deltaX < 0 ? 1 : -1
             const newSelect = select + offset
             if (newSelect >= 0 && newSelect < linkExchange.length) {
@@ -30,6 +36,7 @@ export default function FriendsClientPageWrapper({ linkExchange }: { linkExchang
 
     useEffect(() => {
         const scrollHandler = (ev: WheelEvent) => {
+            if (ev.target && findClassNameAmong(ev.target as HTMLElement, preventPageSwitch)) return
             if (window.scrollY > 0) return
 
             const offset = ev.deltaY > 0 ? 1 : -1
@@ -72,11 +79,11 @@ export default function FriendsClientPageWrapper({ linkExchange }: { linkExchang
                     />
                 </Link>
             </div>
-            <div className="absolute flex gap-2 m-2">
-                <OutlinedButton className="w-16 flex justify-center items-center" onClick={() => router.back()}>
+            <div className="absolute flex gap-2 m-2 w-[calc(100%-16px)]">
+                <OutlinedButton className="min-w-16 flex justify-center items-center" onClick={() => router.back()}>
                     <AsciiText>Back</AsciiText>
                 </OutlinedButton>
-                <div className="flex w-full gap-2 overflow-x-scroll overflow-y-clip">
+                <div className={`flex gap-2 overflow-x-auto ${preventPageSwitch}`}>
                     {linkExchange.map((link, i) =>
                         <div key={i} className="relative flex flex-col gap-1 cursor-pointer" onClick={() => setSelect(i)}>
                             <div className="relative w-12 h-12">
@@ -103,7 +110,7 @@ export default function FriendsClientPageWrapper({ linkExchange }: { linkExchang
             </div>
             <div className="flex justify-center items-center w-[100vw] h-[100vh]" {...swipeHandler}>
                 <AnimatePresence>
-                    <LargeView link={selectedLink} />
+                    {/* <LargeView link={selectedLink} /> */}
                 </AnimatePresence>
             </div>
         </div>
