@@ -110,7 +110,7 @@ export default function FriendsClientPageWrapper({ linkExchange }: { linkExchang
             </div>
             <div className="flex justify-center items-center w-[100vw] h-[100vh]" {...swipeHandler}>
                 <AnimatePresence>
-                    {/* <LargeView link={selectedLink} /> */}
+                    <LargeView link={selectedLink} />
                 </AnimatePresence>
             </div>
         </div>
