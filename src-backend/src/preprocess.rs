@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs::create_dir_all, str::FromStr};
+use std::{collections::HashMap, fs::create_dir_all, path::PathBuf, str::FromStr};
 
 use aes_gcm::{
     Aes256Gcm, AesGcm, Key, KeyInit,
@@ -12,7 +12,7 @@ use serde::{Deserialize, de::DeserializeOwned};
 use sqlx::{SqlitePool, query, sqlite::SqliteConnectOptions};
 
 use crate::{
-    env::{get_island_cache_root, get_island_storage_root},
+    env::{get_island_cache_root, get_island_storage_root, get_site_public_root},
     islands::IslandMaps,
     models::{
         Island, IslandMeta, IslandMetaTagged, IslandState, IslandType, License, SubIsland, TagData,
@@ -246,7 +246,8 @@ fn load_all_islands(
         let content = &content[0];
 
         let (mut island, mut body) = extract_frontmatter::<IslandToml>(content);
-        body = replace_image_urls(body);
+        body = replace_media_urls(body);
+        copy_media(id, entry.path().join(id.to_string()));
 
         if island.date.is_none() && island.state == IslandStateStr::Finished {
             island.state = IslandStateStr::WorkInProgress;
@@ -336,10 +337,10 @@ fn extract_frontmatter<T: DeserializeOwned>(body: &str) -> (T, String) {
     )
 }
 
-fn replace_image_urls(body: String) -> String {
+fn replace_media_urls(body: String) -> String {
     regex::Regex::new(r#"\.\/([0-9]+)\/"#)
         .unwrap()
-        .replace_all(&body, "https://oss.443eb9.dev/islandsmedia/$1/")
+        .replace_all(&body, "https://443eb9.dev/media/$1/")
         .into()
 }
 
@@ -389,4 +390,20 @@ fn apply_encryption(body: String, en: &ContentEncryptor) -> Island {
     }
 
     Island { content: result }
+}
+
+fn copy_media(id: u32, media: PathBuf) {
+    let Ok(dir) = media.read_dir() else {
+        return;
+    };
+
+    let media_root = get_site_public_root().join("media").join(id.to_string());
+    let _ = std::fs::create_dir_all(&media_root);
+    for item in dir {
+        let Ok(item) = item else {
+            continue;
+        };
+
+        std::fs::copy(item.path(), media_root.join(item.file_name())).unwrap();
+    }
 }

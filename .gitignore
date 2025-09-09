@@ -8,6 +8,7 @@ pixiv-weekly.webp
 pixiv-weekly.json
 .idea
 uv.lock
+public/media
 
 # dependencies
 /node_modules
