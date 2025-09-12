@@ -1,6 +1,7 @@
 import { OSS } from "./endpoints"
 import { createDecipheriv } from "crypto";
 import { IslandStateType, IslandType, LicenseType } from "./model";
+import { Vector2 } from "three";
 
 export function formatDate(date: string | undefined) {
     if (!date) {
@@ -47,6 +48,11 @@ export function lerp(x: number, y: number, t: number) {
 export type StatefulContext<T> = {
     value: T,
     setter: (value: T) => void,
+}
+
+export type Transform = {
+    translation: Vector2,
+    scale: number,
 }
 
 export function findClassNameAmong(target: HTMLElement, className: string): HTMLElement | null {
