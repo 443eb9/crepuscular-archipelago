@@ -1,7 +1,3 @@
-import IslandFilter from "@/components/island-filter";
-import { NetworkFailable } from "@/components/network-failable";
-import OutlinedBox from "@/components/outlined-box";
-import Pagination from "@/components/pagination";
 import { fetchAllTags, fetchIslandCount, fetchIslandMapMeta, fetchIslandMapRegionCenters, fetchIslandsMeta } from "@/data/api";
 import { processSearchParams, RawSearchParams } from "@/data/search-param-util";
 import IslandsMap from "./islands-map";
@@ -25,7 +21,6 @@ export default async function Page({ searchParams }: { searchParams: Promise<Raw
             regionCenters={regionCenters.data}
             totalIslands={islandCount.data.count}
             allTags={allTags.data}
-            params={params}
         />
     )
 }

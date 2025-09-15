@@ -1,6 +1,6 @@
 "use client"
 
-import { Island, IslandMapMeta, IslandMapRegionCenters, IslandMeta, TagData } from "@/data/model"
+import { IslandMapMeta, IslandMapRegionCenters, IslandMeta, TagData } from "@/data/model"
 import IslandPanels from "./island-panels"
 import MainCanvas, { CanvasMode } from "./main-canvas"
 import { StatefulContext, Transform } from "@/data/utils"
@@ -59,7 +59,7 @@ export type CanvasState = "ready" | "pending"
 
 export const canvasStateContext = createContext<StatefulContext<CanvasState> | undefined>(undefined)
 
-export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta: IslandMapMeta, regionCenters: IslandMapRegionCenters, totalIslands: number, allTags: TagData[], params: QueryParams }) {
+export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta: IslandMapMeta, regionCenters: IslandMapRegionCenters, totalIslands: number, allTags: TagData[] }) {
     const videoRef = useRef<HTMLVideoElement>(null)
     const [canvasState, setCanvasState] = useState<CanvasState>("pending")
     const islandGrid = useContext(islandGridContext)
@@ -92,6 +92,7 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
     }, [canvasMode])
 
     const MainContent = () => {
+        console.log("BBBBBBBBBBBBBBBBB")
         return (
             <>
                 {
@@ -107,7 +108,6 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
                 <MainCanvas
                     islands={props.islands}
                     islandMapMeta={props.islandMapMeta}
-                    params={props.params}
                     maxValidNoiseValueOverride={canvasMode.mode == "bad-apple" ? 0.5 : undefined}
                     canvasMode={canvasMode}
                 />

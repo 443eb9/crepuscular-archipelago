@@ -10,7 +10,8 @@ import { GridMode, MainGrid } from "./(canvas)/main-grid"
 import { useTheme } from "next-themes"
 import { MouseTracker } from "./(canvas)/mouse-tracker"
 import { EffectComposer } from "@react-three/postprocessing"
-import { SearchParams } from "@/data/search-param-util"
+import { processUrlSearchParams } from "@/data/search-param-util"
+import { useSearchParams } from "next/navigation"
 
 export const GridSettings = {
     cellSize: 40,
@@ -24,15 +25,16 @@ export const GridSettings = {
     waveScale: 20,
 }
 
-export type CanvasMode = { mode: "islands" } | { mode: "bad-apple", video: RefObject<HTMLVideoElement> }
+export type CanvasMode = { mode: "islands" } | { mode: "bad-apple", video: RefObject<HTMLVideoElement | null> }
 
 export default function MainCanvas({
-    islands, islandMapMeta, params, canvasMode, maxValidNoiseValueOverride
+    islands, islandMapMeta, canvasMode, maxValidNoiseValueOverride
 }: {
-    islands: IslandMeta[], islandMapMeta: IslandMapMeta, params: SearchParams, canvasMode: CanvasMode, maxValidNoiseValueOverride?: number
+    islands: IslandMeta[], islandMapMeta: IslandMapMeta, canvasMode: CanvasMode, maxValidNoiseValueOverride?: number
 }) {
     const islandGrid = useContext(islandGridContext)
     const resolverRef = useRef<HTMLDivElement>(null)
+    const searchParams = processUrlSearchParams(useSearchParams())
 
     const [colors, setColors] = useState<{
         foreground: Color,
@@ -104,7 +106,7 @@ export default function MainCanvas({
     useEffect(() => {
         switch (canvasMode.mode) {
             case "islands":
-                const islandsNoise = new TextureLoader().load(islandMapUrl(params.page))
+                const islandsNoise = new TextureLoader().load(islandMapUrl(searchParams.page))
                 islandsNoise.magFilter = NearestFilter
                 islandsNoise.minFilter = NearestFilter
                 setNoise(islandsNoise)
@@ -117,7 +119,7 @@ export default function MainCanvas({
                 canvasMode.video.current.play()
                 setNoise(badApple)
         }
-    }, [params.page, canvasMode.mode])
+    }, [searchParams.page, canvasMode.mode])
 
     useEffect(() => {
         const cursorHandler = (ev: MouseEvent) => {
@@ -146,10 +148,10 @@ export default function MainCanvas({
             if (islandGrid.canvasSize != three.size) {
                 islandGrid.canvasSize = three.size
 
-                setUpdateFlag(!updateFlag)
                 canvasState?.setter("ready")
+                console.log(islandGrid.canvasSize, three.size)
             }
-        }, [updateFlag])
+        }, [three.size])
 
         return <></>
     }
@@ -201,7 +203,7 @@ export default function MainCanvas({
                     .multiplyScalar(islandGrid.canvasTransform.scale)
                     .add(islandGrid.canvasTransform.translation.clone())
                 const grid = px.divideScalar(GridSettings.cellSize).floor()
-                const query = await fetchIslandAt(params.page, grid.x, grid.y - 1)
+                const query = await fetchIslandAt(searchParams.page, grid.x, grid.y - 1)
                 let result: { regionId: number | null; noiseValue: number }
                 if (query.ok && query.data.result && query.data.result.noiseValue < maxValidNoiseValue) {
                     result = { ...query.data.result }
