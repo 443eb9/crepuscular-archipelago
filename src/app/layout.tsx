@@ -5,7 +5,7 @@ import { Toaster } from "react-hot-toast";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
 	return (
-		<html lang="en" suppressHydrationWarning>
+		<html lang="cmn-hans" suppressHydrationWarning>
 			<body className="bg-light-0 dark:bg-dark-0">
 				<Toaster
 					toastOptions={{

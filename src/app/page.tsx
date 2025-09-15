@@ -1,8 +1,7 @@
 import { NetworkFailableSync } from "@/components/network-failable";
 import { wrappedFetch } from "@/data/api";
 import { frontendEndpoint } from "@/data/endpoints";
-import { SelfTitleData } from "@/data/model";
-import MotionTitles from "./motion-titles";
+import MotionVerbs from "./motion-verbs";
 import TitleText from "@/components/text/title-text";
 import AsciiText from "@/components/text/ascii-text";
 import OutlinedBox from "@/components/outlined-box";
@@ -10,7 +9,6 @@ import BodyText from "@/components/text/body-text";
 import NavBarButtons from "@/components/nav-bar-buttons";
 
 export default async function Home() {
-	const titles = await wrappedFetch<SelfTitleData[]>(frontendEndpoint("/self-titles.json"), "GET")
 	const chickenSoups = await wrappedFetch<string[]>(frontendEndpoint("/chicken-soups.json"), "GET")
 
 	return (
@@ -21,11 +19,9 @@ export default async function Home() {
 					<div className="w-full h-1/2 flex">
 						<div className="w-1/2 flex flex-col">
 							<OutlinedBox className="w-24 aspect-square bg-cover" style={{ backgroundImage: "url(https://avatars.githubusercontent.com/u/50186452)" }}></OutlinedBox>
-							<AsciiText className="text-[30pt] font-bold">I'm 443eb9#C, a</AsciiText>
-							<div className="flex flex-col text-[40pt]">
-								<NetworkFailableSync response={titles}>
-									{titles => <MotionTitles titles={titles} />}
-								</NetworkFailableSync>
+							<AsciiText className="text-[30pt] font-bold">I'm 443eb9#C,</AsciiText>
+							<div className="text-[40pt]">
+								<MotionVerbs />
 							</div>
 						</div>
 						<div className="w-1/2 flex items-end flex-col">
@@ -52,8 +48,8 @@ export default async function Home() {
 
 				{/* Mobile */}
 				<div className="w-[calc(100%-30px)] h-[calc(100%-30px)] max-w-[1280px] max-h-[720px] md:hidden flex flex-col justify-between">
-					<div className="w-full flex flex-col gap-8">
-						<div className="flex flex-col items-end">
+					<div className="w-full flex flex-col gap-8 items-center">
+						<div className="flex flex-col">
 							<TitleText className="text-[20pt]">晨暮群岛</TitleText>
 							<AsciiText className="text-[20pt] text-nowrap">Crepuscular Archipelago</AsciiText>
 							<NetworkFailableSync response={chickenSoups}>
@@ -66,11 +62,9 @@ export default async function Home() {
 						</div>
 						<div className="flex flex-col">
 							<OutlinedBox className="w-24 aspect-square bg-cover" style={{ backgroundImage: "url(https://avatars.githubusercontent.com/u/50186452)" }}></OutlinedBox>
-							<AsciiText className="text-[20pt] font-bold">I'm 443eb9#C, a</AsciiText>
-							<div className="flex flex-col text-[20pt]">
-								<NetworkFailableSync response={titles}>
-									{titles => <MotionTitles titles={titles} />}
-								</NetworkFailableSync>
+							<AsciiText className="text-[20pt] font-bold">I'm 443eb9#C,</AsciiText>
+							<div className="text-[20pt]">
+								<MotionVerbs />
 							</div>
 						</div>
 					</div>
