@@ -51,7 +51,7 @@ export const islandGridContext = createContext<IslandGridContext>({
         value: null,
     },
     focusingRegionValue: {
-        value: 0.0,
+        value: 1.0,
     },
 })
 

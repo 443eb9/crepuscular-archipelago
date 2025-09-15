@@ -209,7 +209,7 @@ export default function MainCanvas({
                 } else {
                     result = {
                         regionId: null,
-                        noiseValue: 0.0,
+                        noiseValue: 1.0,
                     }
                 }
                 islandGrid.focusingRegionId.value = result.regionId
