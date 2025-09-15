@@ -8,7 +8,6 @@ import OutlinedBox from "@/components/outlined-box"
 import { fetchIsland } from "@/data/api"
 import { islandGridContext } from "./islands-map"
 import CanvasRelatedPanel from "./canvas-related-panel"
-import { visitingIslandContext } from "./island-panels"
 import AsciiText from "@/components/text/ascii-text"
 import IslandCard from "@/components/island-card"
 import BodyText from "@/components/text/body-text"
@@ -19,8 +18,6 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
     const y = useMotionValue(0)
     const [state, setState] = useState<"focused" | "unfocused" | "none">("none")
 
-    const visitingIsland = useContext(visitingIslandContext)
-    const islandGrid = useContext(islandGridContext)
     const [islandContent, setIslandContent] = useState<Island | undefined>()
 
     useEffect(() => {
@@ -51,7 +48,7 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
         <CanvasRelatedPanel
             posX={center.x}
             posY={center.y}
-            className="absolute bg-light-background dark:bg-dark-background"
+            className="absolute bg-light-0 dark:bg-dark-0"
             style={{
                 x,
                 y,
@@ -65,23 +62,7 @@ export default function IslandFloatingInfo({ regionId, island, center }: { regio
                         <AsciiText>Access Denied</AsciiText>
                     </OutlinedBox>
                     : state == "focused"
-                        ? <div
-                            className={`absolute w-[500px] bg-light-background dark:bg-dark-background ${island.ty == "article" ? "cursor-pointer" : ""}`}
-                            onClick={async () => {
-                                if (visitingIsland?.value?.meta.id != island.id && island.ty == "article") {
-                                    const content = await fetchIsland(island.id)
-                                    if (content.ok) {
-                                        visitingIsland?.setter({
-                                            meta: island,
-                                            content: content.data,
-                                        })
-                                    }
-
-                                    islandGrid.focusingRegionValue.value = 1
-                                    islandGrid.focusingRegionId.value = null
-                                }
-                            }}
-                        >
+                        ? <div className={`absolute w-[500px] bg-light-0 dark:bg-dark-0 pointer-events-auto ${island.ty == "article" ? "cursor-pointer" : ""}`}>
                             <IslandCard island={island} content={islandContent} />
                         </div>
                         : <OutlinedBox className="p-2 flex items-center gap-2">

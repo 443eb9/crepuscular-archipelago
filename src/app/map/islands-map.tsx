@@ -51,7 +51,7 @@ export const islandGridContext = createContext<IslandGridContext>({
         value: null,
     },
     focusingRegionValue: {
-        value: 1.0,
+        value: 0.0,
     },
 })
 
@@ -92,11 +92,10 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
     }, [canvasMode])
 
     const MainContent = () => {
-        console.log("BBBBBBBBBBBBBBBBB")
         return (
             <>
                 {
-                    canvasState == "ready" &&
+                    canvasState == "ready" && canvasMode.mode == "islands" &&
                     <IslandPanels
                         totalIslands={props.totalIslands}
                         allTags={props.allTags}
@@ -138,7 +137,7 @@ export default function IslandsMap(props: { islands: IslandMeta[], islandMapMeta
                         <video
                             ref={videoRef}
                             src="videos/bad-apple.mp4"
-                            className="absolute -z-[100000]"
+                            className="absolute -z-[100000] -top-full"
                             controls
                         />
                     }

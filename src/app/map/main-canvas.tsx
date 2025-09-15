@@ -149,7 +149,6 @@ export default function MainCanvas({
                 islandGrid.canvasSize = three.size
 
                 canvasState?.setter("ready")
-                console.log(islandGrid.canvasSize, three.size)
             }
         }, [three.size])
 
@@ -194,7 +193,7 @@ export default function MainCanvas({
                 islandGrid.canvasTransform.scale = newScale
             }}
             onClick={async ev => {
-                if (ev.button != 0) { return }
+                if (ev.button != 0) return
 
                 const cursor = islandGrid.cursor.clone()
                     .multiplyScalar(0.5)
@@ -210,7 +209,7 @@ export default function MainCanvas({
                 } else {
                     result = {
                         regionId: null,
-                        noiseValue: 1.0,
+                        noiseValue: 0.0,
                     }
                 }
                 islandGrid.focusingRegionId.value = result.regionId
