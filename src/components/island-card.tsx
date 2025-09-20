@@ -11,7 +11,7 @@ import FocusRect from "./svg-deco/focus-rect";
 import Tag from "./tag";
 import { constructPath, formatDate, formatLicense, formatState } from "@/data/utils";
 import CcIcons from "./svg-deco/cc-icons";
-import { OSS } from "@/data/endpoints";
+import { frontendEndpoint, OSS } from "@/data/endpoints";
 import IslandBody from "./island-body";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -142,7 +142,7 @@ export default function IslandCard({ island, content }: { island: IslandMeta, co
                                 island.banner &&
                                 <OutlinedBox className="w-full aspect-[10/3]">
                                     <AsciiText className="absolute bg-dark-0 dark:bg-light-0 px-2 text-[8pt]" inv>DESTINATION PREVIEW</AsciiText>
-                                    <img src={`${OSS}/${island.id}/BANNER.avif`}/>
+                                    <img src={frontendEndpoint(`/media/${island.id}/BANNER.avif`)}/>
                                 </OutlinedBox>
                             }
                             <div className="flex gap-2 min-h-8">
