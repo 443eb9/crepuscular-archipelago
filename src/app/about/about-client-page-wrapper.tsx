@@ -24,6 +24,8 @@ import { findClassNameAmong, isScrolledToBottom, isScrolledToTop } from "@/data/
 import GitHubCalendar from 'react-github-calendar';
 import { useTheme } from "next-themes";
 import { RiBilibiliLine } from "react-icons/ri";
+import SvgDeco from "@/components/svg-deco/svg-deco";
+import { frontendEndpoint } from "@/data/endpoints";
 
 const preventPageSwitch = "prevent-page-switch"
 
@@ -197,8 +199,10 @@ function SelfIntro({ text, titles, emoticons }: { text: Response<string>, titles
                                 </NetworkFailableSync>
                             </div>
                             <div className="flex mt-2 gap-2 flex-wrap">
-                                <SocialMediaButton href={"https://github.com/443eb9"}><FiGithub className="text-lg text-dark-0 dark:text-light-0" /></SocialMediaButton>
-                                <SocialMediaButton href={"https://space.bilibili.com/401786213"}><RiBilibiliLine className="text-lg text-dark-0 dark:text-light-0" /></SocialMediaButton>
+                                <SocialMediaButton href="https://github.com/443eb9"><FiGithub className="text-lg text-dark-0 dark:text-light-0" /></SocialMediaButton>
+                                <SocialMediaButton href="https://space.bilibili.com/401786213"><RiBilibiliLine className="text-lg text-dark-0 dark:text-light-0" /></SocialMediaButton>
+                                <SocialMediaButton href="https://www.artstation.com/sharpc443eb96"><SvgDeco url={frontendEndpoint("/images/platform/ArtStation-logomark-white.svg")} className="w-full h-full" /></SocialMediaButton>
+                                <SocialMediaButton href="https://x.com/443eb9"><SvgDeco url={frontendEndpoint("/images/platform/X_Logo.svg")} className="w-3/5 h-3/5" /></SocialMediaButton>
                             </div>
                             <div className="flex grow items-center">
                                 <NetworkFailableSync response={emoticons}>
